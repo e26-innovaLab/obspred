@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { FiltrosContext, type FiltrosContextValue } from './filtrosContext';
+import { FiltrosContext, type FiltrosContextValue } from './filtrosContextInstance';
 
 export function useFiltros(): FiltrosContextValue {
   const ctx = useContext(FiltrosContext);

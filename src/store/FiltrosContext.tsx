@@ -1,7 +1,7 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import type { Filtros } from '../types/kpi';
 import { PERIODOS } from '../services/mock/catalogo';
-import { FiltrosContext, type FiltrosContextValue } from './filtrosContext';
+import { FiltrosContext, type FiltrosContextValue } from './filtrosContextInstance';
 
 const FILTROS_INICIALES: Filtros = {
   pais: 'AR',
