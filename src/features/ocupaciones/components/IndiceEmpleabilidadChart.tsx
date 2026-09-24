@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { DimensionIndice } from '../../../services/mock/ocupaciones';
 import { SinDatos } from '../../../components/common/SinDatos';
+import { PALETA_MARCA } from '../../../styles/paletaMarca';
 
 export function IndiceEmpleabilidadChart({ dimensiones }: { dimensiones: DimensionIndice[] }) {
   if (dimensiones.length === 0) return <SinDatos />;
@@ -12,7 +13,7 @@ export function IndiceEmpleabilidadChart({ dimensiones }: { dimensiones: Dimensi
         <XAxis type="number" domain={[0, 100]} />
         <YAxis type="category" dataKey="nombre" width={160} />
         <Tooltip />
-        <Bar dataKey="valor" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="valor" fill={PALETA_MARCA.azulClaro} radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

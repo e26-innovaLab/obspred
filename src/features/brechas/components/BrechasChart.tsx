@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { HabilidadComparada } from '../../../types/brecha';
 import { SinDatos } from '../../../components/common/SinDatos';
+import { PALETA_MARCA } from '../../../styles/paletaMarca';
 
 export function BrechasChart({ habilidades }: { habilidades: HabilidadComparada[] }) {
   if (habilidades.length === 0) return <SinDatos />;
@@ -13,8 +14,8 @@ export function BrechasChart({ habilidades }: { habilidades: HabilidadComparada[
         <YAxis domain={[0, 100]} />
         <Tooltip />
         <Legend />
-        <Bar dataKey="demanda" name="Demanda del mercado" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="ofertaFormativa" name="Oferta formativa" fill="#a3a3a3" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="demanda" name="Demanda del mercado" fill={PALETA_MARCA.azulClaro} radius={[4, 4, 0, 0]} />
+        <Bar dataKey="ofertaFormativa" name="Oferta formativa" fill={PALETA_MARCA.amarillo} radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
