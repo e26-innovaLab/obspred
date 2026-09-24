@@ -4,13 +4,23 @@ Frontend (React + TypeScript + Vite) del **Observatorio predictivo de tendencias
 socioeconómicas, laborales y educativas** (Argentina, Uruguay y Chile) —
 proyecto de innova.lab, Grupo N° 5.
 
+## Estado actual
+
+Las 5 vistas del Observatorio están implementadas y funcionando con **datos
+mock** (`src/services/mock/`), generados de forma determinística por
+filtro para simular la futura API sin necesitar el backend todavía. Cuando
+el contrato de la API interna esté definido (roadmap, paso 4), los hooks de
+cada feature (`features/*/hooks/`) se actualizan para consumir
+`services/api/` en lugar de `services/mock/` — los componentes no cambian.
+
 ## Stack
 
 - React 19 + TypeScript
-- Vite
+- Vite (con code-splitting por ruta vía `React.lazy`)
 - React Router (navegación entre vistas)
-- Axios (consumo de la API interna)
+- Axios (consumo de la futura API interna)
 - Recharts (visualizaciones)
+- Context API (filtros globales compartidos)
 
 ## Estructura de carpetas
 
@@ -28,10 +38,12 @@ src/
 │   ├── brechas/                 # Vista 4 — Brechas de habilidades
 │   └── trazabilidad/            # Vista 5 — Trazabilidad y fuentes
 │       └── (components/ hooks/ types/ dentro de cada feature)
-├── services/api/               # cliente HTTP y llamadas a la API interna
+├── services/
+│   ├── api/                      # cliente HTTP y llamadas a la futura API interna
+│   └── mock/                     # datos simulados (reemplazan a api/ hasta que el backend exista)
 ├── hooks/                       # hooks compartidos entre features
 ├── types/                        # tipos compartidos (Indicador, Filtros, Fuente...)
-├── store/                         # estado global (si se necesita)
+├── store/                         # filtros globales (Context API)
 ├── config/                         # configuración y variables de entorno
 └── styles/                          # estilos globales adicionales
 ```

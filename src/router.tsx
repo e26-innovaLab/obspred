@@ -1,21 +1,31 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
-import { DashboardPage } from './features/dashboard/DashboardPage';
-import { OcupacionesPage } from './features/ocupaciones/OcupacionesPage';
-import { TendenciasPage } from './features/tendencias/TendenciasPage';
-import { BrechasPage } from './features/brechas/BrechasPage';
-import { TrazabilidadPage } from './features/trazabilidad/TrazabilidadPage';
+
+// Cada vista se carga bajo demanda: reduce el bundle inicial, algo
+// relevante acá porque Recharts es una dependencia pesada.
+const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })));
+const OcupacionesPage = lazy(() => import('./features/ocupaciones/OcupacionesPage').then((m) => ({ default: m.OcupacionesPage })));
+const TendenciasPage = lazy(() => import('./features/tendencias/TendenciasPage').then((m) => ({ default: m.TendenciasPage })));
+const BrechasPage = lazy(() => import('./features/brechas/BrechasPage').then((m) => ({ default: m.BrechasPage })));
+const TrazabilidadPage = lazy(() =>
+  import('./features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
+);
+
+function conSuspense(element: React.ReactNode) {
+  return <Suspense fallback={<p className="page">Cargando…</p>}>{element}</Suspense>;
+}
 
 export const router = createBrowserRouter([
   {
     path: '/',
     element: <AppLayout />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'ocupaciones', element: <OcupacionesPage /> },
-      { path: 'tendencias', element: <TendenciasPage /> },
-      { path: 'brechas', element: <BrechasPage /> },
-      { path: 'trazabilidad', element: <TrazabilidadPage /> },
+      { index: true, element: conSuspense(<DashboardPage />) },
+      { path: 'ocupaciones', element: conSuspense(<OcupacionesPage />) },
+      { path: 'tendencias', element: conSuspense(<TendenciasPage />) },
+      { path: 'brechas', element: conSuspense(<BrechasPage />) },
+      { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
     ],
   },
 ]);
