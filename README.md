@@ -22,6 +22,19 @@ cada feature (`features/*/hooks/`) se actualizan para consumir
 - Recharts (visualizaciones)
 - Context API (filtros globales compartidos)
 
+
+## Equipo Frontend / UX
+
+Responsabilidades definidas en la reunión del 24/09:
+
+| Persona | Rol | A cargo de |
+|---|---|---|
+| Germán Gonzalez | Frontend | Estructura de carpetas y arquitectura (`services/`, `store/`, `config/`, organización general del proyecto) |
+| Melvin Farias Ramirez | Frontend | Componentes y vistas (`components/`, botones, `features/*/*Page.tsx`) |
+| Ludmila Bravo Ruiz Diaz | Frontend | Gráficos y visualización de datos (`features/*/components/*Chart.tsx`, Recharts, paleta de marca) |
+| Guillermo Pérez Maidana | Diseñador/a UX/UI | Diseño de las vistas y experiencia de usuario |
+| Sofía Moreno | Diseñadora UX/UI | Diseño de las vistas y experiencia de usuario |
+
 ## Estructura de carpetas
 
 ```
@@ -79,3 +92,6 @@ npm run dev
 - `npm run build` — build de producción
 - `npm run lint` — linter
 - `npm run preview` — previsualizar el build
+
+
+
