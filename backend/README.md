@@ -34,12 +34,12 @@ backend/
 └── requirements.txt       # Dependencias principales
 ```
 
-### Ubicación de Controladores y Capa API (`app/api/`)
+### ¿Dónde se ubican los Controllers? (Capa API `app/api/`)
 En esta implementación de Clean Architecture con FastAPI, el rol tradicional de los **Controllers** se distribuye de la siguiente manera:
-- **Controladores / Endpoints (`app/api/v1/endpoints/`):** Albergan los handlers de rutas (`APIRouter`). Su función exclusiva es recibir las solicitudes HTTP, aplicar validaciones de entrada, coordinar la inyección de dependencias y delegar la lógica de negocio a los casos de uso correspondientes (`app/application/use_cases/`).
-- **Enrutador Central (`app/api/v1/router.py`):** Centraliza y monta todos los submódulos de endpoints bajo la versión de la API correspondiente.
-- **Punto de Entrada (`app/main.py`):** Inicializa la aplicación FastAPI, registra middlewares (como CORS) e incluye el enrutador central.
-- **Modelos de Transferencia / Schemas (`app/api/v1/schemas/`):** Definen los contratos estrictos de entrada y salida mediante modelos Pydantic.
+- **Controladores / Endpoints ([`app/api/v1/endpoints/`](app/api/v1/endpoints/)):** Albergan los handlers de rutas (`APIRouter`). Su función exclusiva es recibir las solicitudes HTTP, aplicar validaciones de entrada, coordinar la inyección de dependencias y delegar la lógica de negocio a los casos de uso correspondientes ([`app/application/use_cases/`](app/application/use_cases/)).
+- **Enrutador Central ([`app/api/v1/router.py`](app/api/v1/router.py)):** Centraliza y monta todos los submódulos de endpoints bajo la versión de la API correspondiente.
+- **Punto de Entrada ([`app/main.py`](app/main.py)):** Inicializa la aplicación FastAPI, registra middlewares (como CORS) e incluye el enrutador central.
+- **Modelos de Transferencia / Schemas ([`app/api/v1/schemas/`](app/api/v1/schemas/)):** Definen los contratos estrictos de entrada y salida mediante modelos Pydantic.
 
 ### Estándar de Respuestas REST (`ApiResponse[T]`)
 Todas las llamadas a la API (tanto exitosas como con errores o excepciones) responden con un envoltorio uniforme bajo el esquema `ApiResponse[T]` ([`app/api/v1/schemas/response_schema.py`](app/api/v1/schemas/response_schema.py)):

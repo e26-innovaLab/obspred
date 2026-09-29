@@ -34,32 +34,13 @@ obspred/
 
 ---
 
-## ⚙️ Backend y Arquitectura
-
-El backend está desarrollado con **FastAPI** y **Python 3.12+**, implementando **Clean Architecture** (Arquitectura Limpia) y principios **SOLID**:
-
-```text
-backend/app/
-├── core/               # Configuración, constantes (sin magic strings) y logging
-├── domain/             # Reglas de negocio puras, entidades, excepciones e interfaces
-├── application/        # Orquestación de casos de uso (use cases) y DTOs
-├── infrastructure/     # Conectores externos, base de datos y repositorios
-└── api/                # Capa de presentación HTTP / Controllers (FastAPI)
-    ├── dependencies.py # Inyección de dependencias
-    └── v1/
-        ├── router.py   # Enrutador central v1 (agrega todos los controladores)
-        ├── endpoints/  # Controladores HTTP / Endpoints (health, indicadores, etc.)
-        └── schemas/    # Esquemas Pydantic de entrada/salida (DTOs de request/response)
-```
-
-### ¿Dónde se ubican los Controllers?
-En FastAPI con Clean Architecture, los controladores corresponden a los **Endpoints / Routers** HTTP:
-* **Directorio de Controllers:** [`backend/app/api/v1/endpoints/`](backend/app/api/v1/endpoints/)
-* **Enrutador Central:** [`backend/app/api/v1/router.py`](backend/app/api/v1/router.py)
-* **Punto de entrada:** [`backend/app/main.py`](backend/app/main.py)
-* **Lógica delegada:** Los controladores delegan la ejecución a los casos de uso en [`backend/app/application/use_cases/`](backend/app/application/use_cases/).
-
-Para más detalles sobre la ejecución local y pruebas del backend, consulta el [`README.md` del Backend](backend/README.md).
+## 🧩 Componentes del Sistema
+ 
+ El proyecto se divide en tres componentes principales:
+ 
+- **Backend ([`backend/`](backend/)):** API REST desarrollada con **FastAPI** (Python 3.11+), implementando **Clean Architecture** (Arquitectura Limpia) y principios **SOLID**, persistencia asíncrona (PostgreSQL / SQLite vía SQLAlchemy) y suite de pruebas unitarias. Para consultar la estructura detallada de capas, ubicación de controladores, contratos de respuesta y puesta en marcha local, consulta el [**README del Backend**](backend/README.md).
+- **Frontend ([`frontend/`](frontend/)):** Aplicación SPA desarrollada en **React 19**, **TypeScript**, **Vite** y visualización con **Recharts**, diseñada siguiendo la guía de estilos institucionales y benchmark UX.
+- **Datos y Modelos ([`data/`](data/)):** Catálogo de fuentes públicas, scripts de procesamiento, armonización semántica de taxonomías y cálculo de indicadores (Índice de Empleabilidad).
 
 ---
 
