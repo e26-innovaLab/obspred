@@ -57,20 +57,18 @@ Leveraging automated connections to official APIs (such as ILOSTAT, CEPALSTAT, W
 | Rol | Nombre y Apellido | Correo Electrónico |
 |:---|:---|:---|
 | **Frontend** | Melvin Gabriela Farias Ramirez | `melvingabriela17@gmail.com` |
-| **Frontend** | Ludmila Ruiz Diaz | `ludmila.b.ruizdiaz@gmail.com` |
+| **Frontend** | Ludmila Mariana Bravo Ruiz Diaz | `ludmila.b.ruizdiaz@gmail.com` |
 | **Frontend** | Germán Pablo Gonzalez | `germancai@hotmail.com` |
 | **Backend** | Nicolás Snider | `nicolas.snider@gmail.com` |
 | **Backend** | Colby Vertilus | `vertiluscolby@gmail.com` |
-| **Backend** | Enzo Figlioli | `enzofiglioli.p@gmail.com` |
-| **Diseño UX/UI** | Selena Romei | `selenaromeicm@gmail.com` |
-| **Diseño UX/UI** | Lucas Rossi Caula | `lucas1rc2003@gmail.com` |
+| **Backend** | Georgina Gisela Bosque | `georginabosque@gmail.com` |
+| **Diseño UX/UI** | Ignacio Agustín Maydana | `ignaciomaydana.9@gmail.com` |
 | **Diseño UX/UI** | Guillermo Damián Pérez Maidana | `guilleperezmaida@gmail.com` |
+| **Diseño UX/UI** | Sofía Moreno | `sofiac.moreno1@gmail.com` |
 | **Data Analytics** | Matias Vrecic | `m_vrecic@hotmail.com` |
 | **Data Analytics** | Ximena Facal | `xime.facal@live.com.ar` |
 | **Data Analytics** | Ignacio Lopez Parra | `lopezparraignacio@gmail.com` |
-| **Testing / QA** | Christian Facundo Aldavez | `christian.aldavez90@gmail.com` |
 | **Testing / QA** | Eduardo Arevalo | `eduardo.arevalo072@gmail.com` |
-| **Testing / QA** | Alejandro Medina Jurado | `medinaale93@gmail.com` |
 
 ### Dinámica y Encuentros del Equipo
 - **Día y horario regular:** Martes de 18:30 a 20:30 h.
