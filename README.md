@@ -1,23 +1,34 @@
 # Observatorio Predictivo de Tendencias Socioeconómicas, Laborales y Educativas (`obspred`)
 
-Plataforma analítica e interactiva para la integración, visualización y proyección de indicadores socioeconómicos, laborales y educativos de **Argentina, Uruguay y Chile**, desarrollada en el marco de **innova.lab (Grupo N° 5)**.
+Plataforma analítica e interactiva para la integración, normalización, visualización y proyección de indicadores socioeconómicos, laborales y educativos de **Argentina, Uruguay y Chile**, desarrollada en el marco de **innova.lab (Grupo N° 5)**.
 
 ---
 
-## 🏛️ Estructura del Proyecto
+## 🎯 Alcance del MVP
 
-El repositorio se organiza con separación de responsabilidades:
+- **Cobertura geográfica:** Argentina, Uruguay y Chile.
+- **Sectores estratégicos:** Tecnología, Salud, Energía, Turismo y Economía del conocimiento.
+- **Ocupaciones:** ~20 ocupaciones clave priorizadas.
+- **Flujo de datos:** Fuentes oficiales / Carga manual $\rightarrow$ Normalización $\rightarrow$ Cálculo de KPIs $\rightarrow$ API interna $\rightarrow$ Visualización con trazabilidad.
+
+---
+
+## 📂 Estructura del Repositorio
+
+El repositorio se organiza con clara separación de responsabilidades:
 
 ```text
 obspred/
 ├── backend/            # API REST (FastAPI/Python), Clean Architecture y persistencia
 ├── frontend/           # SPA React 19 + TypeScript + Vite + Recharts
 ├── data/               # Scripts de procesamiento, normalización y catálogo de datasets
-├── docs/               # Especificaciones técnicas, metodología y contratos
+├── docs/               # Especificaciones técnicas, metodología y contratos de API
+├── docker-compose.yml  # Configuración para entorno local y base de datos
 ├── AGENTS.md           # Reglas e instrucciones para agentes de desarrollo
 ├── ROADMAP.md          # Roadmap detallado, matriz de KPIs y entregables semanales
 ├── BENCHMARK_UX.md     # Benchmark UX/UI, análisis de referentes y flujos de usuario
 ├── Observatorio_predictivo.md # Brief del producto y requerimientos funcionales
+├── .gitignore          # Exclusiones de Git
 └── README.md           # Descripción general del repositorio
 ```
 
@@ -37,7 +48,7 @@ backend/app/
     ├── dependencies.py # Inyección de dependencias
     └── v1/
         ├── router.py   # Enrutador central v1 (agrega todos los controladores)
-        ├── endpoints/  # Controladores HTTP / Endpoints (health, indicadores, ocupaciones, etc.)
+        ├── endpoints/  # Controladores HTTP / Endpoints (health, indicadores, etc.)
         └── schemas/    # Esquemas Pydantic de entrada/salida (DTOs de request/response)
 ```
 
