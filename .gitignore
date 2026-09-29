@@ -1,3 +1,18 @@
-.env
+# IDEs y editores
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Entornos virtuales de Python
+venv/
+.venv/
+env/
+
+# Caché y compilados de Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Variables de entorno y secretos
+.env
