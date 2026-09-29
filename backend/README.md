@@ -41,11 +41,46 @@ En esta implementación de Clean Architecture con FastAPI, el rol tradicional de
 - **Punto de Entrada (`app/main.py`):** Inicializa la aplicación FastAPI, registra middlewares (como CORS) e incluye el enrutador central.
 - **Modelos de Transferencia / Schemas (`app/api/v1/schemas/`):** Definen los contratos estrictos de entrada y salida mediante modelos Pydantic.
 
+### Estándar de Respuestas REST (`ApiResponse[T]`)
+Todas las llamadas a la API (tanto exitosas como con errores o excepciones) responden con un envoltorio uniforme bajo el esquema `ApiResponse[T]` ([`app/api/v1/schemas/response_schema.py`](app/api/v1/schemas/response_schema.py)):
+
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "message": "Operación ejecutada con éxito.",
+  "data": { ... },
+  "errors": null,
+  "meta": null,
+  "timestamp": "2026-09-29T21:24:35.123456Z"
+}
+```
+
+En caso de error (HTTP 4xx o 5xx):
+```json
+{
+  "success": false,
+  "status_code": 404,
+  "message": "La entidad 'Occupation' con ID '999' no fue encontrada.",
+  "data": null,
+  "errors": [
+    {
+      "code": "ENTITY_NOT_FOUND",
+      "detail": "La entidad 'Occupation' con ID '999' no fue encontrada.",
+      "field": "Occupation"
+    }
+  ],
+  "meta": null,
+  "timestamp": "2026-09-29T21:24:35.123456Z"
+}
+```
+
 ### Reglas de Desarrollo
 1. **Separación de responsabilidades:** La lógica de negocio (`domain/`) no depende de librerías externas ni de detalles de persistencia o frameworks web.
 2. **Inversión de dependencias (DIP):** Las capas internas dependen de abstracciones (`domain/interfaces/`), mientras que `infrastructure/` y `api/` implementan e inyectan dichas abstracciones.
 3. **Ausencia de cadenas mágicas (*magic strings*):** Toda ruta, estado, entorno o parámetro constante se declara mediante enumeraciones (`Enum`) o constantes fuertemente tipadas en `app/core/constants.py` y `app/core/config.py`.
 4. **Convención lingüística:** Nombres de variables, funciones, clases y módulos en **inglés**. Documentación, docstrings y explicaciones en **español**.
+5. **Estándar unificado de respuesta:** Toda respuesta REST debe encapsularse en `ApiResponse[T]`. Los manejadores globales de excepciones en `app/main.py` garantizan que incluso los errores no controlados respeten este formato.
 
 ## Puesta en Marcha Local
 

@@ -27,8 +27,15 @@ class HealthStatus(str, Enum):
 # Prefijos y rutas de la API para evitar magic strings
 API_V1_PREFIX: Final[str] = "/api/v1"
 HEALTH_CHECK_ROUTE: Final[str] = "/health"
+PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
 ROOT_ROUTE: Final[str] = "/"
 
 # Identificación y versiones base
 DEFAULT_API_VERSION: Final[str] = "v1"
 PROJECT_IDENTIFIER: Final[str] = "obspred"
+
+# Mensajes estándar para respuestas REST
+DEFAULT_SUCCESS_MESSAGE: Final[str] = "Operación ejecutada con éxito."
+DEFAULT_ERROR_MESSAGE: Final[str] = "Ocurrió un error al procesar la solicitud."
+INTERNAL_SERVER_ERROR_MESSAGE: Final[str] = "Error interno del servidor no controlado."
+

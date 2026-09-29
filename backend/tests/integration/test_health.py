@@ -1,4 +1,4 @@
-"""Pruebas de integración para los endpoints de salud y raíz."""
+"""Pruebas de integración para los endpoints de salud y raíz con estándar ApiResponse."""
 
 import pytest
 from httpx import AsyncClient
@@ -7,8 +7,10 @@ from app.core.constants import HEALTH_CHECK_ROUTE, ROOT_ROUTE, HealthStatus
 
 
 @pytest.mark.asyncio
-async def test_root_endpoint_returns_ok(async_client: AsyncClient) -> None:
-    """Verifica que el endpoint raíz responda con código 200 y metadatos básicos.
+async def test_root_endpoint_returns_standard_response(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica que el endpoint raíz responda con código 200 y el formato estándar ApiResponse.
 
     Args:
         async_client: Cliente HTTP asíncrono para ejecutar la solicitud.
@@ -17,15 +19,18 @@ async def test_root_endpoint_returns_ok(async_client: AsyncClient) -> None:
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["status"] == "online"
-    assert payload["name"] == settings.app_name
+    assert payload["success"] is True
+    assert payload["status_code"] == 200
+    assert payload["data"]["status"] == "online"
+    assert payload["data"]["name"] == settings.app_name
+    assert "timestamp" in payload
 
 
 @pytest.mark.asyncio
-async def test_health_check_endpoint_returns_healthy(
+async def test_health_check_endpoint_returns_standard_response(
     async_client: AsyncClient,
 ) -> None:
-    """Verifica que el endpoint de salud responda con estado 'healthy' y estructura válida.
+    """Verifica que el endpoint de salud responda con la envoltura estándar y estado 'healthy'.
 
     Args:
         async_client: Cliente HTTP asíncrono para ejecutar la solicitud.
@@ -35,6 +40,9 @@ async def test_health_check_endpoint_returns_healthy(
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload["status"] == HealthStatus.HEALTHY.value
-    assert payload["environment"] == settings.app_env.value
+    assert payload["success"] is True
+    assert payload["status_code"] == 200
+    assert payload["data"]["status"] == HealthStatus.HEALTHY.value
+    assert payload["data"]["environment"] == settings.app_env.value
+    assert payload["errors"] is None
     assert "timestamp" in payload
