@@ -1,15 +1,14 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import { AppLayout } from './components/layout/AppLayout';
+import { AppLayout } from '../components/layout/AppLayout';
+import { DetailPage } from '../features/detail/DetailPage';
 
-// Cada vista se carga bajo demanda: reduce el bundle inicial, algo
-// relevante acá porque Recharts es una dependencia pesada.
-const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })));
-const OcupacionesPage = lazy(() => import('./features/ocupaciones/OcupacionesPage').then((m) => ({ default: m.OcupacionesPage })));
-const TendenciasPage = lazy(() => import('./features/tendencias/TendenciasPage').then((m) => ({ default: m.TendenciasPage })));
-const BrechasPage = lazy(() => import('./features/brechas/BrechasPage').then((m) => ({ default: m.BrechasPage })));
+const DashboardPage = lazy(() => import('../features/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })));
+const OcupacionesPage = lazy(() => import('../features/ocupaciones/OcupacionesPage').then((m) => ({ default: m.OcupacionesPage })));
+const TendenciasPage = lazy(() => import('../features/tendencias/TendenciasPage').then((m) => ({ default: m.TendenciasPage })));
+const BrechasPage = lazy(() => import('../features/brechas/BrechasPage').then((m) => ({ default: m.BrechasPage })));
 const TrazabilidadPage = lazy(() =>
-  import('./features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
+  import('../features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
 );
 
 function conSuspense(element: React.ReactNode) {
@@ -26,6 +25,7 @@ export const router = createBrowserRouter([
       { path: 'tendencias', element: conSuspense(<TendenciasPage />) },
       { path: 'brechas', element: conSuspense(<BrechasPage />) },
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
+      { path: 'detail', element: conSuspense(<DetailPage />) },
     ],
   },
 ]);
