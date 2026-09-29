@@ -21,15 +21,25 @@ backend/
 │   ├── infrastructure/    # Implementaciones técnicas y detalles externos
 │   │   ├── connectors/    # Conectores para APIs oficiales (AR, UY, CL, INT)
 │   │   └── persistence/   # Base de datos, modelos ORM y repositorios
-│   └── api/               # Capa de presentación HTTP (FastAPI)
+│   └── api/               # Capa de presentación HTTP / Controllers (FastAPI)
 │       ├── dependencies.py# Inyección de dependencias
-│       └── v1/            # Enrutamiento, esquemas y endpoints versión 1
+│       └── v1/            # Versionado de API v1
+│           ├── router.py  # Enrutador central v1 (agrega todos los controladores)
+│           ├── endpoints/ # Controladores HTTP / Endpoints (health, indicadores, etc.)
+│           └── schemas/   # Esquemas Pydantic de entrada/salida (Request/Response DTOs)
 ├── tests/                 # Suite de pruebas unitarias e integración
 ├── .env.example           # Plantilla de variables de entorno
 ├── .gitignore             # Exclusiones de Git específicas de Python
 ├── pyproject.toml         # Configuración del paquete y herramientas de calidad
 └── requirements.txt       # Dependencias principales
 ```
+
+### Ubicación de Controladores y Capa API (`app/api/`)
+En esta implementación de Clean Architecture con FastAPI, el rol tradicional de los **Controllers** se distribuye de la siguiente manera:
+- **Controladores / Endpoints (`app/api/v1/endpoints/`):** Albergan los handlers de rutas (`APIRouter`). Su función exclusiva es recibir las solicitudes HTTP, aplicar validaciones de entrada, coordinar la inyección de dependencias y delegar la lógica de negocio a los casos de uso correspondientes (`app/application/use_cases/`).
+- **Enrutador Central (`app/api/v1/router.py`):** Centraliza y monta todos los submódulos de endpoints bajo la versión de la API correspondiente.
+- **Punto de Entrada (`app/main.py`):** Inicializa la aplicación FastAPI, registra middlewares (como CORS) e incluye el enrutador central.
+- **Modelos de Transferencia / Schemas (`app/api/v1/schemas/`):** Definen los contratos estrictos de entrada y salida mediante modelos Pydantic.
 
 ### Reglas de Desarrollo
 1. **Separación de responsabilidades:** La lógica de negocio (`domain/`) no depende de librerías externas ni de detalles de persistencia o frameworks web.
