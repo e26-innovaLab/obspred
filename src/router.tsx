@@ -11,6 +11,7 @@ const BrechasPage = lazy(() => import('./features/brechas/BrechasPage').then((m)
 const TrazabilidadPage = lazy(() =>
   import('./features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
 );
+const DetailPage = lazy(() => import('./features/detail/DetailPage').then((m) => ({ default: m.DetailPage })),);
 
 function conSuspense(element: React.ReactNode) {
   return <Suspense fallback={<p className="page">Cargando…</p>}>{element}</Suspense>;
@@ -26,6 +27,7 @@ export const router = createBrowserRouter([
       { path: 'tendencias', element: conSuspense(<TendenciasPage />) },
       { path: 'brechas', element: conSuspense(<BrechasPage />) },
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
+      { path: 'detail', element: conSuspense(<DetailPage />) },
     ],
   },
 ]);
