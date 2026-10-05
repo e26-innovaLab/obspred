@@ -28,6 +28,7 @@ class HealthStatus(str, Enum):
 API_V1_PREFIX: Final[str] = "/api/v1"
 HEALTH_CHECK_ROUTE: Final[str] = "/health"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
+STUDY_INDICATORS_ROUTE: Final[str] = "/study-indicators"
 ROOT_ROUTE: Final[str] = "/"
 
 # Identificación y versiones base
