@@ -30,6 +30,7 @@ Los archivos fuente originales en formatos `.pdf` y `.docx` constituyen la base 
 | `Observatorio_predictivo.pdf` | [`Observatorio_predictivo.md`](Observatorio_predictivo.md) | Brief formal del producto, alcance del MVP, funcionalidades, conectores oficiales y plan de trabajo de 12 semanas (Sprints 0 a 6). |
 | `roadmap_observatorio.docx` | [`ROADMAP.md`](ROADMAP.md) | Roadmap de trabajo v1.0, Sprint 0. Principios del equipo, catálogo de datos, matriz de KPIs, 5 pasos al MVP y gestión de riesgos. |
 | `Semana_0_Observatorio_Predictivo_Benchmark_UX.pdf` | [`BENCHMARK_UX.md`](BENCHMARK_UX.md) | Benchmark de referentes (SABE Chile, OEDE Argentina, INE Uruguay, O*NET, Lightcast), arquitectura de información y 5 vistas del dashboard. |
+| `documentacion/informe-fuentes-datos-observatorio.md` | [`informe-fuentes-datos-observatorio.md`](documentacion/informe-fuentes-datos-observatorio.md) | **Fuente de la verdad técnica de datos:** Verificación de APIs públicas, endpoints, parámetros oficiales, conectores e ingesta de datasets por país. |
 
 > **Regla de integridad:** Cualquier cambio en la definición de KPIs, flujos o alcance debe contrastarse y mantenerse en estricta coherencia con estos documentos de referencia.
 

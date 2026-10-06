@@ -82,6 +82,24 @@ En caso de error (HTTP 4xx o 5xx):
 4. **Convención lingüística:** Nombres de variables, funciones, clases y módulos en **inglés**. Documentación, docstrings y explicaciones en **español**.
 5. **Estándar unificado de respuesta:** Toda respuesta REST debe encapsularse en `ApiResponse[T]`. Los manejadores globales de excepciones en `app/main.py` garantizan que incluso los errores no controlados respeten este formato.
 
+## Fuentes de Datos y Conectores (Fuente de la Verdad)
+
+La arquitectura de ingesta, el diseño de conectores externos (`app/infrastructure/connectors/`), los parámetros oficiales de APIs y el catálogo de datasets se rigen estrictamente por el siguiente documento de referencia:
+
+> 📖 **Fuente de la Verdad:** [`documentacion/informe-fuentes-datos-observatorio.md`](../documentacion/informe-fuentes-datos-observatorio.md)
+
+Este informe técnico documenta y valida:
+- **Fuentes comparables regionales:**
+  - **World Bank API:** Indicadores macroeconómicos y contexto regional (desempleo, participación laboral, matrícula terciaria, PIB per cápita).
+  - **ILOSTAT (OIT):** Series de empleo por actividad económica (ISIC) y ocupación (ISCO), con ingesta recomendada vía CSV directo (`rplumber.ilo.org`).
+  - **CEPALSTAT:** Árbol temático (`thematic-tree`) e indicadores socioeconómicos y educativos regionales.
+- **Fuentes oficiales por país:**
+  - **Argentina:** API Datos Argentina Series de Tiempo (`apis.datos.gob.ar/series/api/`), portal CKAN y microdatos EPH / Secretaría de Trabajo.
+  - **Uruguay:** Catálogo Nacional CKAN (`catalogodatos.gub.uy`) y Datastore API; series complementarias ILOSTAT / CEPALSTAT y microdatos ECH.
+  - **Chile:** Web Services Banco Central de Chile, portal CKAN, y datasets descargables de SIMEL (`simel.gob.cl`) y SENCE SABE.
+- **Taxonomías y clasificaciones:** Mapeo de sectores a ISIC Rev. 4 y ocupaciones a ISCO-08 / ESCO.
+- **Trazabilidad y contrato de datos:** Todo registro procesado e insertado debe cumplir el esquema estándar que incluye `fuente`, `fecha_actualizacion` y `tipo` (`observado`, `calculado`, `proyeccion`).
+
 ## Puesta en Marcha Local
 
 ### 1. Crear y activar entorno virtual
