@@ -5,6 +5,7 @@ from app.api.v1.schemas.health_schema import (
     HealthResponseSchema,
 )
 from app.api.v1.schemas.indicadores_schema import (
+    IndicadoresFilterSchema,
     IndicadoresResponseSchema,
     IndicadorItemSchema,
 )
@@ -33,6 +34,7 @@ __all__ = [
     "HealthDataSchema",
     "HealthResponseSchema",
     "IndicadorItemSchema",
+    "IndicadoresFilterSchema",
     "IndicadoresResponseSchema",
     "PruebaItemData",
     "PruebaPayloadSchema",

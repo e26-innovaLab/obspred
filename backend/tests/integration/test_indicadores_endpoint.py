@@ -89,3 +89,26 @@ async def test_get_indicadores_con_filtros_completos(
     )
     assert payload["meta"]["extra"]["filtros"]["desde"] == "2024-Q1"
     assert payload["meta"]["extra"]["filtros"]["hasta"] == "2024-Q4"
+
+
+@pytest.mark.asyncio
+async def test_get_indicadores_sanitiza_espacios_en_blanco(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica que espacios periféricos se eliminen y cadenas vacías sean None.
+
+    Args:
+        async_client: Cliente HTTP asíncrono de pruebas.
+    """
+    url = f"{settings.api_v1_prefix}{INDICADORES_ROUTE}"
+    params = {
+        "pais": "  URY  ",
+        "sector": "   ",
+    }
+    response = await async_client.get(url, params=params)
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["meta"]["extra"]["filtros"]["pais"] == "URY"
+    assert payload["meta"]["extra"]["filtros"]["sector"] is None

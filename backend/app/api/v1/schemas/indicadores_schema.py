@@ -1,10 +1,60 @@
 """Esquemas Pydantic para la consulta y serialización de indicadores."""
 
-from typing import List, Optional
+from typing import Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.api.v1.schemas.response_schema import ApiResponse
+
+
+class IndicadoresFilterSchema(BaseModel):
+    """Parámetros de consulta y filtrado jerárquico para indicadores.
+
+    Normaliza y sanitiza automáticamente los filtros entrantes desde Query parameters,
+    transformando cadenas vacías o compuestas únicamente por espacios en None.
+
+    Attributes:
+        pais: Filtro de país (raíz ineludible de la jerarquía, ej. ARG, URY, CHL).
+        sector: Sector productivo o económico analizado.
+        ocupacion: Ocupación analizada según taxonomía normalizada.
+        desde: Límite temporal inicial del rango (ej. 2023, 2024-Q1).
+        hasta: Límite temporal final del rango (ej. 2024, 2024-Q4).
+    """
+
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        frozen=True,
+        extra="forbid",
+    )
+
+    pais: Optional[str] = Field(
+        default=None,
+        description="Filtro jerárquico por país (ej. ARG, URY, CHL)",
+    )
+    sector: Optional[str] = Field(
+        default=None,
+        description="Filtro por sector productivo o económico",
+    )
+    ocupacion: Optional[str] = Field(
+        default=None,
+        description="Filtro por ocupación de referencia",
+    )
+    desde: Optional[str] = Field(
+        default=None,
+        description="Límite temporal inicial del rango (ej. 2023, 2024-Q1)",
+    )
+    hasta: Optional[str] = Field(
+        default=None,
+        description="Límite temporal final del rango (ej. 2024, 2024-Q4)",
+    )
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def empty_string_to_none(cls, value: Any) -> Any:
+        """Convierte cadenas en blanco o vacías a None para sanitización uniforme."""
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
 
 
 class IndicadorItemSchema(BaseModel):
