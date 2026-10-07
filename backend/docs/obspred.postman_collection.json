@@ -248,6 +248,50 @@
       ]
     },
     {
+      "name": "indicadores",
+      "item": [
+        {
+          "name": "get_indicadores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indicadores?pais=&sector=&ocupacion=&desde=&hasta=",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indicadores"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": ""
+                },
+                {
+                  "key": "sector",
+                  "value": ""
+                },
+                {
+                  "key": "ocupacion",
+                  "value": ""
+                },
+                {
+                  "key": "desde",
+                  "value": ""
+                },
+                {
+                  "key": "hasta",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "health_check",
       "request": {
         "method": "GET",
