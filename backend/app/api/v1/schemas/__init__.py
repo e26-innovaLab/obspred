@@ -4,6 +4,10 @@ from app.api.v1.schemas.health_schema import (
     HealthDataSchema,
     HealthResponseSchema,
 )
+from app.api.v1.schemas.ingesta_schema import (
+    FileUploadData,
+    FileUploadResponseSchema,
+)
 from app.api.v1.schemas.prueba_schema import (
     PruebaItemData,
     PruebaPayloadSchema,
@@ -20,6 +24,8 @@ from app.api.v1.schemas.response_schema import (
 __all__ = [
     "ApiResponse",
     "ErrorDetail",
+    "FileUploadData",
+    "FileUploadResponseSchema",
     "HealthDataSchema",
     "HealthResponseSchema",
     "PruebaItemData",

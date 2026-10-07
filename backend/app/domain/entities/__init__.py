@@ -1,4 +1,5 @@
-"""Submódulo de entidades del dominio.
+"""Submódulo de entidades del dominio."""
 
-Aquí se alojarán las entidades de negocio a medida que se implementen los casos de uso.
-"""
+from app.domain.entities.uploaded_file import UploadedFile
+
+__all__ = ["UploadedFile"]

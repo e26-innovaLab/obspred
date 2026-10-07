@@ -90,11 +90,11 @@ def register_exception_handlers(app: FastAPI) -> None:
         ]
         error_response = create_error_response(
             message="Error de validación en los parámetros enviados.",
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             errors=errors,
         )
         return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             content=error_response.model_dump(mode="json"),
         )
 

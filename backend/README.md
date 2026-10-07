@@ -12,22 +12,26 @@ backend/
 │   ├── core/              # Configuración, constantes (sin magic strings) y logging
 │   ├── domain/            # Reglas de negocio puras, entidades, excepciones e interfaces
 │   │   ├── entities/      # Entidades de dominio
-│   │   ├── exceptions/    # Excepciones de negocio
-│   │   ├── interfaces/    # Protocolos / contratos abstractos (puertos)
+│   │   ├── exceptions/    # Excepciones de negocio (ej. file_upload)
+│   │   ├── interfaces/    # Protocolos / contratos abstractos (puertos: storage, repos)
 │   │   └── value_objects/ # Objetos de valor inmutables
 │   ├── application/       # Orquestación de casos de uso y DTOs
-│   │   ├── dtos/          # Objetos de transferencia de datos
-│   │   └── use_cases/     # Lógica de aplicación
+│   │   ├── dtos/          # Objetos de transferencia de datos (ej. FileUploadDTO)
+│   │   ├── services/      # Servicios de aplicación y casos de uso (ej. FileUploadService)
+│   │   └── use_cases/     # Casos de uso específicos
 │   ├── infrastructure/    # Implementaciones técnicas y detalles externos
 │   │   ├── connectors/    # Conectores para APIs oficiales (AR, UY, CL, INT)
-│   │   └── persistence/   # Base de datos, modelos ORM y repositorios
+│   │   ├── persistence/   # Base de datos, modelos ORM y repositorios
+│   │   └── storage/       # Adaptadores de almacenamiento físico (ej. LocalFileStorageService)
 │   └── api/               # Capa de presentación HTTP / Controllers (FastAPI)
 │       ├── dependencies.py# Inyección de dependencias
 │       └── v1/            # Versionado de API v1
 │           ├── router.py  # Enrutador central v1 (agrega todos los controladores)
-│           ├── endpoints/ # Controladores HTTP / Endpoints (health, indicadores, etc.)
-│           └── schemas/   # Esquemas Pydantic de entrada/salida (Request/Response DTOs)
+│           ├── endpoints/ # Controladores HTTP (health, ingesta, prueba, etc.)
+│           └── schemas/   # Esquemas Pydantic (Request/Response DTOs)
 ├── tests/                 # Suite de pruebas unitarias e integración
+│   ├── unit/              # Pruebas unitarias de servicios y almacenamiento
+│   └── integration/       # Pruebas de integración de endpoints HTTP
 ├── .env.example           # Plantilla de variables de entorno
 ├── .gitignore             # Exclusiones de Git específicas de Python
 ├── pyproject.toml         # Configuración del paquete y herramientas de calidad
@@ -82,6 +86,87 @@ En caso de error (HTTP 4xx o 5xx):
 4. **Convención lingüística:** Nombres de variables, funciones, clases y módulos en **inglés**. Documentación, docstrings y explicaciones en **español**.
 5. **Estándar unificado de respuesta:** Toda respuesta REST debe encapsularse en `ApiResponse[T]`. Los manejadores globales de excepciones en `app/main.py` garantizan que incluso los errores no controlados respeten este formato.
 
+## Módulo de Ingesta — Carga de Archivos (`feature/backend_file_upload`)
+
+El módulo de ingesta permite la recepción, validación y persistencia física de datasets tabulares en disco para su posterior normalización e inserción en base de datos.
+
+### Endpoint: `POST /api/v1/ingesta/upload`
+
+Permite subir archivos multipart (`multipart/form-data`) con las siguientes reglas de negocio:
+
+- **Validación de formato:** Solo admite archivos con extensión `.csv` (case-insensitive).
+- **Validación de contenido y estructura:**
+  - Rechaza archivos vacíos o compuestos únicamente por espacios en blanco (`EmptyFileException`).
+  - Inspección de contenido: detecta y rechaza archivos binarios o ejecutables disfrazados con extensión `.csv` (`InvalidFileContentException`).
+  - Límite de tamaño: configurable vía `MAX_UPLOAD_SIZE_BYTES` (por defecto 50 MB), rechazando archivos que excedan la cuota (`FileSizeExceededException`).
+- **Prevención de vulnerabilidades y trazabilidad:**
+  - Sanitiza el nombre de archivo eliminando secuencias de *Directory / Path Traversal* (`../`).
+  - Asigna un prefijo con marca de tiempo UTC (`<timestamp>_<nombre_original>`) para garantizar trazabilidad temporal y evitar sobreescritura accidental.
+- **Persistencia física no bloqueante (High-Performance Async):**
+  - Implementación en `LocalFileStorageService` utilizando `anyio.to_thread` para delegar operaciones de I/O en disco a un pool de hilos, evitando bloquear el *Event Loop* principal de FastAPI.
+  - El directorio de almacenamiento es configurable mediante la variable de entorno `UPLOAD_DIR` (por defecto `data/uploads`).
+  - Creación automática de directorios anidados si no existen.
+- **Arquitectura Clean & SOLID:**
+  - **Dominio:**
+    - Entidad inmutable: `UploadedFile` (`app/domain/entities/uploaded_file.py`).
+    - Contratos de puertos: `IFileStorageService` y `IFileValidator` (`app/domain/interfaces/`).
+    - Excepciones tipadas de dominio: `InvalidFileExtensionException`, `EmptyFileException`, `FileSizeExceededException`, `InvalidFileContentException`, `FileStorageException`.
+  - **Aplicación:**
+    - Validador especializado desacoplado (SRP & OCP): `CsvFileValidator` (`app/application/validators/csv_file_validator.py`).
+    - Orquestador del caso de uso (DIP): `FileUploadService` (`app/application/services/file_upload_service.py`).
+    - DTO de salida: `FileUploadDTO` (`app/application/dtos/file_upload_dto.py`).
+  - **Infraestructura:**
+    - Adaptador de almacenamiento: `LocalFileStorageService` (`app/infrastructure/storage/local_file_storage_service.py`).
+  - **Presentación (FastAPI):**
+    - Inyección de dependencias tipada con `Annotated` (`app/api/dependencies.py`).
+    - Documentación OpenAPI completa con respuestas y modelos tipados (`app/api/v1/endpoints/ingesta.py`).
+
+#### Ejemplo de Petición (`curl`):
+```bash
+curl -X POST "http://localhost:8000/api/v1/ingesta/upload" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@datos_empleo_2026.csv"
+```
+
+#### Ejemplo de Respuesta Exitosa (`HTTP 201 Created`):
+```json
+{
+  "success": true,
+  "status_code": 201,
+  "message": "Archivo CSV subido y persistido con éxito.",
+  "data": {
+    "filename": "1791391414_datos_empleo_2026.csv",
+    "original_filename": "datos_empleo_2026.csv",
+    "file_path": "data/uploads/1791391414_datos_empleo_2026.csv",
+    "size_bytes": 1024,
+    "content_type": "text/csv"
+  },
+  "errors": null,
+  "meta": null,
+  "timestamp": "2026-10-07T16:40:00.000000Z"
+}
+```
+
+#### Ejemplo de Respuesta de Error de Validación (`HTTP 400 Bad Request`):
+```json
+{
+  "success": false,
+  "status_code": 400,
+  "message": "El archivo 'reporte.xlsx' no es válido. Solo se admiten archivos con extensión '.csv'.",
+  "data": null,
+  "errors": [
+    {
+      "code": "DOMAIN_RULE_VIOLATION",
+      "detail": "El archivo 'reporte.xlsx' no es válido. Solo se admiten archivos con extensión '.csv'.",
+      "field": null
+    }
+  ],
+  "meta": null,
+  "timestamp": "2026-10-07T16:40:00.000000Z"
+}
+```
+
 ## Fuentes de Datos y Conectores (Fuente de la Verdad)
 
 La arquitectura de ingesta, el diseño de conectores externos (`app/infrastructure/connectors/`), los parámetros oficiales de APIs y el catálogo de datasets se rigen estrictamente por el siguiente documento de referencia:
@@ -127,7 +212,58 @@ uvicorn app.main:app --reload --port 8000
 ```
 La documentación interactiva OpenAPI estará disponible en `http://localhost:8000/docs`.
 
-### 5. Ejecutar suite de pruebas
+### 5. Ejecutar suite de pruebas y calidad de código
+
+Para ejecutar las pruebas, asegúrate de haber activado el entorno virtual (`.venv`) o invocar directamente el intérprete del entorno.
+
+#### A. Ejecutar todas las pruebas
+
+**Estando dentro del directorio `backend/`:**
 ```bash
-pytest
+# Con entorno virtual activo:
+pytest -v
+
+# Alternativa directa con el intérprete de Python:
+python -m pytest -v
 ```
+
+**Estando desde la raíz del repositorio (`obspred/`):**
+```bash
+# En Windows (PowerShell):
+backend\.venv\Scripts\python -m pytest backend/tests -v
+
+# En Linux / macOS:
+backend/.venv/bin/python -m pytest backend/tests -v
+```
+
+#### B. Ejecutar pruebas por tipo / capa
+
+```bash
+# Solo pruebas unitarias (servicios de aplicación, validadores, persistencia física):
+pytest tests/unit -v
+
+# Solo pruebas de integración (endpoints FastAPI y contratos ApiResponse):
+pytest tests/integration -v
+
+# Ejecutar un archivo específico (ejemplo: validadores CSV):
+pytest tests/unit/test_csv_file_validator.py -v
+
+# Ejecutar pruebas del módulo de ingesta y almacenamiento:
+pytest tests/unit/test_file_upload_service.py tests/integration/test_ingesta_upload.py -v
+```
+
+#### C. Verificación de linter y formato (Ruff)
+
+El proyecto utiliza **Ruff** como linter y formateador estricto para garantizar el cumplimiento de PEP 8 y buenas prácticas:
+
+```bash
+# Verificar reglas de estilo e importaciones:
+ruff check .
+
+# Verificar y aplicar correcciones automáticas:
+ruff check --fix .
+
+# Verificar formato de código:
+ruff format --check .
+```
+
