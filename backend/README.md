@@ -238,6 +238,7 @@ La tabla `indicadores` almacena las series históricas y proyecciones garantizan
 | `fuente` | `String(100)` | Not Null | Organismo fuente (ej. `ILOSTAT`, `INDEC`, `SENCE`) |
 | `fecha_actualizacion` | `Date` | Not Null | Fecha de actualización del dato (`YYYY-MM-DD`) |
 | `created_at` | `DateTime` | Not Null, Server Default | Marca de tiempo UTC de inserción |
+| `updated_at` | `DateTime` | Nullable | Marca de tiempo UTC de última modificación |
 
 **Índices Compuestos de Rendimiento:**
 - `ix_indicadores_pais_sector_ocupacion`: Optimiza la búsqueda por jerarquía territorial y ocupacional.

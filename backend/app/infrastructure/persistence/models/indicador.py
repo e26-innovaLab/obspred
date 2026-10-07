@@ -81,6 +81,12 @@ class IndicadorModel(Base):
         server_default=func.now(),
         doc="Marca de tiempo UTC de inserción en el sistema",
     )
+    updated_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        onupdate=func.now(),
+        doc="Marca de tiempo UTC de última modificación del registro",
+    )
 
     __table_args__ = (
         Index(

@@ -29,6 +29,7 @@ def test_indicador_model_initialization() -> None:
     assert record.tipo == "observado"
     assert record.fuente == "ILOSTAT"
     assert record.fecha_actualizacion == date(2026, 9, 30)
+    assert record.updated_at is None
 
 
 def test_indicador_model_indices_defined() -> None:
