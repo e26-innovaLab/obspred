@@ -1,5 +1,13 @@
+# ruff: noqa: E402
 import asyncio
+import sys
 from logging.config import fileConfig
+from pathlib import Path
+
+# Garantizar que el directorio 'backend' esté en sys.path independientemente del CWD
+backend_dir = Path(__file__).resolve().parent.parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
 
 from alembic import context
 from sqlalchemy import pool
