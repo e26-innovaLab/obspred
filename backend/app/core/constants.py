@@ -28,11 +28,19 @@ class HealthStatus(str, Enum):
 API_V1_PREFIX: Final[str] = "/api/v1"
 HEALTH_CHECK_ROUTE: Final[str] = "/health"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
+INGESTA_ROUTE: Final[str] = "/ingesta"
+INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 ROOT_ROUTE: Final[str] = "/"
 
 # Identificación y versiones base
 DEFAULT_API_VERSION: Final[str] = "v1"
 PROJECT_IDENTIFIER: Final[str] = "obspred"
+
+# Configuración por defecto de almacenamiento de archivos
+DEFAULT_UPLOAD_DIR: Final[str] = "data/uploads"
+CSV_FILE_EXTENSION: Final[str] = ".csv"
+DEFAULT_MAX_UPLOAD_SIZE_BYTES: Final[int] = 52_428_800  # 50 MB
+DEFAULT_CSV_CONTENT_TYPE: Final[str] = "text/csv"
 
 # Mensajes estándar para respuestas REST
 DEFAULT_SUCCESS_MESSAGE: Final[str] = "Operación ejecutada con éxito."
