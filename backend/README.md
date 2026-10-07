@@ -167,6 +167,100 @@ curl -X POST "http://localhost:8000/api/v1/ingesta/upload" \
 }
 ```
 
+## Módulo de Indicadores (`feature/bckend_indicadores`)
+
+Expone el catálogo analítico de indicadores socioeconómicos, laborales y educativos bajo filtros jerárquicos.
+
+### Endpoint: `GET /api/v1/indicadores`
+
+Permite consultar series temporales de indicadores aplicando filtros de segmentación con las siguientes directrices arquitectónicas:
+
+- **Query Model y Buenas Prácticas FastAPI:** Los parámetros se agrupan en el modelo Pydantic `IndicadoresFilterSchema` inyectado mediante `Annotated[IndicadoresFilterSchema, Query()]`.
+- **Filtros Soportados:**
+  - `pais`: Código o nombre del país (raíz ineludible de la jerarquía, ej. `ARG`, `URY`, `CHL`).
+  - `sector`: Sector productivo o rama de actividad económica (ej. `Tecnología`, `Salud`).
+  - `ocupacion`: Ocupación clave analizada.
+  - `desde`: Período inicial del rango (ej. `2024-Q1`, `2023`).
+  - `hasta`: Período final del rango (ej. `2024-Q4`, `2024`).
+- **Sanitización y Validación Automática:** Pydantic elimina espacios en blanco periféricos (`str_strip_whitespace=True`) y convierte parámetros vacíos (`?pais=&sector=...`) a `None` de forma declarativa.
+- **Respuesta Estándar:** Encapsulada bajo `ApiResponse[List[IndicadorItemSchema]]` incluyendo el detalle de filtros aplicados en el campo `meta.extra.filtros`.
+
+#### Ejemplo de Petición (`curl`):
+```bash
+curl -X GET "http://localhost:8000/api/v1/indicadores?pais=ARG&sector=Tecnolog%C3%ADa&desde=2024-Q1&hasta=2024-Q4" \
+  -H "accept: application/json"
+```
+
+#### Ejemplo de Respuesta Exitosa (`HTTP 200 OK`):
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "message": "Consulta de indicadores ejecutada con éxito.",
+  "data": [],
+  "errors": null,
+  "meta": {
+    "page": null,
+    "per_page": null,
+    "total": 0,
+    "extra": {
+      "filtros": {
+        "pais": "ARG",
+        "sector": "Tecnología",
+        "ocupacion": null,
+        "desde": "2024-Q1",
+        "hasta": "2024-Q4"
+      }
+    }
+  },
+  "timestamp": "2026-10-07T18:55:00.000000Z"
+}
+```
+
+## Persistencia y Migraciones de Base de Datos (SQLAlchemy + Alembic)
+
+El Observatorio utiliza SQLAlchemy 2.0 (modo asíncrono) junto con Alembic para la gestión reproducible del esquema de base de datos.
+
+### 1. Modelo Relacional: `IndicadorModel` (`app/infrastructure/persistence/models/indicador.py`)
+
+La tabla `indicadores` almacena las series históricas y proyecciones garantizando trazabilidad completa:
+
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | `Integer` | PK, Autoincremental | Identificador único del registro |
+| `pais` | `String(10)` | Not Null, Index | Código o sigla de país (`ARG`, `URY`, `CHL`) |
+| `sector` | `String(100)` | Nullable, Index | Sector económico armonizado |
+| `ocupacion` | `String(150)` | Nullable, Index | Ocupación clave analizada |
+| `indicador` | `String(100)` | Not Null, Index | Identificador del indicador (ej. `tasa_desempleo`) |
+| `periodo` | `String(20)` | Not Null, Index | Período temporal (ej. `2024-Q1`, `2024-01`) |
+| `valor` | `Float` | Not Null | Valor numérico del indicador |
+| `tipo` | `String(20)` | Not Null | Metodología: `observado`, `calculado`, `proyeccion` |
+| `fuente` | `String(100)` | Not Null | Organismo fuente (ej. `ILOSTAT`, `INDEC`, `SENCE`) |
+| `fecha_actualizacion` | `Date` | Not Null | Fecha de actualización del dato (`YYYY-MM-DD`) |
+| `created_at` | `DateTime` | Not Null, Server Default | Marca de tiempo UTC de inserción |
+
+**Índices Compuestos de Rendimiento:**
+- `ix_indicadores_pais_sector_ocupacion`: Optimiza la búsqueda por jerarquía territorial y ocupacional.
+- `ix_indicadores_busqueda_temporal`: Optimiza consultas de series de tiempo por país e indicador.
+
+### 2. Comandos de Migración con Alembic
+
+Alembic está configurado en modo asíncrono y toma dinámicamente la URL de conexión desde `settings.database_url` (compatible con PostgreSQL vía `asyncpg` y SQLite local vía `aiosqlite`).
+
+```bash
+# Aplicar todas las migraciones pendientes hasta la última versión:
+alembic upgrade head
+
+# Revertir la última migración aplicada:
+alembic downgrade -1
+
+# Ver la revisión actual aplicada en la base de datos:
+alembic current
+
+# Generar una nueva migración automáticamente tras modificar modelos ORM:
+alembic revision --autogenerate -m "descripcion_del_cambio"
+```
+
 ## Fuentes de Datos y Conectores (Fuente de la Verdad)
 
 La arquitectura de ingesta, el diseño de conectores externos (`app/infrastructure/connectors/`), los parámetros oficiales de APIs y el catálogo de datasets se rigen estrictamente por el siguiente documento de referencia:
@@ -206,13 +300,18 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-### 4. Iniciar el servidor de desarrollo
+### 4. Ejecutar migraciones de base de datos
+```bash
+alembic upgrade head
+```
+
+### 5. Iniciar el servidor de desarrollo
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
 La documentación interactiva OpenAPI estará disponible en `http://localhost:8000/docs`.
 
-### 5. Ejecutar suite de pruebas y calidad de código
+### 6. Ejecutar suite de pruebas y calidad de código
 
 Para ejecutar las pruebas, asegúrate de haber activado el entorno virtual (`.venv`) o invocar directamente el intérprete del entorno.
 
