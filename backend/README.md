@@ -248,6 +248,7 @@ La tabla `indicadores` almacena las series históricas y proyecciones garantizan
 
 Alembic está configurado en modo asíncrono y toma dinámicamente la URL de conexión desde `settings.database_url` (compatible con PostgreSQL vía `asyncpg` y SQLite local vía `aiosqlite`).
 
+Estando dentro del directorio `backend/`:
 ```bash
 # Aplicar todas las migraciones pendientes hasta la última versión:
 alembic upgrade head
@@ -261,6 +262,8 @@ alembic current
 # Generar una nueva migración automáticamente tras modificar modelos ORM:
 alembic revision --autogenerate -m "descripcion_del_cambio"
 ```
+
+> **Nota:** Si se ejecutan los comandos desde la raíz del repositorio, indicar la ruta del archivo de configuración con el flag `-c`: `alembic -c backend/alembic.ini upgrade head`.
 
 ## Fuentes de Datos y Conectores (Fuente de la Verdad)
 
