@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/ocupaciones', label: 'Ocupaciones' },
   { to: '/tendencias', label: 'Tendencias' },
+  { to: '/comparar', label: 'Comparar países' },
   { to: '/brechas', label: 'Brechas de habilidades' },
   { to: '/trazabilidad', label: 'Trazabilidad y fuentes' },
 ];
