@@ -33,7 +33,7 @@ export function TendenciasPage() {
   return (
     <section className="page">
       <h2>Tendencias</h2>
-      <p>Analizá la evolución de los principales indicadores del mercado laboral.</p>
+      <p className="page__descripcion">Analizá la evolución de los principales indicadores del mercado laboral.</p>
       <FiltrosBar mostrarSector mostrarOcupacion mostrarPeriodo={false} />
 
       <ChartCard

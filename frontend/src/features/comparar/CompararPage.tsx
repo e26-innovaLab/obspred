@@ -18,7 +18,7 @@ export function CompararPage() {
   return (
     <section className="page">
       <h2>Comparar países</h2>
-      <p>Compará indicadores del mercado laboral entre Argentina, Uruguay y Chile.</p>
+      <p className="page__descripcion">Compará indicadores del mercado laboral entre Argentina, Uruguay y Chile.</p>
 
       <FiltrosComparacion
         paises={f.paises}

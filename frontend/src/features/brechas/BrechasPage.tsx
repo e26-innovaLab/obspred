@@ -12,6 +12,7 @@ export function BrechasPage() {
   return (
     <section className="page">
       <h2>Brechas de habilidades</h2>
+      <p className="page__descripcion">Compará la demanda de habilidades del mercado con la oferta formativa disponible.</p>
       <FiltrosBar mostrarSector mostrarOcupacion mostrarPeriodo={false} />
 
       <h3>Demanda vs. oferta formativa</h3>

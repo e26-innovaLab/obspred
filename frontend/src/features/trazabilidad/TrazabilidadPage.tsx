@@ -11,6 +11,7 @@ export function TrazabilidadPage() {
   return (
     <section className="page">
       <h2>Trazabilidad y fuentes</h2>
+      <p className="page__descripcion">Consultá el origen, la actualización y la metodología de los datos del observatorio.</p>
       <FiltrosBar mostrarSector={false} mostrarPeriodo={false} />
 
       <FuentesTable fuentes={fuentes} />
