@@ -1,4 +1,4 @@
-import type { Filtros, Pais, Proyeccion, PuntoSerie, SerieTemporal } from '../../types/kpi';
+import type { CambioSignificativo, Filtros, Pais, Proyeccion, PuntoSerie, SerieTemporal } from '../../types/kpi';
 import { seededRange } from './random';
 import { indicadorPorId } from './catalogo';
 import { fuenteMock } from './fuentes';
@@ -20,6 +20,11 @@ const BASE: Record<string, { min: number; max: number; pendiente: number }> = {
   salario_real_indice: { min: 88, max: 108, pendiente: 0.4 },
   empleo_registrado: { min: 1400, max: 6200, pendiente: 12 },
 };
+
+const ENTEROS = new Set(['puestos_demandados', 'empleo_registrado']);
+
+/** 2023-Q3 → "T3 2023" (texto para el usuario, principio 06). */
+const periodoLegible = (p: string) => p.replace(/^(\d{4})-Q(\d)$/, 'T$2 $1');
 
 function esperar(signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -47,7 +52,9 @@ function puntos(indicador: string, pais: Pais, filtros: Filtros): PuntoSerie[] {
     if (sinDato) return { periodo, valor: null, tipo: 'observado' as const };
     const ruido = seededRange(`${seed}-${periodo}`, -0.04, 0.04) * base;
     const valor = base + cfg.pendiente * (n - fin) * (base / cfg.max) + ruido;
-    return { periodo, valor: Math.round(valor * 10) / 10, tipo: 'observado' as const };
+    // Conteos (avisos, miles de personas) sin decimales; tasas e índices con uno.
+    const factor = ENTEROS.has(indicador) ? 1 : 10;
+    return { periodo, valor: Math.round(valor * factor) / factor, tipo: 'observado' as const };
   });
 }
 
@@ -127,4 +134,38 @@ export async function getProyeccion(
       };
     }),
   };
+}
+
+// Cambios significativos (alertas sobre la serie). Regla del mock: variación
+// entre dos períodos consecutivos con dato ≥ 5 % → medio; ≥ 8 % → alto.
+// Se devuelven los 3 de mayor magnitud. El umbral real lo define Data.
+const UMBRAL_MEDIO = 5;
+const UMBRAL_ALTO = 8;
+
+export async function getCambiosSignificativos(
+  indicador: string,
+  filtros: Filtros,
+  signal?: AbortSignal,
+): Promise<CambioSignificativo[]> {
+  const [s] = await getSeries(indicador, filtros, signal);
+  const cambios: CambioSignificativo[] = [];
+  for (let i = 1; i < s.puntos.length; i++) {
+    const prev = s.puntos[i - 1].valor;
+    const act = s.puntos[i].valor;
+    if (prev === null || act === null || prev === 0) continue;
+    const variacionPct = Math.round(((act - prev) / Math.abs(prev)) * 1000) / 10;
+    if (Math.abs(variacionPct) < UMBRAL_MEDIO) continue;
+    const sube = variacionPct > 0;
+    cambios.push({
+      id: `${indicador}-${s.pais}-${s.puntos[i].periodo}`,
+      pais: s.pais,
+      indicador,
+      periodo: s.puntos[i].periodo,
+      variacionPct,
+      nivel: Math.abs(variacionPct) >= UMBRAL_ALTO ? 'alto' : 'medio',
+      titulo: `${s.nombre}: ${sube ? 'suba' : 'baja'} de ${Math.abs(variacionPct).toLocaleString('es-AR')} %`,
+      descripcion: `Variación respecto del período anterior (${periodoLegible(s.puntos[i - 1].periodo)}).`,
+    });
+  }
+  return cambios.sort((a, b) => Math.abs(b.variacionPct) - Math.abs(a.variacionPct)).slice(0, 3);
 }
