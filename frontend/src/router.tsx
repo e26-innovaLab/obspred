@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
+import NotFoundPage from './features/notfound/notfound';
+
 
 // Cada vista se carga bajo demanda: reduce el bundle inicial, algo
 // relevante acá porque Recharts es una dependencia pesada.
@@ -26,6 +28,7 @@ export const router = createBrowserRouter([
       { path: 'tendencias', element: conSuspense(<TendenciasPage />) },
       { path: 'brechas', element: conSuspense(<BrechasPage />) },
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
+      { path: '*', element: conSuspense(<NotFoundPage />)  }
     ],
   },
 ]);

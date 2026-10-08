@@ -12,9 +12,11 @@ export function DashboardPage() {
 
   return (
     <section className="page">
-      <h2>Dashboard general</h2>
+      <h2>Panorama General</h2>
+      <h4>Vista general de los principales indicadores del observatorio</h4>
       <FiltrosBar mostrarSector mostrarPeriodo />
 
+      <h2>Indicadores Principales</h2>
       <div className="kpi-grid">
         {indicadores.map((i) => (
           <KpiCard key={i.id} indicador={i} />
