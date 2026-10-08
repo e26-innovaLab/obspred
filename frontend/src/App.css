@@ -341,3 +341,289 @@
   opacity: 0.7;
   font-size: 13px;
 }
+
+/* Tarjeta de gráfico: título, estados de carga/error/sin datos y fuentes */
+.chart-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background: var(--bg);
+}
+
+.chart-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.chart-card__header h3 {
+  margin: 0;
+}
+
+.chart-card__descripcion {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+
+.chart-card__selector {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--azul-oscuro);
+}
+
+.chart-card__selector select {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+}
+
+.chart-card__cuerpo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.chart-card__error {
+  text-align: center;
+  color: var(--azul-oscuro);
+}
+
+.chart-card__error button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background: var(--azul-claro);
+  color: var(--blanco);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chart-card__error button:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 2px;
+}
+
+.chart-card__fuentes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 12px;
+}
+
+/* Skeleton: barras grises con brillo; respeta "reducir movimiento" */
+.chart-skeleton {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px 8px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chart-skeleton__barra {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(90deg, #e3e8eb 25%, #eef2f4 50%, #e3e8eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-brillo 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-brillo {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chart-skeleton__barra { animation: none; }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Comparar países: filtro de países múltiple */
+.filtros-comparacion__paises {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.filtros-comparacion__paises legend {
+  padding: 0;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--azul-oscuro);
+}
+
+.filtros-comparacion__pais {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.filtros-comparacion__pais input {
+  accent-color: var(--azul-claro);
+  width: 16px;
+  height: 16px;
+}
+
+.filtros-comparacion__muestra {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* Tarjetas de indicadores comparativos */
+.comparativa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.comparativa-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.comparativa-card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--azul-oscuro);
+}
+
+.comparativa-card ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.comparativa-card li {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.comparativa-card__barra {
+  height: 8px;
+  border-radius: 4px;
+  background: #eef2f4;
+  overflow: hidden;
+}
+
+.comparativa-card__barra span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.comparativa-card li strong {
+  color: var(--azul-oscuro);
+  text-align: right;
+}
+
+.comparativa-card__sin-dato {
+  grid-column: 2 / 4;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.comparativa-card__periodo {
+  grid-column: 2 / 4;
+  margin-top: -6px;
+  font-size: 11px;
+  color: #8a6d00;
+}
+
+/* Mapa de calor */
+.mapa-calor__scroll {
+  overflow-x: auto;
+}
+
+.mapa-calor table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 4px;
+  font-size: 14px;
+}
+
+.mapa-calor th {
+  font-weight: 500;
+  color: var(--azul-oscuro);
+  text-align: left;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.mapa-calor thead th {
+  text-align: center;
+}
+
+.mapa-calor__celda {
+  min-width: 96px;
+  padding: 10px 8px;
+  border-radius: 4px;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.mapa-calor__celda strong {
+  display: block;
+  font-size: 15px;
+}
+
+.mapa-calor__variacion {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.mapa-calor__celda--vacia {
+  background: repeating-linear-gradient(45deg, #f2f4f5, #f2f4f5 6px, #e3e8eb 6px, #e3e8eb 12px);
+  color: var(--text);
+  font-style: italic;
+}
+
+.mapa-calor__leyenda {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+.mapa-calor__paso {
+  width: 28px;
+  height: 12px;
+  border-radius: 2px;
+  padding: 0;
+  min-width: 0;
+}
+
+.mapa-calor__leyenda .mapa-calor__celda--vacia {
+  margin-left: 12px;
+}

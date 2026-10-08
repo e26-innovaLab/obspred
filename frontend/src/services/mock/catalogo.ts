@@ -1,4 +1,5 @@
 import type { PaisInfo, SectorInfo, Ocupacion, Periodo } from '../../types/catalogo';
+import type { IndicadorCatalogo } from '../../types/kpi';
 
 // Catálogo estático del MVP (Sprint 0): 3 países, 5 sectores, ~20 ocupaciones.
 // Cuando exista la API interna, este archivo se reemplaza por una consulta
@@ -48,6 +49,20 @@ export const PERIODOS: Periodo[] = [
   { id: '2026-Q1', label: '1er trimestre 2026' },
   { id: '2026-Q2', label: '2do trimestre 2026' },
 ];
+
+// Indicadores graficables (a confirmar con Data — principio 01).
+// Cuando exista GET /catalogo, la lista llega del Backend.
+export const INDICADORES: IndicadorCatalogo[] = [
+  { id: 'puestos_demandados', nombre: 'Puestos demandados', unidad: 'avisos' },
+  { id: 'tasa_desempleo', nombre: 'Tasa de desempleo', unidad: '%' },
+  { id: 'tasa_empleo', nombre: 'Tasa de empleo', unidad: '%' },
+  { id: 'salario_real_indice', nombre: 'Salario real (índice base 100)', unidad: 'índice' },
+  { id: 'empleo_registrado', nombre: 'Empleo registrado', unidad: 'miles de personas' },
+];
+
+export function indicadorPorId(id: string): IndicadorCatalogo | undefined {
+  return INDICADORES.find((i) => i.id === id);
+}
 
 export function ocupacionesPorSector(sector?: string): Ocupacion[] {
   if (!sector) return OCUPACIONES;
