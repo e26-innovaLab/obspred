@@ -12,6 +12,12 @@
   padding: 16px 24px;
   background: var(--azul-oscuro);
   color: var(--blanco);
+  /* El menú queda fijo al hacer scroll en páginas largas. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .app-header h1 {
@@ -56,13 +62,32 @@
   /* El contenido ocupa el área a la derecha del menú con márgenes parejos.
      Con 1100px fijos quedaban ~300px vacíos a cada lado en pantallas anchas
      y la vista se veía corrida a la derecha. */
-  padding: 24px clamp(24px, 3vw, 48px);
+  padding: 32px clamp(24px, 3.5vw, 56px) 48px;
   box-sizing: border-box;
 }
 
 .app-content > .page {
-  max-width: 1440px;
+  /* Usa el ancho disponible con márgenes parejos; solo en monitores muy
+     anchos (> 1680px de contenido) se limita y queda centrado. */
+  max-width: 1680px;
   margin: 0 auto;
+}
+
+/* Encabezado igual en todas las vistas: título → descripción → filtros */
+.page > h2 {
+  margin-bottom: 4px;
+}
+
+.page__descripcion {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.page__seccion {
+  margin: 8px 0 12px;
+  font-size: 20px;
+  color: var(--azul-oscuro);
 }
 
 .page h2 {
@@ -87,7 +112,11 @@
 .filtros-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  /* Alineados al mismo borde que el título y el contenido: se leen de
+     izquierda a derecha, sin dejar media barra vacía. */
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 16px 24px;
   margin: 16px 0 24px;
   padding: 12px 16px;
   border: 1px solid var(--border);
@@ -789,4 +818,251 @@
   font-size: 13px;
   font-style: italic;
   opacity: 0.7;
+}
+
+
+/* Menú: botón solo visible en celular y tablet */
+.app-header__barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+}
+
+.app-header__menu-btn {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid rgba(252, 252, 252, 0.4);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--blanco);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.app-header__menu-btn:focus-visible,
+.app-header nav a:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 2px;
+}
+
+/* Tablas anchas: se desplazan hacia el costado en vez de romper la página */
+.tabla-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ranking-table--paises {
+  min-width: 520px;
+  margin-top: 0;
+}
+
+.ranking-table--paises th,
+.ranking-table--paises td {
+  white-space: nowrap;
+}
+
+.ranking-table--paises td:first-child {
+  white-space: normal;
+  min-width: 160px;
+}
+
+.ranking-table__pais {
+  text-align: center !important;
+  border-bottom-width: 1px !important;
+}
+
+.ranking-table__pais .filtros-comparacion__muestra {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.ranking-table__num {
+  text-align: right !important;
+}
+
+.ranking-table tbody tr:focus-visible {
+  outline: 2px solid var(--azul-claro);
+  outline-offset: -2px;
+}
+
+/* ---------- Responsive ---------- */
+
+/* Tablet y celular: el menú lateral pasa a una barra superior */
+@media (max-width: 900px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-header {
+    position: sticky;
+    top: 0;
+    height: auto;
+    z-index: 10;
+    align-items: stretch;
+    gap: 0;
+    padding: 12px 16px;
+  }
+
+  .app-header__menu-btn {
+    display: inline-flex;
+  }
+
+  .app-header nav {
+    display: none;
+    gap: 4px;
+    padding-top: 12px;
+  }
+
+  .app-header nav[data-abierto='true'] {
+    display: flex;
+  }
+
+  .app-header nav a {
+    padding: 10px 4px;
+    border-bottom: 1px solid rgba(252, 252, 252, 0.12);
+  }
+
+  .app-content {
+    padding: 16px;
+  }
+
+  .dashboard__graficos {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Celular */
+@media (max-width: 600px) {
+  .page > h2 {
+    font-size: 22px;
+  }
+
+  .page__descripcion {
+    font-size: 15px;
+  }
+
+  .filtros-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+  }
+
+  .filtros-bar select {
+    width: 100%;
+  }
+
+  .chart-card {
+    padding: 12px;
+  }
+
+  .chart-card__selector,
+  .chart-card__selector select {
+    width: 100%;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .kpi-card__valor {
+    font-size: 22px;
+  }
+
+  .ranking-list li {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+  }
+
+  .ranking-list__barra {
+    grid-column: 1 / -1;
+    order: 4;
+  }
+
+  .comparativa-card li {
+    grid-template-columns: 64px 1fr auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Ocupaciones: maestro-detalle. En pantallas anchas la tabla queda a la
+   izquierda y el detalle de la ocupación elegida fijo a la derecha, así se
+   ve el resultado al tocar una fila sin tener que bajar. */
+.ocupaciones__layout {
+  display: grid;
+  /* minmax(0, …): la tabla ancha se desplaza dentro de su tarjeta en vez de
+     ensanchar la página en celular. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.ocupaciones__detalle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+.ocupaciones__layout .chart-card {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1500px) {
+  .ocupaciones__layout {
+    grid-template-columns: minmax(0, 1.45fr) minmax(360px, 1fr);
+  }
+
+  .ocupaciones__detalle {
+    position: sticky;
+    top: 24px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1499px) {
+  .ocupaciones__detalle {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ocupaciones__ver-mas {
+  margin-top: 12px;
+  padding: 8px 14px;
+  border: 1px solid var(--azul-claro);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--azul-claro);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ocupaciones__ver-mas:hover {
+  background: var(--accent-bg);
+}
+
+.ocupaciones__ver-mas:focus-visible {
+  outline: 3px solid var(--amarillo);
+  outline-offset: 2px;
+}
+
+.ocupaciones__detalle-titulo {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--azul-claro);
 }
