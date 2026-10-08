@@ -1,6 +1,11 @@
 import { apiGet, ISO3_A_PAIS, PAIS_A_ISO3 } from './client';
 import type {
+  CambioSignificativo,
   ComparativaIndicador,
+  DimensionRanking,
+  KpiResumen,
+  Ranking,
+  Tendencia,
   Filtros,
   Fuente,
   Indicador,
@@ -189,4 +194,111 @@ export async function getMapaCalor(indicador: string, paises: Pais[], signal?: A
     })),
     fuentes: d.fuentes.map(mapFuente),
   };
+}
+
+// ---- Inicio: KPIs y rankings; Tendencias: cambios significativos ----
+
+interface KpiDto {
+  indicador: string;
+  nombre: string;
+  unidad: string;
+  periodo: string | null;
+  valor: number | null;
+  valor_anterior: number | null;
+  variacion_pct: number | null;
+  tendencia: Tendencia | null;
+  sentido_positivo: 'sube' | 'baja';
+  sparkline: Array<number | null>;
+  fuente: FuenteDto;
+}
+
+interface RankingDto {
+  dimension: DimensionRanking;
+  indicador: string;
+  unidad: string;
+  periodo: string;
+  items: Array<{ id: string; nombre: string; valor: number | null; variacion_pct: number | null; tendencia: Tendencia | null }>;
+  fuentes: FuenteDto[];
+}
+
+interface CambioDto {
+  id: string;
+  pais: string;
+  indicador: string;
+  periodo: string;
+  variacion_pct: number;
+  nivel: CambioSignificativo['nivel'];
+  titulo: string;
+  descripcion: string;
+}
+
+/** GET /metricas/kpis — tarjetas "Indicadores principales". */
+export async function getKpis(indicadores: string[], filtros: Filtros, signal?: AbortSignal): Promise<KpiResumen[]> {
+  const data = await apiGet<{ kpis: KpiDto[] }>(
+    '/metricas/kpis',
+    { indicadores: indicadores.join(','), ...filtrosAQuery(filtros), periodo: filtros.periodo },
+    signal,
+  );
+  return data.kpis.map((k) => ({
+    indicador: k.indicador,
+    nombre: k.nombre,
+    unidad: k.unidad,
+    periodo: k.periodo,
+    valor: k.valor,
+    valorAnterior: k.valor_anterior,
+    variacionPct: k.variacion_pct,
+    tendencia: k.tendencia,
+    sentidoPositivo: k.sentido_positivo,
+    sparkline: k.sparkline,
+    fuente: mapFuente(k.fuente),
+  }));
+}
+
+/** GET /metricas/ranking — sectores, ocupaciones o habilidades con mayor demanda. */
+export async function getRanking(
+  dimension: DimensionRanking,
+  indicador: string,
+  filtros: Filtros,
+  signal?: AbortSignal,
+  limite = 5,
+): Promise<Ranking> {
+  const r = await apiGet<RankingDto>(
+    '/metricas/ranking',
+    { dimension, indicador, limite, ...filtrosAQuery(filtros), periodo: filtros.periodo },
+    signal,
+  );
+  return {
+    ...r,
+    items: r.items.map((i) => ({
+      id: i.id,
+      nombre: i.nombre,
+      valor: i.valor,
+      variacionPct: i.variacion_pct,
+      tendencia: i.tendencia,
+    })),
+    fuentes: r.fuentes.map(mapFuente),
+  };
+}
+
+/** GET /alertas?tipo=variacion_significativa — cambios a marcar sobre la serie. */
+export async function getCambiosSignificativos(
+  indicador: string,
+  filtros: Filtros,
+  signal?: AbortSignal,
+): Promise<CambioSignificativo[]> {
+  const data = await apiGet<{ alertas: CambioDto[] }>(
+    '/alertas',
+    { tipo: 'variacion_significativa', indicador, ...filtrosAQuery(filtros) },
+    signal,
+  );
+  return data.alertas.map((a) => ({
+    id: a.id,
+    pais: ISO3_A_PAIS[a.pais],
+    indicador: a.indicador,
+    periodo: a.periodo,
+    variacionPct: a.variacion_pct,
+    nivel: a.nivel,
+    titulo: a.titulo,
+    descripcion: a.descripcion,
+  }));
 }
