@@ -9,6 +9,7 @@ const DashboardPage = lazy(() => import('./features/dashboard/DashboardPage').th
 const OcupacionesPage = lazy(() => import('./features/ocupaciones/OcupacionesPage').then((m) => ({ default: m.OcupacionesPage })));
 const TendenciasPage = lazy(() => import('./features/tendencias/TendenciasPage').then((m) => ({ default: m.TendenciasPage })));
 const BrechasPage = lazy(() => import('./features/brechas/BrechasPage').then((m) => ({ default: m.BrechasPage })));
+const CompararPage = lazy(() => import('./features/comparar/CompararPage').then((m) => ({ default: m.CompararPage })));
 const TrazabilidadPage = lazy(() =>
   import('./features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
 );
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
       // Rutas de las secciones de la aplicación
       { path: 'ocupaciones', element: conSuspense(<OcupacionesPage />) },
       { path: 'tendencias', element: conSuspense(<TendenciasPage />) },
+      { path: 'comparar', element: conSuspense(<CompararPage />) },
       { path: 'brechas', element: conSuspense(<BrechasPage />) },
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
       { path: 'detail', element: conSuspense(<DetailPage />) },
