@@ -33,9 +33,89 @@ export interface Indicador<T = number> {
   periodo: string; // ej. "2026-Q2"
 }
 
+// ---- Series y proyecciones (contrato: frontend/docs/contrato-api-graficos.md)
+
+export type Frecuencia = 'anual' | 'trimestral' | 'mensual';
+
+export interface IndicadorCatalogo {
+  id: string; // ej. tasa_desempleo
+  nombre: string;
+  unidad: string; // %, índice, avisos…
+}
+
+export interface PuntoSerie {
+  periodo: string; // 2024, 2024-Q1 o 2024-01
+  valor: number | null; // null = sin dato en la fuente (nunca se inventa)
+  tipo: TipoIndicador;
+}
+
+export interface SerieTemporal {
+  pais: Pais;
+  indicador: string;
+  nombre: string;
+  unidad: string;
+  frecuencia: Frecuencia;
+  puntos: PuntoSerie[];
+  fuentes: Array<{ fuente: Fuente; tipo: TipoIndicador }>;
+}
+
+export interface PuntoProyeccion {
+  periodo: string;
+  valor: number;
+  limiteInferior: number;
+  limiteSuperior: number;
+}
+
+export interface Proyeccion {
+  pais: Pais;
+  indicador: string;
+  unidad: string;
+  historico: PuntoSerie[];
+  proyeccion: PuntoProyeccion[];
+  proyectable: boolean; // false si hay < 3 períodos comparables (principio 05)
+  motivoNoProyectable?: string;
+  metodo: string;
+  nivelConfianza: number; // ej. 0.8
+  fuentes: Array<{ fuente: Fuente; tipo: TipoIndicador }>;
+}
+
 export interface Filtros {
   pais: Pais;
   sector?: Sector;
   ocupacionId?: string;
   periodo?: string;
+}
+
+// ---- Comparativa entre países y mapa de calor (contrato §3.6 y §3.7)
+
+export interface ValorPorPais {
+  pais: Pais;
+  valor: number | null;
+  periodo: string | null; // cada país puede tener su último período distinto
+  fuente: { fuente: Fuente; tipo: TipoIndicador } | null;
+}
+
+export interface ComparativaIndicador {
+  indicador: string;
+  nombre: string;
+  unidad: string;
+  valores: ValorPorPais[];
+}
+
+export interface CeldaMapaCalor {
+  sector: Sector;
+  pais: Pais;
+  valor: number | null; // null = la fuente no cubre ese sector en ese país
+  variacionPct: number | null;
+}
+
+export interface MapaCalor {
+  indicador: string;
+  nombre: string;
+  unidad: string;
+  periodo: string;
+  sectores: Array<{ id: Sector; nombre: string }>;
+  paises: Pais[];
+  celdas: CeldaMapaCalor[];
+  fuentes: Array<{ fuente: Fuente; tipo: TipoIndicador }>;
 }
