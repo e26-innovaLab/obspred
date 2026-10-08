@@ -20,11 +20,11 @@ export function DashboardPage() {
 
   return (
     <section className="page">
-      <h2>Panorama General</h2>
-      <h4>Vista general de los principales indicadores del observatorio</h4>
+      <h2>Panorama general</h2>
+      <p className="page__descripcion">Vista general de los principales indicadores del observatorio.</p>
       <FiltrosBar mostrarSector mostrarPeriodo />
 
-      <h2>Indicadores Principales</h2>
+      <h3 className="page__seccion">Indicadores principales</h3>
       {g.kpis.state.status === 'loading' && (
         <div className="kpi-grid" role="status" aria-label="Cargando indicadores">
           {KPIS_INICIO.map((id) => (
