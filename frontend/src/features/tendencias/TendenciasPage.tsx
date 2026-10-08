@@ -5,6 +5,7 @@ import { useTendenciasData } from './hooks/useTendenciasData';
 import { ChartCard } from '../../components/charts/ChartCard';
 import { SerieHistoricaChart } from '../../components/charts/SerieHistoricaChart';
 import { ProyeccionPanel } from './components/ProyeccionPanel';
+import { CambiosSignificativos } from './components/CambiosSignificativos';
 
 // Vista 3 — Tendencias.
 // Evolución histórica de un indicador y su proyección (solo con serie
@@ -12,7 +13,8 @@ import { ProyeccionPanel } from './components/ProyeccionPanel';
 // indicador (Figma: "Evolución de indicadores → Seleccionar indicador").
 export function TendenciasPage() {
   const [indicador, setIndicador] = useState(INDICADORES[0].id);
-  const { serie, proyeccion } = useTendenciasData(indicador);
+  const { serie, proyeccion, cambios } = useTendenciasData(indicador);
+  const marcas = cambios.state.status === 'success' ? cambios.state.data : [];
   const nombre = INDICADORES.find((i) => i.id === indicador)?.nombre ?? '';
 
   const selector = (
@@ -43,7 +45,12 @@ export function TendenciasPage() {
         fuentes={(series) => series.flatMap((s) => s.fuentes)}
         mensajeSinDatos="Las fuentes de este país no publican este indicador para la selección actual."
       >
-        {(series) => <SerieHistoricaChart series={series} />}
+        {(series) => (
+          <>
+            <SerieHistoricaChart series={series} marcas={marcas} />
+            {cambios.state.status === 'success' && <CambiosSignificativos cambios={marcas} />}
+          </>
+        )}
       </ChartCard>
 
       <ChartCard
