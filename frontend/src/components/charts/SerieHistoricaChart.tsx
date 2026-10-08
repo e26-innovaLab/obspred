@@ -1,12 +1,14 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import type { SerieTemporal } from '../../types/kpi';
-import { CHART_THEME, EJE_PROPS, SERIE_PAIS } from '../../styles/paletaMarca';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceDot, ResponsiveContainer } from 'recharts';
+import type { CambioSignificativo, SerieTemporal } from '../../types/kpi';
+import { CHART_THEME, EJE_PROPS, PALETA_MARCA, SERIE_PAIS } from '../../styles/paletaMarca';
 import { PAISES } from '../../services/mock/catalogo';
 import { formatPeriodo, formatValor, pivotearPorPais } from './series';
 
 interface Props {
   series: SerieTemporal[]; // una por país; con un solo país se ve una línea
   altura?: number;
+  /** Cambios significativos a marcar sobre la línea (alertas). */
+  marcas?: CambioSignificativo[];
 }
 
 const nombrePais = (id: string) => PAISES.find((p) => p.id === id)?.nombre ?? id;
@@ -14,7 +16,8 @@ const nombrePais = (id: string) => PAISES.find((p) => p.id === id)?.nombre ?? id
 // Evolución histórica de UN indicador (una unidad por gráfico: no se mezclan
 // % con índices en el mismo eje). Los períodos sin dato quedan como hueco
 // (connectNulls=false): no se interpola lo que la fuente no publicó.
-export function SerieHistoricaChart({ series, altura = 280 }: Props) {
+// Las `marcas` (círculo amarillo con "!") señalan cambios significativos.
+export function SerieHistoricaChart({ series, altura = 280, marcas = [] }: Props) {
   const filas = pivotearPorPais(series);
   const unidad = series[0]?.unidad ?? '';
 
@@ -43,6 +46,22 @@ export function SerieHistoricaChart({ series, altura = 280 }: Props) {
             isAnimationActive={false}
           />
         ))}
+        {marcas.map((m) => {
+          const y = filas.find((f) => f.periodo === m.periodo)?.[m.pais];
+          if (y == null) return null;
+          return (
+            <ReferenceDot
+              key={m.id}
+              x={m.periodo}
+              y={y}
+              r={9}
+              fill={PALETA_MARCA.amarillo}
+              stroke={PALETA_MARCA.azulOscuro}
+              strokeWidth={2}
+              label={{ value: '!', position: 'center', fontSize: 12, fontWeight: 700, fill: PALETA_MARCA.azulOscuro }}
+            />
+          );
+        })}
       </LineChart>
     </ResponsiveContainer>
   );
