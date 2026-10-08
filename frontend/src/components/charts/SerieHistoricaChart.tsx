@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceDot, ResponsiveContainer } from 'recharts';
 import type { CambioSignificativo, SerieTemporal } from '../../types/kpi';
-import { CHART_THEME, EJE_PROPS, PALETA_MARCA, SERIE_PAIS } from '../../styles/paletaMarca';
+import { CHART_THEME, EJE_PROPS, PALETA_MARCA, SERIE_PAIS, ordenPorPais } from '../../styles/paletaMarca';
 import { PAISES } from '../../services/mock/catalogo';
 import { formatPeriodo, formatValor, pivotearPorPais } from './series';
 
@@ -26,12 +26,15 @@ export function SerieHistoricaChart({ series, altura = 280, marcas = [] }: Props
       <LineChart data={filas} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
         <CartesianGrid stroke={CHART_THEME.grilla} vertical={false} />
         <XAxis dataKey="periodo" tickFormatter={formatPeriodo} {...EJE_PROPS} />
-        <YAxis width={56} {...EJE_PROPS} />
+        {/* Eje ajustado al rango de los datos: con el eje desde 0 las variaciones
+            se ven planas. Las líneas muestran tendencia, no magnitud absoluta. */}
+        <YAxis width={56} domain={['auto', 'auto']} {...EJE_PROPS} />
         <Tooltip
+          itemSorter={ordenPorPais}
           labelFormatter={(l) => formatPeriodo(String(l))}
           formatter={(v, nombre) => [formatValor(v as number | null, unidad), nombre]}
         />
-        <Legend />
+        <Legend itemSorter={ordenPorPais} />
         {series.map((s) => (
           <Line
             key={s.pais}
