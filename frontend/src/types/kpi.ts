@@ -119,3 +119,54 @@ export interface MapaCalor {
   celdas: CeldaMapaCalor[];
   fuentes: Array<{ fuente: Fuente; tipo: TipoIndicador }>;
 }
+
+// ---- Dashboard: tarjetas de KPI y rankings (contrato §3.4 y §3.5)
+
+export type Tendencia = 'crecimiento' | 'estabilidad' | 'caida';
+
+export interface KpiResumen {
+  indicador: string;
+  nombre: string;
+  unidad: string;
+  periodo: string | null;
+  valor: number | null;
+  valorAnterior: number | null;
+  variacionPct: number | null;
+  tendencia: Tendencia | null;
+  /** Para pintar bien la variación: que baje el desempleo es bueno. */
+  sentidoPositivo: 'sube' | 'baja';
+  sparkline: Array<number | null>; // últimos períodos, para la mini línea
+  fuente: { fuente: Fuente; tipo: TipoIndicador };
+}
+
+export type DimensionRanking = 'sector' | 'ocupacion' | 'habilidad';
+
+export interface RankingItem {
+  id: string;
+  nombre: string;
+  valor: number | null;
+  variacionPct: number | null;
+  tendencia: Tendencia | null;
+}
+
+export interface Ranking {
+  dimension: DimensionRanking;
+  indicador: string;
+  unidad: string;
+  periodo: string;
+  items: RankingItem[];
+  fuentes: Array<{ fuente: Fuente; tipo: TipoIndicador }>;
+}
+
+// ---- Tendencias: cambios significativos marcados sobre la serie (contrato §3.10)
+
+export interface CambioSignificativo {
+  id: string;
+  pais: Pais;
+  indicador: string;
+  periodo: string; // período donde se detectó el cambio
+  variacionPct: number;
+  nivel: 'alto' | 'medio' | 'bajo';
+  titulo: string;
+  descripcion: string;
+}
