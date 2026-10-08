@@ -42,6 +42,7 @@ class HealthStatus(str, Enum):
 ROOT_ROUTE: Final[str] = "/"
 API_V1_PREFIX: Final[str] = "/api/v1"
 HEALTH_CHECK_ROUTE: Final[str] = "/health"
+INDICADORES_ROUTE: Final[str] = "/indicadores"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
@@ -83,6 +84,7 @@ __all__ = [
     "ROOT_ROUTE",
     "API_V1_PREFIX",
     "HEALTH_CHECK_ROUTE",
+    "INDICADORES_ROUTE",
     "INGESTA_ROUTE",
     "INGESTA_UPLOAD_ROUTE",
     "PRUEBA_ENDPOINT_BORRAR_ROUTE",
