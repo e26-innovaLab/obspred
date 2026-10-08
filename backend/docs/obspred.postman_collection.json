@@ -1,0 +1,312 @@
+{
+  "info": {
+    "_postman_id": "32d70b83-739a-4519-9e06-fd075dd9c770",
+    "name": "obspred",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48764930",
+    "_collection_link": "https://go.postman.co/collection/48764930-32d70b83-739a-4519-9e06-fd075dd9c770?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "ingesta",
+      "item": [
+        {
+          "name": "file_upload",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/upload",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "upload"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "422_file_upload_empty_file",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "file",
+                  "file": {}
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/upload",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "upload"
+                  ]
+                }
+              },
+              "status": "Unprocessable Content",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Wed, 07 Oct 2026 18:44:34 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "248"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 422,\n  \"message\": \"Error de validación en los parámetros enviados.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"VALIDATION_ERROR\",\n      \"detail\": \"Field required\",\n      \"field\": \"body.file\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-07T18:44:35.119610Z\"\n}"
+            },
+            {
+              "name": "400_file_upload_invalid_file",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": [
+                        "/C:/Users/nicolas/Documents/obspred_files/text_file.txt.txt"
+                      ]
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/upload",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "upload"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Wed, 07 Oct 2026 18:48:35 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "369"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 400,\n  \"message\": \"El archivo 'text_file.txt.txt' no es válido. Solo se admiten archivos con extensión '.csv'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"DOMAIN_RULE_VIOLATION\",\n      \"detail\": \"El archivo 'text_file.txt.txt' no es válido. Solo se admiten archivos con extensión '.csv'.\",\n      \"field\": null\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-07T18:48:36.548112Z\"\n}"
+            },
+            {
+              "name": "400_file_upload_blank_file",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": [
+                        "/C:/Users/nicolas/Documents/obspred_files/blank_file.csv"
+                      ]
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/upload",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "upload"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Wed, 07 Oct 2026 18:49:17 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "355"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 400,\n  \"message\": \"El archivo 'blank_file.csv' está vacío. No se permite cargar archivos sin contenido.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"DOMAIN_RULE_VIOLATION\",\n      \"detail\": \"El archivo 'blank_file.csv' está vacío. No se permite cargar archivos sin contenido.\",\n      \"field\": null\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-07T18:49:18.782231Z\"\n}"
+            },
+            {
+              "name": "201_ok_file_upload",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": [
+                        "/C:/Users/nicolas/Documents/obspred_files/ok_file.csv"
+                      ]
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/upload",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "upload"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "date",
+                  "value": "Wed, 07 Oct 2026 18:50:31 GMT"
+                },
+                {
+                  "key": "server",
+                  "value": "uvicorn"
+                },
+                {
+                  "key": "content-length",
+                  "value": "330"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "vary",
+                  "value": "Origin"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Archivo CSV subido y persistido con éxito.\",\n  \"data\": {\n    \"filename\": \"1791399032_ok_file.csv\",\n    \"original_filename\": \"ok_file.csv\",\n    \"file_path\": \"data\\\\uploads\\\\1791399032_ok_file.csv\",\n    \"size_bytes\": 9,\n    \"content_type\": \"text/csv\"\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-07T18:50:32.235311Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "indicadores",
+      "item": [
+        {
+          "name": "get_indicadores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indicadores?pais=&sector=&ocupacion=&desde=&hasta=",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indicadores"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": ""
+                },
+                {
+                  "key": "sector",
+                  "value": ""
+                },
+                {
+                  "key": "ocupacion",
+                  "value": ""
+                },
+                {
+                  "key": "desde",
+                  "value": ""
+                },
+                {
+                  "key": "hasta",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "health_check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{URL_BASE}}/health",
+          "host": [
+            "{{URL_BASE}}"
+          ],
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
