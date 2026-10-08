@@ -1,34 +1,76 @@
-import type { OcupacionRanking } from '../../../services/mock/ocupaciones';
+import type { Pais } from '../../../types/kpi';
+import { PAISES } from '../../../services/mock/catalogo';
+import { SERIE_PAIS } from '../../../styles/paletaMarca';
+import type { FilaOcupacion } from '../hooks/useOcupacionesData';
 
 interface Props {
-  ranking: OcupacionRanking[];
+  filas: FilaOcupacion[];
+  paises: Pais[];
   seleccionadaId?: string;
   onSeleccionar: (id: string) => void;
 }
 
-export function RankingOcupacionesTable({ ranking, seleccionadaId, onSeleccionar }: Props) {
+const nombrePais = (id: Pais) => PAISES.find((p) => p.id === id)?.nombre ?? id;
+
+// Ranking de ocupaciones con dos columnas por país marcado (puestos e
+// índice). En pantallas chicas la tabla se desplaza hacia el costado.
+export function RankingOcupacionesTable({ filas, paises, seleccionadaId, onSeleccionar }: Props) {
   return (
-    <table className="ranking-table">
-      <thead>
-        <tr>
-          <th>Ocupación</th>
-          <th>Puestos disponibles</th>
-          <th>Índice de Empleabilidad</th>
-        </tr>
-      </thead>
-      <tbody>
-        {ranking.map((r) => (
-          <tr
-            key={r.ocupacionId}
-            aria-selected={r.ocupacionId === seleccionadaId}
-            onClick={() => onSeleccionar(r.ocupacionId)}
-          >
-            <td>{r.nombre}</td>
-            <td>{r.puestosDisponibles.toLocaleString('es-AR')}</td>
-            <td>{r.indiceEmpleabilidad}</td>
+    <div className="tabla-scroll">
+      <table className="ranking-table ranking-table--paises">
+        <thead>
+          <tr>
+            <th rowSpan={2} scope="col">
+              Ocupación
+            </th>
+            {paises.map((p) => (
+              <th key={p} colSpan={2} scope="colgroup" className="ranking-table__pais">
+                <span className="filtros-comparacion__muestra" style={{ background: SERIE_PAIS[p].color }} aria-hidden />
+                {nombrePais(p)}
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+          <tr>
+            {paises.map((p) => [
+              <th key={`${p}-puestos`} scope="col" className="ranking-table__num">
+                Puestos
+              </th>,
+              <th key={`${p}-indice`} scope="col" className="ranking-table__num">
+                Índice
+              </th>,
+            ])}
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map((f) => (
+            <tr
+              key={f.ocupacionId}
+              aria-selected={f.ocupacionId === seleccionadaId}
+              tabIndex={0}
+              onClick={() => onSeleccionar(f.ocupacionId)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSeleccionar(f.ocupacionId);
+                }
+              }}
+            >
+              <td>{f.nombre}</td>
+              {paises.map((p) => {
+                const d = f.porPais[p];
+                return [
+                  <td key={`${p}-puestos`} className="ranking-table__num">
+                    {d ? d.puestos.toLocaleString('es-AR') : 'Sin dato'}
+                  </td>,
+                  <td key={`${p}-indice`} className="ranking-table__num">
+                    {d ? d.indice : 'Sin dato'}
+                  </td>,
+                ];
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
