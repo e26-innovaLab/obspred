@@ -10,7 +10,7 @@ export function DetailPage() {
   return (
     <section className="page">
       <h2>Detalle</h2>
-      <p className="text-muted">Información detallada del elemento seleccionado.</p>
+      <p className="page__descripcion">Información detallada del elemento seleccionado.</p>
 
       {/* Filtros  */}
       <FiltrosBar mostrarSector mostrarPeriodo />
@@ -30,7 +30,7 @@ export function DetailPage() {
 
       {/*Evolución de la Demanda */}
       <div className="detail__section my-6">
-        <h3>Evolución de la Demanda</h3>
+        <h3>Evolución de la demanda</h3>
         <span className="text-muted text-sm">Variación temporal</span>
         <div className="border rounded p-8 text-center my-3 text-muted">
           [ aqui va el gráfico de líneas ]
@@ -55,7 +55,7 @@ export function DetailPage() {
         <h3>Formación y brecha</h3>
         <div className="page__columns grid grid-cols-1 md:grid-cols-2 gap-6 mt-3">
           <div>
-            <h4 className="font-semibold text-sm mb-2">Formación Requerida</h4>
+            <h4 className="font-semibold text-sm mb-2">Formación requerida</h4>
             <ul className="divide-y">
               {[1, 2, 3, 4].map((item) => (
                 <li key={item} className="flex justify-between py-1.5 text-sm">

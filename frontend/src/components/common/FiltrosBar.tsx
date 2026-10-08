@@ -1,5 +1,7 @@
 import { useFiltros } from '../../store/useFiltros';
 import { PAISES, SECTORES, PERIODOS, ocupacionesPorSector } from '../../services/mock/catalogo';
+import type { Pais } from '../../types/kpi';
+import { PaisesCheckboxes } from './PaisesCheckboxes';
 
 interface Props {
   // Cada vista muestra solo los filtros que sus KPIs necesitan
@@ -8,24 +10,35 @@ interface Props {
   mostrarSector?: boolean;
   mostrarOcupacion?: boolean;
   mostrarPeriodo?: boolean;
+  /** Si se pasa, el país pasa a ser selección múltiple (casillas) para comparar. */
+  paisesMultiples?: { seleccionados: Pais[]; onToggle: (pais: Pais) => void };
 }
 
-export function FiltrosBar({ mostrarSector = true, mostrarOcupacion = false, mostrarPeriodo = true }: Props) {
+export function FiltrosBar({
+  mostrarSector = true,
+  mostrarOcupacion = false,
+  mostrarPeriodo = true,
+  paisesMultiples,
+}: Props) {
   const { filtros, setPais, setSector, setOcupacionId, setPeriodo } = useFiltros();
   const ocupacionesDisponibles = ocupacionesPorSector(filtros.sector);
 
   return (
     <div className="filtros-bar" role="group" aria-label="Filtros del Observatorio">
-      <label>
-        País
-        <select value={filtros.pais} onChange={(e) => setPais(e.target.value as typeof filtros.pais)}>
-          {PAISES.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.nombre}
-            </option>
-          ))}
-        </select>
-      </label>
+      {paisesMultiples ? (
+        <PaisesCheckboxes seleccionados={paisesMultiples.seleccionados} onToggle={paisesMultiples.onToggle} />
+      ) : (
+        <label>
+          País
+          <select value={filtros.pais} onChange={(e) => setPais(e.target.value as typeof filtros.pais)}>
+            {PAISES.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nombre}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       {mostrarSector && (
         <label>

@@ -72,9 +72,9 @@
 | Pantalla | Bloque | Endpoint |
 |---|---|---|
 | Inicio | Filtros País / Período | `GET /catalogo` |
-| Inicio | 4 tarjetas "Indicadores principales" (valor + variación) | `GET /metricas/kpis` |
-| Inicio | Evolución de la demanda (línea) | `GET /metricas/series?indicador=puestos_demandados` |
-| Inicio | Sectores con mayor demanda / Ocupaciones destacadas / Habilidades más solicitadas | `GET /metricas/ranking` (3 llamadas, `dimension` distinta) |
+| Inicio | 4 tarjetas "Indicadores principales" (valor + variación + mini línea) **(ya consumido con mock)** | `GET /metricas/kpis` |
+| Inicio | Evolución de la demanda (línea) **(ya consumido con mock)** | `GET /metricas/series?indicador=puestos_demandados` |
+| Inicio | Sectores con mayor demanda / Ocupaciones destacadas / Habilidades más solicitadas **(ya consumido con mock)** | `GET /metricas/ranking` (3 llamadas, `dimension` distinta) |
 | Explorar | Filtros (país múltiple, sector, ocupación, período, habilidad) | `GET /catalogo` |
 | Explorar / Comparar | Indicadores comparativos (tarjetas con valor por país) | `GET /metricas/comparativa` |
 | Comparar países | Indicadores comparativos **(ya consumido con mock)** | `GET /metricas/comparativa` |
@@ -84,6 +84,7 @@
 | Tendencias | Evolución de indicadores + "Seleccionar indicador" | `GET /metricas/series` **(ya consumido con mock)** |
 | Tendencias | Proyección (histórico vs proyección) | `GET /metricas/proyecciones` **(ya consumido con mock)** |
 | Tendencias | Tendencias destacadas | `GET /metricas/ranking?orden=variacion` |
+| Tendencias | Cambios significativos marcados con "!" sobre la serie **(ya consumido con mock)** | `GET /alertas?tipo=variacion_significativa` |
 | Fuentes y metodología | Fuentes, metodología, actualización | `GET /fuentes` |
 
 ---
@@ -240,6 +241,7 @@ Tarjetas "Nombre del indicador / Valor / Variación · Tendencia" de Inicio y Te
       "variacion_pct": -3.8,
       "tendencia": "caida",
       "sentido_positivo": "baja",
+      "sparkline": [8.4, 8.2, null, 8.0, 7.9, 7.9, 7.6],
       "fuente": { "fuente": "INDEC — EPH", "fecha_actualizacion": "2026-09-24", "estado_fuente": "activa", "tipo": "observado", "metodologia_url": null }
     }
   ]
@@ -251,6 +253,7 @@ Tarjetas "Nombre del indicador / Valor / Variación · Tendencia" de Inicio y Te
 | `tendencia` | `crecimiento` \| `estabilidad` \| `caida` \| null | Umbral de "estabilidad" lo define Data. |
 | `sentido_positivo` | `sube` \| `baja` | Para pintar verde/rojo bien: que baje el desempleo es bueno. |
 | `valor_anterior`, `variacion_*` | number \| null | `null` si no hay período anterior comparable. |
+| `sparkline` | array de number \| null | Últimos 6–8 períodos, para la mini línea de la tarjeta. **En uso por Inicio.** |
 
 ### 3.5 `GET /api/v1/metricas/ranking`
 
@@ -385,6 +388,38 @@ Pantalla "Fuentes y metodología".
 
 Lo usaríamos para tablas de detalle y descarga, no para los gráficos (para eso están los `/metricas/*`).
 
+### 3.10 `GET /api/v1/alertas?tipo=variacion_significativa` — en uso por Tendencias
+
+Cambios significativos de un indicador, para marcarlos sobre la línea. Cumple el requisito del MVP
+"detección de al menos un tipo de cambio significativo".
+
+| Param | Tipo | Obligatorio | Ejemplo |
+|---|---|---|---|
+| `tipo` | `variacion_significativa` | sí | Otros tipos posibles a futuro: `cambio_indice`, `nueva_brecha`, `fuente_desactualizada`. |
+| `indicador` | string | sí | `puestos_demandados` |
+| `pais` | ISO3 | sí | `ARG` |
+| `sector`, `ocupacion`, `desde`, `hasta` | — | no | |
+
+```json
+{
+  "alertas": [
+    {
+      "id": "puestos_demandados-ARG-2023-Q4",
+      "pais": "ARG",
+      "indicador": "puestos_demandados",
+      "periodo": "2023-Q4",
+      "variacion_pct": 8.0,
+      "nivel": "alto",
+      "titulo": "Puestos demandados: suba de 8 %",
+      "descripcion": "Variación respecto del período anterior (T3 2023)."
+    }
+  ]
+}
+```
+
+`periodo` tiene que coincidir con un período de `/metricas/series` para que el marcador caiga sobre la línea.
+El umbral lo define Data; el mock usa 5 % (`medio`) y 8 % (`alto`). Si no hay cambios, `alertas: []`.
+
 ---
 
 ## 4. Decisiones pendientes
@@ -395,5 +430,6 @@ Lo usaríamos para tablas de detalle y descarga, no para los gráficos (para eso
 | 2 | Lista de 20 ocupaciones y slugs | Data | La de `services/mock/catalogo.ts`. |
 | 3 | Método de proyección y nivel de confianza | Data | Empezar con regresión lineal al 80 %; el contrato no cambia si se reemplaza. |
 | 4 | Umbral de "estabilidad" en `tendencia` | Data | ±2 % de variación. |
+| 7 | Umbral de cambio significativo | Data | 5 % = medio, 8 % = alto, entre períodos consecutivos. |
 | 5 | Formato de error en 422 | Backend | Envolver en `ApiResponse` con `VALIDATION_ERROR`. |
 | 6 | CORS en desarrollo | Backend / Frontend | Proxy de Vite (`/api` → `localhost:8000`) para no depender de CORS. |

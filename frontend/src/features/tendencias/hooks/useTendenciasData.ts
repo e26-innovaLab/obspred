@@ -21,5 +21,8 @@ export function useTendenciasData(indicador: string) {
   // "Sin proyección" no es un error: lo resuelve ProyeccionPanel con su motivo.
   const proyeccion = useAsyncData(`proy|${key}`, (signal) => servicio.getProyeccion(indicador, filtros, signal));
 
-  return { serie, proyeccion };
+  // Si falla la detección de cambios, el gráfico se muestra igual, sin marcas.
+  const cambios = useAsyncData(`cambios|${key}`, (signal) => servicio.getCambiosSignificativos(indicador, filtros, signal));
+
+  return { serie, proyeccion, cambios };
 }

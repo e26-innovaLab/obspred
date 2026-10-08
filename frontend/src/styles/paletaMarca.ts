@@ -44,3 +44,10 @@ export const EJE_PROPS = {
   tick: { fill: CHART_THEME.texto, fontSize: CHART_THEME.tamanoTexto },
   tickLine: false,
 } as const;
+
+/**
+ * Orden fijo de países en leyendas y tooltips (Argentina, Uruguay, Chile),
+ * el mismo de las casillas y las tablas. Recharts ordena alfabético por defecto.
+ */
+export const ordenPorPais = (item: { dataKey?: unknown }): number =>
+  ['AR', 'UY', 'CL'].indexOf(String(item.dataKey));
