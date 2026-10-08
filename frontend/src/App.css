@@ -52,11 +52,17 @@
 
 .app-content {
   flex: 1;
-  padding: 24px;
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
+  min-width: 0;
+  /* El contenido ocupa el área a la derecha del menú con márgenes parejos.
+     Con 1100px fijos quedaban ~300px vacíos a cada lado en pantallas anchas
+     y la vista se veía corrida a la derecha. */
+  padding: 24px clamp(24px, 3vw, 48px);
   box-sizing: border-box;
+}
+
+.app-content > .page {
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .page h2 {
@@ -626,4 +632,161 @@
 
 .mapa-calor__leyenda .mapa-calor__celda--vacia {
   margin-left: 12px;
+}
+
+/* Dashboard: KPIs con variación y mini línea, gráficos y rankings */
+.kpi-card__variacion {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.kpi-card__variacion span {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.kpi-card__variacion[data-estado='bueno'] {
+  color: #12795a;
+}
+
+.kpi-card__variacion[data-estado='malo'] {
+  color: #b23b3b;
+}
+
+.kpi-card__variacion[data-estado='neutro'] {
+  color: var(--azul-claro);
+}
+
+.kpi-card__sparkline {
+  margin-bottom: 8px;
+}
+
+.kpi-card--skeleton {
+  min-height: 150px;
+  background: linear-gradient(90deg, #e3e8eb 25%, #eef2f4 50%, #e3e8eb 75%);
+  background-size: 200% 100%;
+  animation: skeleton-brillo 1.4s ease-in-out infinite;
+  border-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-card--skeleton { animation: none; }
+}
+
+.dashboard__graficos {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.dashboard__graficos .chart-card,
+.page__columns .chart-card {
+  margin-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .dashboard__graficos {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ranking-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  counter-reset: ranking;
+}
+
+.ranking-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(60px, 1fr) auto 64px;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  counter-increment: ranking;
+}
+
+.ranking-list__nombre::before {
+  content: counter(ranking) '. ';
+  color: var(--azul-claro);
+  font-weight: 700;
+}
+
+.ranking-list__barra {
+  height: 8px;
+  border-radius: 4px;
+  background: #eef2f4;
+  overflow: hidden;
+}
+
+.ranking-list__barra span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--azul-claro);
+}
+
+.ranking-list li:first-child .ranking-list__barra span {
+  background: var(--azul-oscuro);
+}
+
+.ranking-list strong {
+  color: var(--azul-oscuro);
+  text-align: right;
+}
+
+.ranking-list__variacion {
+  font-size: 12px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.ranking-list__variacion[data-tendencia='crecimiento'] {
+  color: #12795a;
+}
+
+.ranking-list__variacion[data-tendencia='caida'] {
+  color: #b23b3b;
+}
+
+.ranking-list__variacion[data-tendencia='estabilidad'] {
+  color: var(--azul-claro);
+}
+
+/* Tendencias: cambios significativos marcados en el gráfico */
+.cambios-significativos {
+  margin-top: 16px;
+}
+
+.cambios-significativos h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--azul-oscuro);
+}
+
+.cambios-significativos__icono {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--amarillo);
+  border: 2px solid var(--azul-oscuro);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.cambios-significativos__vacio {
+  margin: 12px 0 0;
+  font-size: 13px;
+  font-style: italic;
+  opacity: 0.7;
 }
