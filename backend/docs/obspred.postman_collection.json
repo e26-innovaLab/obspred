@@ -292,6 +292,61 @@
       ]
     },
     {
+      "name": "indice_empleabilidad",
+      "item": [
+        {
+          "name": "get_indice_empleabilidad_ocupacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indice-empleabilidad/dev-software?pais=ARG&sector=tecnologia&periodo=2026-Q1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indice-empleabilidad",
+                "dev-software"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "sector",
+                  "value": "tecnologia"
+                },
+                {
+                  "key": "periodo",
+                  "value": "2026-Q1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get_indice_empleabilidad_404_no_encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indice-empleabilidad/ocupacion_inexistente",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indice-empleabilidad",
+                "ocupacion_inexistente"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "health_check",
       "request": {
         "method": "GET",
