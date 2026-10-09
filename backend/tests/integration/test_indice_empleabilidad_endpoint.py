@@ -15,8 +15,8 @@ from app.main import app
 @pytest.fixture(autouse=True)
 def override_repository_dependency() -> Generator[None, None, None]:
     """Aísla el repositorio para pruebas de integración evitando timeouts de red."""
-    app.dependency_overrides[provide_indice_empleabilidad_repository] = (
-        lambda: SqlAlchemyIndiceEmpleabilidadRepository(session=None)
+    app.dependency_overrides[provide_indice_empleabilidad_repository] = lambda: (
+        SqlAlchemyIndiceEmpleabilidadRepository(session=None)
     )
     yield
     app.dependency_overrides.pop(provide_indice_empleabilidad_repository, None)

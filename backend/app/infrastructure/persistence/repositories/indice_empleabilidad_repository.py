@@ -420,9 +420,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 if count > 0:
                     return True
             except Exception as exc:
-                logger.warning(
-                    f"Fallo al consultar ocupación en base de datos: {exc}"
-                )
+                logger.warning(f"Fallo al consultar ocupación en base de datos: {exc}")
                 return False
 
         return False
@@ -550,9 +548,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
             EvolucionIndicePunto(
                 periodo="2025-Q4", valor=round(max(0.0, score - 1.5), 1)
             ),
-            EvolucionIndicePunto(
-                periodo="2026-Q1", valor=round(score, 1)
-            ),
+            EvolucionIndicePunto(periodo="2026-Q1", valor=round(score, 1)),
             EvolucionIndicePunto(
                 periodo="2026-Q2", valor=round(min(100.0, score + 1.1), 1)
             ),

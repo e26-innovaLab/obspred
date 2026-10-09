@@ -60,9 +60,7 @@ class EvolucionIndicePunto:
         if not self.periodo or not self.periodo.strip():
             raise ValueError("El período no puede estar vacío.")
         if not (0.0 <= self.valor <= 100.0):
-            raise ValueError(
-                "El valor de evolución debe situarse entre 0.0 y 100.0."
-            )
+            raise ValueError("El valor de evolución debe situarse entre 0.0 y 100.0.")
 
 
 @dataclass(frozen=True)
@@ -135,9 +133,7 @@ class IndiceEmpleabilidad:
         return "Bajo"
 
     @classmethod
-    def calcular_score_ponderado(
-        cls, dimensiones: List[DimensionIndice]
-    ) -> float:
+    def calcular_score_ponderado(cls, dimensiones: List[DimensionIndice]) -> float:
         """Calcula el score global ponderado a partir de sus dimensiones.
 
         Args:
