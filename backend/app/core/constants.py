@@ -46,6 +46,7 @@ INDICADORES_ROUTE: Final[str] = "/indicadores"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
+TENDENCIAS_ROUTE = "/tendencias"
 
 
 # ==============================================================================

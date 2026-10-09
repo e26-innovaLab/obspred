@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class TipoDato(str,Enum):
     HISTORICO = "historico"
-    PROYECCION = "proyecccion"
+    PROYECCION = "proyeccion"
 
 class PuntoSerie(BaseModel):
     periodo: str # "T1 2025"
@@ -16,7 +16,7 @@ class PuntoProyeccion(BaseModel):
     periodo:str
     valor_estimado:float
     valor_inferior: Optional[float] = None
-    limite_superior: Optional[float] = None
+    valor_superior: Optional[float] = None
 
 class CambioSignificativo(BaseModel):
     periodo: str

@@ -8,9 +8,10 @@ from app.api.v1.schemas.tendencia_schema import (
     CambioSignificativo,
     MetadatosFuente
 )
+from app.core.constants import TENDENCIAS_ROUTE
 
 router = APIRouter(
-    prefix= "/tendencias",
+    prefix= TENDENCIAS_ROUTE,
     tags = ["Tendencias"]
 )
 
@@ -22,10 +23,10 @@ router = APIRouter(
 )
 
 async def get_tendencias(
-    pais: str = Query(default="Argentina", descripcion="Nombre del país p código ISO"),
-    sector:str = Query(default="Todos los sectores", decripcion="Sector de actividad económica"),
-    ocupacion: str = Query(default="Todas las ocupaciones", descripcion="Categoria u ocupación laboral"),
-    indicador: str = Query(default="puestos_demandados", descripcion="Tipo de indicadr a consultar")
+    pais: str = Query(default="Argentina", description="Nombre del país o código ISO"),
+    sector:str = Query(default="Todos los sectores", description="Sector de actividad económica"),
+    ocupacion: str = Query(default="Todas las ocupaciones", description="Categoria u ocupación laboral"),
+    indicador: str = Query(default="puestos_demandados", description="Tipo de indicador a consultar")
 
 )-> TendenciasResponse:
     """
@@ -69,9 +70,9 @@ async def get_tendencias(
             )
         ],
         proyeccion=[
-            PuntoProyeccion(periodo="T2 2026", valor_estimado=1933.0, limite_inferior=1933.0, limite_superior=1933.0),
-            PuntoProyeccion(periodo="T3 2026", valor_estimado=1925.0, limite_inferior=1880.0, limite_superior=1980.0),
-            PuntoProyeccion(periodo="T4 2026", valor_estimado=1940.0, limite_inferior=1870.0, limite_superior=2020.0),
+            PuntoProyeccion(periodo="T2 2026", valor_estimado=1933.0, valor_inferior=1933.0, valor_superior=1933.0),
+            PuntoProyeccion(periodo="T3 2026", valor_estimado=1925.0, valor_inferior=1880.0, valor_superior=1980.0),
+            PuntoProyeccion(periodo="T4 2026", valor_estimado=1940.0, valor_inferior=1870.0, valor_superior=2020.0),
         ],
         metadatos_historico=MetadatosFuente(
             fuente="CEPALSTAT",
