@@ -292,6 +292,180 @@
       ]
     },
     {
+      "name": "indice_empleabilidad",
+      "item": [
+        {
+          "name": "get_indice_empleabilidad_ocupacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indice-empleabilidad/dev-software?pais=ARG&sector=tecnologia&periodo=2026-Q1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indice-empleabilidad",
+                "dev-software"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "sector",
+                  "value": "tecnologia"
+                },
+                {
+                  "key": "periodo",
+                  "value": "2026-Q1"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_dev_software",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/indice-empleabilidad/dev-software?pais=ARG&sector=tecnologia&periodo=2026-Q1",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "indice-empleabilidad",
+                    "dev-software"
+                  ],
+                  "query": [
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "tecnologia"
+                    },
+                    {
+                      "key": "periodo",
+                      "value": "2026-Q1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Índice de Empleabilidad obtenido con éxito.\",\n  \"data\": {\n    \"ocupacion_id\": \"dev-software\",\n    \"ocupacion_nombre\": \"Desarrollador/a de software\",\n    \"score\": 81.3,\n    \"nivel\": \"Muy Alto\",\n    \"dimensiones\": [\n      {\n        \"nombre\": \"Demanda de puestos\",\n        \"valor\": 88.0,\n        \"peso\": 0.35,\n        \"descripcion\": \"Alta demanda vacantes digitales\"\n      },\n      {\n        \"nombre\": \"Estabilidad salarial\",\n        \"valor\": 84.0,\n        \"peso\": 0.25,\n        \"descripcion\": \"Remuneración competitiva\"\n      },\n      {\n        \"nombre\": \"Cobertura formativa\",\n        \"valor\": 68.0,\n        \"peso\": 0.20,\n        \"descripcion\": \"Déficit de graduados afines\"\n      },\n      {\n        \"nombre\": \"Crecimiento reciente\",\n        \"valor\": 86.0,\n        \"peso\": 0.20,\n        \"descripcion\": \"Expansión interanual sostenida\"\n      }\n    ],\n    \"tipo\": \"calculado\",\n    \"fuente\": \"INDEC — Encuesta Permanente de Hogares / Secretaría de Trabajo\",\n    \"fecha_actualizacion\": \"2026-09-30\",\n    \"metodologia\": \"Índice de Empleabilidad — Metodología v1 (ponderación: Demanda 35%, Estabilidad 25%, Cobertura 20%, Crecimiento 20%)\",\n    \"pais\": \"ARG\",\n    \"sector\": \"tecnologia\",\n    \"periodo\": \"2026-Q1\",\n    \"evolucion\": [\n      {\n        \"periodo\": \"2025-Q3\",\n        \"valor\": 78.1\n      },\n      {\n        \"periodo\": \"2025-Q4\",\n        \"valor\": 79.8\n      },\n      {\n        \"periodo\": \"2026-Q1\",\n        \"valor\": 81.3\n      },\n      {\n        \"periodo\": \"2026-Q2\",\n        \"valor\": 82.4\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 1,\n    \"extra\": {\n      \"filtros\": {\n        \"pais\": \"ARG\",\n        \"sector\": \"tecnologia\",\n        \"periodo\": \"2026-Q1\"\n      }\n    }\n  },\n  \"timestamp\": \"2026-10-08T10:30:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_indice_empleabilidad_404_no_encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indice-empleabilidad/ocupacion_inexistente",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indice-empleabilidad",
+                "ocupacion_inexistente"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404_not_found_ocupacion",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/indice-empleabilidad/ocupacion_inexistente",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "indice-empleabilidad",
+                    "ocupacion_inexistente"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 404,\n  \"message\": \"La entidad 'Occupation' con ID 'ocupacion_inexistente' no fue encontrada.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"ENTITY_NOT_FOUND\",\n      \"detail\": \"La entidad 'Occupation' con ID 'ocupacion_inexistente' no fue encontrada.\",\n      \"field\": \"Occupation\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-08T10:30:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_indice_empleabilidad_400_ocupacion_vacia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indice-empleabilidad/%20%20%20",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indice-empleabilidad",
+                "%20%20%20"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "400_bad_request_ocupacion_vacia",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/indice-empleabilidad/%20%20%20",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "indice-empleabilidad",
+                    "%20%20%20"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 400,\n  \"message\": \"El identificador o nombre de ocupación no puede estar vacío.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"DOMAIN_RULE_VIOLATION\",\n      \"detail\": \"El identificador o nombre de ocupación no puede estar vacío.\",\n      \"field\": null\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-08T10:30:00.000000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "health_check",
       "request": {
         "method": "GET",
@@ -307,6 +481,13 @@
         }
       },
       "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "URL_BASE",
+      "value": "http://localhost:8000/api/v1",
+      "type": "string"
     }
   ]
 }
