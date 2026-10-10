@@ -1,6 +1,7 @@
 """Esquemas de datos para la verificación de salud del sistema."""
 
 from pydantic import BaseModel, ConfigDict, Field
+
 from app.api.v1.schemas.response_schema import ApiResponse
 from app.core.constants import HealthStatus
 

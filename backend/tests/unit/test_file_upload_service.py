@@ -67,9 +67,7 @@ async def test_upload_csv_delegates_to_validator() -> None:
     """Verifica que FileUploadService invoque al validador inyectado."""
     storage_mock = FakeStorageService()
     validator_mock = MagicMock(spec=IFileValidator)
-    validator_mock.validate.side_effect = InvalidFileExtensionException(
-        "archivo.xlsx"
-    )
+    validator_mock.validate.side_effect = InvalidFileExtensionException("archivo.xlsx")
 
     service = FileUploadService(
         storage_service=storage_mock,

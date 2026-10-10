@@ -3,6 +3,7 @@
 import logging
 import sys
 from typing import Optional
+
 from app.core.constants import PROJECT_IDENTIFIER
 
 
