@@ -6,7 +6,9 @@ consistencia estructural tanto en respuestas exitosas como en errores.
 
 from datetime import datetime, timezone
 from typing import Any, Dict, Generic, List, Optional, TypeVar
+
 from pydantic import BaseModel, ConfigDict, Field
+
 from app.core.constants import (
     DEFAULT_ERROR_MESSAGE,
     DEFAULT_SUCCESS_MESSAGE,
@@ -19,7 +21,8 @@ class ErrorDetail(BaseModel):
     """Detalle puntual de un error de validación o excepción.
 
     Attributes:
-        code: Código alfanumérico estandarizado del error (ej. VALIDATION_ERROR, NOT_FOUND).
+        code: Código alfanumérico estandarizado del error
+            (ej. VALIDATION_ERROR, NOT_FOUND).
         detail: Descripción legible del problema.
         field: Campo del payload que provocó el error si corresponde.
     """
@@ -54,7 +57,9 @@ class ResponseMeta(BaseModel):
 
     page: Optional[int] = Field(default=None, description="Número de página actual")
     per_page: Optional[int] = Field(default=None, description="Tamaño de la página")
-    total: Optional[int] = Field(default=None, description="Cantidad total de registros")
+    total: Optional[int] = Field(
+        default=None, description="Cantidad total de registros"
+    )
     extra: Optional[Dict[str, Any]] = Field(
         default=None, description="Metadatos adicionales de la consulta"
     )
@@ -179,4 +184,3 @@ def create_error_response(
         errors=errors,
         meta=meta,
     )
-

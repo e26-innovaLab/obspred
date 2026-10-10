@@ -1,7 +1,10 @@
-"""Pruebas de integración para los endpoints de salud y raíz con estándar ApiResponse."""
+"""Pruebas de integración para los endpoints de salud y raíz con
+estándar ApiResponse.
+"""
 
 import pytest
 from httpx import AsyncClient
+
 from app.core.config import settings
 from app.core.constants import HEALTH_CHECK_ROUTE, ROOT_ROUTE, HealthStatus
 
@@ -10,7 +13,8 @@ from app.core.constants import HEALTH_CHECK_ROUTE, ROOT_ROUTE, HealthStatus
 async def test_root_endpoint_returns_standard_response(
     async_client: AsyncClient,
 ) -> None:
-    """Verifica que el endpoint raíz responda con código 200 y el formato estándar ApiResponse.
+    """Verifica que el endpoint raíz responda con código 200 y el formato
+    estándar ApiResponse.
 
     Args:
         async_client: Cliente HTTP asíncrono para ejecutar la solicitud.
@@ -30,7 +34,8 @@ async def test_root_endpoint_returns_standard_response(
 async def test_health_check_endpoint_returns_standard_response(
     async_client: AsyncClient,
 ) -> None:
-    """Verifica que el endpoint de salud responda con la envoltura estándar y estado 'healthy'.
+    """Verifica que el endpoint de salud responda con la envoltura estándar
+    y estado 'healthy'.
 
     Args:
         async_client: Cliente HTTP asíncrono para ejecutar la solicitud.

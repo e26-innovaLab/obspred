@@ -1,7 +1,9 @@
 """Esquemas Pydantic para el controlador temporal de prueba CRUD."""
 
 from typing import Any, Dict, Optional
+
 from pydantic import BaseModel, ConfigDict, Field
+
 from app.api.v1.schemas.response_schema import ApiResponse
 
 

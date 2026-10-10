@@ -19,6 +19,7 @@ DEFAULT_API_VERSION: Final[str] = "v1"
 # 2. Entornos de Ejecución y Estados Operativos
 # ==============================================================================
 
+
 class AppEnvironment(str, Enum):
     """Entornos posibles de ejecución de la aplicación."""
 
@@ -66,9 +67,7 @@ DEFAULT_MAX_UPLOAD_SIZE_BYTES: Final[int] = 52_428_800  # 50 MB
 
 DEFAULT_SUCCESS_MESSAGE: Final[str] = "Operación ejecutada con éxito."
 DEFAULT_ERROR_MESSAGE: Final[str] = "Ocurrió un error al procesar la solicitud."
-INTERNAL_SERVER_ERROR_MESSAGE: Final[str] = (
-    "Error interno del servidor no controlado."
-)
+INTERNAL_SERVER_ERROR_MESSAGE: Final[str] = "Error interno del servidor no controlado."
 
 
 # ==============================================================================

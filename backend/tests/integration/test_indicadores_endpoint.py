@@ -84,8 +84,7 @@ async def test_get_indicadores_con_filtros_completos(
     assert payload["meta"]["extra"]["filtros"]["pais"] == "ARG"
     assert payload["meta"]["extra"]["filtros"]["sector"] == "Tecnología"
     assert (
-        payload["meta"]["extra"]["filtros"]["ocupacion"]
-        == "Desarrollador de software"
+        payload["meta"]["extra"]["filtros"]["ocupacion"] == "Desarrollador de software"
     )
     assert payload["meta"]["extra"]["filtros"]["desde"] == "2024-Q1"
     assert payload["meta"]["extra"]["filtros"]["hasta"] == "2024-Q4"

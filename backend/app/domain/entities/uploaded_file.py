@@ -23,9 +23,7 @@ class UploadedFile:
     file_path: Path
     size_bytes: int
     content_type: str = "text/csv"
-    uploaded_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    uploaded_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def __post_init__(self) -> None:
         """Valida las invariantes de la entidad tras su inicialización.
