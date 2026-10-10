@@ -9,7 +9,7 @@ from app.api.v1.endpoints.indice_empleabilidad import (
 )
 from app.api.v1.endpoints.ingesta import ingesta_router
 from app.api.v1.endpoints.prueba_endpoint_borrar import prueba_router
-from app.api.v1.endpoints.tendencias import router as tendencias_router
+from app.api.v1.endpoints.tendencias import tendencias_router
 
 api_v1_router = APIRouter()
 

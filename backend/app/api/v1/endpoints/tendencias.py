@@ -1,3 +1,5 @@
+"""Controlador y endpoints asociados a la consulta de tendencias y proyecciones."""
+
 from fastapi import APIRouter, Query
 
 from app.api.v1.schemas.tendencia_schema import (
@@ -9,10 +11,10 @@ from app.api.v1.schemas.tendencia_schema import (
 )
 from app.core.constants import TENDENCIAS_ROUTE
 
-router = APIRouter(prefix=TENDENCIAS_ROUTE, tags=["Tendencias"])
+tendencias_router = APIRouter(prefix=TENDENCIAS_ROUTE, tags=["Tendencias"])
 
 
-@router.get(
+@tendencias_router.get(
     "/",
     response_model=TendenciasResponse,
     summary="Obtener serie temporal, proyecciones y cambios significativos",
