@@ -161,6 +161,7 @@ class WorldBankConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
+            tasks = []
             for code in target_indicator_codes:
                 indicator_meta = self.INDICATOR_MAPPINGS[code]
                 url = (
@@ -170,20 +171,27 @@ class WorldBankConnector(IExternalDataConnector):
                 if date_param:
                     url += f"&date={date_param}"
 
-                try:
-                    indicator_records = await self._fetch_indicator_series(
+                tasks.append(
+                    self._fetch_indicator_series(
                         client=client,
                         url=url,
                         indicator_code=code,
                         indicator_meta=indicator_meta,
                     )
-                    records.extend(indicator_records)
-                except Exception as exc:
+                )
+
+            series_results = await asyncio.gather(*tasks, return_exceptions=True)
+            for code, res in zip(
+                target_indicator_codes, series_results, strict=True
+            ):
+                if isinstance(res, Exception):
                     logger.error(
                         "Error consultando indicador %s en World Bank API: %s",
                         code,
-                        str(exc),
+                        str(res),
                     )
+                elif isinstance(res, list):
+                    records.extend(res)
         finally:
             if should_close_client:
                 await client.aclose()
