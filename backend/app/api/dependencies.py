@@ -6,11 +6,20 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.file_upload_service import FileUploadService
+from app.application.services.indice_empleabilidad_service import (
+    IndiceEmpleabilidadService,
+)
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
 from app.domain.interfaces.file_storage_service import IFileStorageService
 from app.domain.interfaces.file_validator import IFileValidator
+from app.domain.interfaces.indice_empleabilidad_repository import (
+    IIndiceEmpleabilidadRepository,
+)
 from app.infrastructure.persistence.database import get_db_session
+from app.infrastructure.persistence.repositories import (
+    SqlAlchemyIndiceEmpleabilidadRepository,
+)
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
@@ -67,3 +76,37 @@ def provide_file_upload_service(
         storage_service=storage_service,
         validator=validator,
     )
+
+
+def provide_indice_empleabilidad_repository(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> IIndiceEmpleabilidadRepository:
+    """Provee el repositorio para la consulta del Índice de Empleabilidad.
+
+    Args:
+        session: Sesión transaccional inyectada por FastAPI.
+
+    Returns:
+        IIndiceEmpleabilidadRepository: Instancia concreta del repositorio.
+    """
+    return SqlAlchemyIndiceEmpleabilidadRepository(session=session)
+
+
+def provide_indice_empleabilidad_service(
+    repository: Annotated[
+        IIndiceEmpleabilidadRepository,
+        Depends(provide_indice_empleabilidad_repository),
+    ],
+) -> IndiceEmpleabilidadService:
+    """Provee el servicio de aplicación para el Índice de Empleabilidad.
+
+    Args:
+        repository: Repositorio inyectado por FastAPI.
+
+    Returns:
+        IndiceEmpleabilidadService: Servicio listo para su uso en controladores.
+    """
+    return IndiceEmpleabilidadService(repository=repository)

@@ -6,7 +6,9 @@ y el estándar unificado de la API.
 """
 
 from typing import Optional
+
 from fastapi import APIRouter, Path, status
+
 from app.api.v1.schemas.prueba_schema import (
     PruebaItemData,
     PruebaPayloadSchema,
@@ -26,7 +28,10 @@ prueba_router = APIRouter(
     response_model=PruebaResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Listar recursos (CRUD: Read All)",
-    description="Simula la lectura de una colección de recursos retornando el estándar ApiResponse.",
+    description=(
+        "Simula la lectura de una colección de recursos retornando el "
+        "estándar ApiResponse."
+    ),
 )
 async def list_simulated_items() -> PruebaResponseSchema:
     """Simula la obtención de un listado de elementos.

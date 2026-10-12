@@ -1,7 +1,10 @@
-"""Pruebas de integración para el controlador de prueba CRUD con estándar ApiResponse."""
+"""Pruebas de integración para el controlador de prueba CRUD con
+estándar ApiResponse.
+"""
 
 import pytest
 from httpx import AsyncClient
+
 from app.core.config import settings
 from app.core.constants import PRUEBA_ENDPOINT_BORRAR_ROUTE
 
@@ -10,7 +13,8 @@ from app.core.constants import PRUEBA_ENDPOINT_BORRAR_ROUTE
 async def test_prueba_crud_operations_with_standard_response(
     async_client: AsyncClient,
 ) -> None:
-    """Verifica que todos los verbos HTTP del endpoint de prueba retornen el estándar ApiResponse.
+    """Verifica que todos los verbos HTTP del endpoint de prueba retornen el
+    estándar ApiResponse.
 
     Args:
         async_client: Cliente HTTP asíncrono.

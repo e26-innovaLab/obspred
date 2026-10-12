@@ -5,11 +5,13 @@ y manejadores globales de excepciones bajo el esquema ApiResponse.
 """
 
 from typing import Any, Dict
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.api.v1.router import api_v1_router
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
@@ -28,7 +30,8 @@ from app.domain.exceptions.base import DomainException, EntityNotFoundException
 
 
 def register_exception_handlers(app: FastAPI) -> None:
-    """Registra los manejadores globales de errores para formatear toda excepción con ApiResponse.
+    """Registra los manejadores globales de errores para formatear toda
+    excepción con ApiResponse.
 
     Args:
         app: Instancia de la aplicación FastAPI.
@@ -79,7 +82,9 @@ def register_exception_handlers(app: FastAPI) -> None:
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
-        """Maneja errores de validación de sintaxis o tipos en peticiones entrantes (HTTP 422)."""
+        """Maneja errores de validación de sintaxis o tipos en peticiones
+        entrantes (HTTP 422).
+        """
         errors = [
             ErrorDetail(
                 code="VALIDATION_ERROR",
@@ -175,7 +180,9 @@ def create_application() -> FastAPI:
         status_code=status.HTTP_200_OK,
         tags=["Root"],
         summary="Ruta raíz del backend",
-        description="Retorna el estado base de la API bajo el formato estándar ApiResponse.",
+        description=(
+            "Retorna el estado base de la API bajo el formato estándar ApiResponse."
+        ),
     )
     async def root_endpoint() -> ApiResponse[Dict[str, Any]]:
         """Endpoint raíz informativo.
