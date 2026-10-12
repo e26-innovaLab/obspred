@@ -1,17 +1,28 @@
-"""Controlador y endpoints asociados al módulo de ingesta de datos."""
+"""Controlador y endpoints asociados al módulo de ingesta y sincronización de datos."""
 
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, File, UploadFile, status
 
-from app.api.dependencies import provide_file_upload_service
+from app.api.dependencies import (
+    provide_file_upload_service,
+    provide_world_bank_sync_service,
+)
 from app.api.v1.schemas.ingesta_schema import (
     FileUploadData,
     FileUploadResponseSchema,
+    SyncExternalDataRequestSchema,
+    SyncExternalDataResponseData,
+    SyncExternalDataResponseSchema,
 )
 from app.api.v1.schemas.response_schema import ApiResponse, create_success_response
+from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
-from app.core.constants import INGESTA_ROUTE, INGESTA_UPLOAD_ROUTE
+from app.core.constants import (
+    INGESTA_ROUTE,
+    INGESTA_SYNC_ROUTE,
+    INGESTA_UPLOAD_ROUTE,
+)
 
 ingesta_router = APIRouter(
     prefix=INGESTA_ROUTE,
@@ -86,4 +97,68 @@ async def upload_csv_file(
         data=data,
         message="Archivo CSV subido y persistido con éxito.",
         status_code=status.HTTP_201_CREATED,
+    )
+
+
+@ingesta_router.post(
+    f"{INGESTA_SYNC_ROUTE}/world-bank",
+    response_model=SyncExternalDataResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Sincronizar indicadores oficiales desde World Bank Indicators API",
+    description=(
+        "Ejecuta extracción y persistencia idempotente de indicadores "
+        "macroeconómicos y laborales oficiales desde la API del Banco Mundial "
+        "para Argentina, Uruguay y Chile."
+    ),
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Sincronización completada exitosamente.",
+            "model": SyncExternalDataResponseSchema,
+        },
+    },
+)
+async def sync_world_bank_indicators(
+    sync_service: Annotated[
+        ExternalSyncService,
+        Depends(provide_world_bank_sync_service),
+    ],
+    payload: Optional[SyncExternalDataRequestSchema] = None,
+) -> SyncExternalDataResponseSchema:
+    """Sincroniza indicadores oficiales del Banco Mundial.
+
+    Args:
+        sync_service: Servicio de orquestación de ingesta externa inyectado.
+        payload: Parámetros opcionales para restringir países, indicadores o períodos.
+
+    Returns:
+        SyncExternalDataResponseSchema: Resultado y métricas de la sincronización.
+    """
+    paises = payload.paises if payload else None
+    indicadores = payload.indicadores if payload else None
+    periodo_desde = payload.periodo_desde if payload else None
+    periodo_hasta = payload.periodo_hasta if payload else None
+
+    result_dto = await sync_service.sync_data(
+        paises=paises,
+        indicadores=indicadores,
+        periodo_desde=periodo_desde,
+        periodo_hasta=periodo_hasta,
+    )
+
+    response_data = SyncExternalDataResponseData(
+        source=result_dto.source,
+        status=result_dto.status,
+        total_fetched=result_dto.total_fetched,
+        total_persisted=result_dto.total_persisted,
+        execution_time_seconds=result_dto.execution_time_seconds,
+        countries_synced=result_dto.countries_synced,
+        indicators_synced=result_dto.indicators_synced,
+        error_message=result_dto.error_message,
+    )
+
+    msg = f"Sincronización de '{result_dto.source}' ({result_dto.status})."
+    return create_success_response(
+        data=response_data,
+        message=msg,
+        status_code=status.HTTP_200_OK,
     )

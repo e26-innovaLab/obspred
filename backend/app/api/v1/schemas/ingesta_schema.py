@@ -1,6 +1,6 @@
 """Esquemas Pydantic para los endpoints del módulo de Ingesta."""
 
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -48,3 +48,79 @@ class FileUploadData(BaseModel):
 
 
 FileUploadResponseSchema = ApiResponse[FileUploadData]
+
+
+class SyncExternalDataRequestSchema(BaseModel):
+    """Parámetros de solicitud para la sincronización de una fuente externa."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    paises: Optional[List[str]] = Field(
+        default=None,
+        description="Lista de códigos ISO de país (ej. ['ARG', 'URY', 'CHL'])",
+        examples=[["ARG", "URY", "CHL"]],
+    )
+    indicadores: Optional[List[str]] = Field(
+        default=None,
+        description="Lista de indicadores o códigos a sincronizar",
+        examples=[["tasa_desempleo", "pib_per_capita"]],
+    )
+    periodo_desde: Optional[str] = Field(
+        default=None,
+        description="Año o período inicial de extracción",
+        examples=["2018"],
+    )
+    periodo_hasta: Optional[str] = Field(
+        default=None,
+        description="Año o período final de extracción",
+        examples=["2024"],
+    )
+
+
+class SyncExternalDataResponseData(BaseModel):
+    """Resultado detallado de la sincronización externa ejecutada."""
+
+    model_config = ConfigDict(frozen=True)
+
+    source: str = Field(
+        ...,
+        description="Fuente externa procesada",
+        examples=["World Bank"],
+    )
+    status: str = Field(
+        ...,
+        description="Estado del proceso ('success', 'failed')",
+        examples=["success"],
+    )
+    total_fetched: int = Field(
+        ...,
+        description="Cantidad de registros obtenidos desde la API remota",
+        examples=[18],
+    )
+    total_persisted: int = Field(
+        ...,
+        description="Cantidad de registros persistidos o actualizados",
+        examples=[18],
+    )
+    execution_time_seconds: float = Field(
+        ...,
+        description="Tiempo de ejecución del proceso en segundos",
+        examples=[1.42],
+    )
+    countries_synced: List[str] = Field(
+        default_factory=list,
+        description="Países efectivamente procesados",
+        examples=[["ARG", "CHL", "URY"]],
+    )
+    indicators_synced: List[str] = Field(
+        default_factory=list,
+        description="Indicadores efectivamente procesados",
+        examples=[["pib_per_capita", "tasa_desempleo"]],
+    )
+    error_message: Optional[str] = Field(
+        default=None,
+        description="Mensaje de error en caso de fallo",
+    )
+
+
+SyncExternalDataResponseSchema = ApiResponse[SyncExternalDataResponseData]

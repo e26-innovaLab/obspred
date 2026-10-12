@@ -5,19 +5,24 @@ from typing import Annotated, AsyncGenerator
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.application.services.indice_empleabilidad_service import (
     IndiceEmpleabilidadService,
 )
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
+from app.domain.interfaces.external_connector import IExternalDataConnector
 from app.domain.interfaces.file_storage_service import IFileStorageService
 from app.domain.interfaces.file_validator import IFileValidator
+from app.domain.interfaces.indicador_repository import IIndicadorRepository
 from app.domain.interfaces.indice_empleabilidad_repository import (
     IIndiceEmpleabilidadRepository,
 )
+from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
+    SqlAlchemyIndicadorRepository,
     SqlAlchemyIndiceEmpleabilidadRepository,
 )
 from app.infrastructure.storage.local_file_storage_service import (
@@ -110,3 +115,52 @@ def provide_indice_empleabilidad_service(
         IndiceEmpleabilidadService: Servicio listo para su uso en controladores.
     """
     return IndiceEmpleabilidadService(repository=repository)
+
+
+def provide_indicador_repository(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> IIndicadorRepository:
+    """Provee el repositorio para la persistencia y consulta de Indicadores.
+
+    Args:
+        session: Sesión transaccional inyectada por FastAPI.
+
+    Returns:
+        IIndicadorRepository: Instancia concreta de SqlAlchemyIndicadorRepository.
+    """
+    return SqlAlchemyIndicadorRepository(session=session)
+
+
+def provide_world_bank_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de World Bank Indicators API.
+
+    Returns:
+        IExternalDataConnector: Instancia de WorldBankConnector.
+    """
+    return WorldBankConnector()
+
+
+def provide_world_bank_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_world_bank_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con World Bank.
+
+    Args:
+        connector: Conector de World Bank inyectado.
+        repository: Repositorio de indicadores inyectado.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+

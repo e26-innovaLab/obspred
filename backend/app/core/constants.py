@@ -47,8 +47,10 @@ INDICADORES_ROUTE: Final[str] = "/indicadores"
 INDICE_EMPLEABILIDAD_ROUTE: Final[str] = "/indice-empleabilidad"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
+INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
 TENDENCIAS_ROUTE = "/tendencias"
+
 
 
 # ==============================================================================
@@ -89,6 +91,7 @@ __all__ = [
     "INDICE_EMPLEABILIDAD_ROUTE",
     "INGESTA_ROUTE",
     "INGESTA_UPLOAD_ROUTE",
+    "INGESTA_SYNC_ROUTE",
     "PRUEBA_ENDPOINT_BORRAR_ROUTE",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
