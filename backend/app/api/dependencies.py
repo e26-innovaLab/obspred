@@ -138,9 +138,12 @@ def provide_world_bank_connector() -> IExternalDataConnector:
     """Provee la instancia del conector oficial de World Bank Indicators API.
 
     Returns:
-        IExternalDataConnector: Instancia de WorldBankConnector.
+        IExternalDataConnector: Instancia de WorldBankConnector configurada.
     """
-    return WorldBankConnector()
+    return WorldBankConnector(
+        base_url=settings.world_bank_api_base_url,
+        timeout=settings.world_bank_timeout_seconds,
+    )
 
 
 def provide_world_bank_sync_service(

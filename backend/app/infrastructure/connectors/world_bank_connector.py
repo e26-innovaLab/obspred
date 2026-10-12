@@ -6,6 +6,10 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from app.core.constants import (
+    DEFAULT_WORLD_BANK_BASE_URL,
+    DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
+)
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import (
     IExternalDataConnector,
@@ -21,9 +25,9 @@ class WorldBankConnector(IExternalDataConnector):
     clave de API de autenticación.
     """
 
-    DEFAULT_BASE_URL: str = "https://api.worldbank.org/v2"
+    DEFAULT_BASE_URL: str = DEFAULT_WORLD_BANK_BASE_URL
     DEFAULT_COUNTRIES: List[str] = ["ARG", "URY", "CHL"]
-    DEFAULT_TIMEOUT_SECONDS: float = 30.0
+    DEFAULT_TIMEOUT_SECONDS: float = DEFAULT_WORLD_BANK_TIMEOUT_SECONDS
 
     # Catálogo de indicadores oficiales verificados y su mapeo al modelo de dominio
     INDICATOR_MAPPINGS: Dict[str, Dict[str, Any]] = {
@@ -105,6 +109,16 @@ class WorldBankConnector(IExternalDataConnector):
     def source_name(self) -> str:
         """Nombre oficial de la fuente institucional."""
         return "World Bank"
+
+    @property
+    def base_url(self) -> str:
+        """URL base configurada para la API."""
+        return self._base_url
+
+    @property
+    def timeout(self) -> float:
+        """Tiempo de espera configurado en segundos."""
+        return self._timeout
 
     async def _get_client(self) -> httpx.AsyncClient:
         """Obtiene o crea un cliente HTTP asíncrono para la conexión."""

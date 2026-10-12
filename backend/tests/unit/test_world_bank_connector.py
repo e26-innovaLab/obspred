@@ -110,6 +110,18 @@ async def test_world_bank_source_name() -> None:
 
 
 @pytest.mark.asyncio
+async def test_world_bank_configurable_base_url_and_timeout() -> None:
+    """Verifica que la URL base y el timeout sean configurables."""
+    connector = WorldBankConnector(
+        base_url="https://mock-wb.example.com/api/",
+        timeout=12.5,
+    )
+    assert connector.base_url == "https://mock-wb.example.com/api"
+    assert connector.timeout == 12.5
+
+
+
+@pytest.mark.asyncio
 async def test_world_bank_resolve_indicator_codes() -> None:
     """Verifica la resolución tanto de códigos directos como de slugs amigables."""
     connector = WorldBankConnector()
