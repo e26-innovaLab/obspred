@@ -288,7 +288,7 @@ pytest tests/unit/test_mi_nueva_fuente_connector.py -v
 ### Paso 6: Actualizar Postman y Documentación
 
 1. Agregar el nuevo request en [`backend/docs/obspred.postman_collection.json`](obspred.postman_collection.json) con sus ejemplos de respuesta (`200 OK` y `502 Bad Gateway`).
-2. Actualizar el estado de cobertura del conector en `documentacion/informe-fuentes-datos-observatorio.md`.
+2. Actualizar el estado de cobertura del conector en [`informe-fuentes-datos-observatorio.md`](../../documentacion/informe-fuentes-datos-observatorio.md).
 
 ---
 

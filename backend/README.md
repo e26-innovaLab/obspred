@@ -29,6 +29,7 @@ backend/
 │           ├── router.py  # Enrutador central v1 (agrega todos los controladores)
 │           ├── endpoints/ # Controladores HTTP (health, ingesta, prueba, etc.)
 │           └── schemas/   # Esquemas Pydantic (Request/Response DTOs)
+├── docs/                  # Documentación técnica, guías de conectores y colecciones Postman
 ├── tests/                 # Suite de pruebas unitarias e integración
 │   ├── unit/              # Pruebas unitarias de servicios y almacenamiento
 │   └── integration/       # Pruebas de integración de endpoints HTTP
