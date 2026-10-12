@@ -113,3 +113,45 @@ async def test_sync_world_bank_endpoint_e_integracion_indicadores(
     assert item["tipo"] == "observado"
     assert item["fuente"] == "World Bank"
     assert item["fecha_actualizacion"] == "2024-03-28"
+
+
+class FailingMockConnector(IExternalDataConnector):
+    """Mock de conector que simula fallo de red."""
+
+    @property
+    def source_name(self) -> str:
+        return "World Bank"
+
+    async def fetch_indicators(self, **kwargs) -> List[RawIndicatorRecord]:
+        raise ConnectionError("Fallo de timeout en World Bank API")
+
+    async def check_health(self) -> bool:
+        return False
+
+
+@pytest.mark.asyncio
+async def test_sync_world_bank_endpoint_error_servicio_externo(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica que fallos remotos retornen HTTP 502 con ApiResponse de error."""
+    app.dependency_overrides[provide_world_bank_connector] = (
+        lambda: FailingMockConnector()
+    )
+    try:
+        sync_url = (
+            f"{settings.api_v1_prefix}{INGESTA_ROUTE}"
+            f"{INGESTA_SYNC_ROUTE}/world-bank"
+        )
+        response = await async_client.post(sync_url, json={})
+        assert response.status_code == 502
+
+        payload = response.json()
+        assert payload["success"] is False
+        assert payload["status_code"] == 502
+        assert payload["data"] is None
+        assert payload["errors"] is not None
+        assert payload["errors"][0]["code"] == "EXTERNAL_SERVICE_ERROR"
+        assert "timeout" in payload["errors"][0]["detail"].lower()
+    finally:
+        app.dependency_overrides.pop(provide_world_bank_connector, None)
+

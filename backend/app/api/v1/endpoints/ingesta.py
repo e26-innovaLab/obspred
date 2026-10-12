@@ -3,6 +3,7 @@
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, File, UploadFile, status
+from fastapi.responses import JSONResponse
 
 from app.api.dependencies import (
     provide_file_upload_service,
@@ -15,7 +16,12 @@ from app.api.v1.schemas.ingesta_schema import (
     SyncExternalDataResponseData,
     SyncExternalDataResponseSchema,
 )
-from app.api.v1.schemas.response_schema import ApiResponse, create_success_response
+from app.api.v1.schemas.response_schema import (
+    ApiResponse,
+    ErrorDetail,
+    create_error_response,
+    create_success_response,
+)
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.core.constants import (
@@ -115,6 +121,14 @@ async def upload_csv_file(
             "description": "Sincronización completada exitosamente.",
             "model": SyncExternalDataResponseSchema,
         },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Error de persistencia o conexión con base de datos.",
+            "model": ApiResponse,
+        },
+        status.HTTP_502_BAD_GATEWAY: {
+            "description": "Error al comunicarse con la API remota externa.",
+            "model": ApiResponse,
+        },
     },
 )
 async def sync_world_bank_indicators(
@@ -123,15 +137,16 @@ async def sync_world_bank_indicators(
         Depends(provide_world_bank_sync_service),
     ],
     payload: Optional[SyncExternalDataRequestSchema] = None,
-) -> SyncExternalDataResponseSchema:
+) -> SyncExternalDataResponseSchema | JSONResponse:
     """Sincroniza indicadores oficiales del Banco Mundial.
 
     Args:
         sync_service: Servicio de orquestación de ingesta externa inyectado.
-        payload: Parámetros opcionales para restringir países, indicadores o períodos.
+        payload: Parámetros opcionales para restringir países o indicadores.
 
     Returns:
-        SyncExternalDataResponseSchema: Resultado y métricas de la sincronización.
+        SyncExternalDataResponseSchema | JSONResponse: Resultado exitoso
+            o ApiResponse de error estándar.
     """
     paises = payload.paises if payload else None
     indicadores = payload.indicadores if payload else None
@@ -145,6 +160,46 @@ async def sync_world_bank_indicators(
         periodo_hasta=periodo_hasta,
     )
 
+    if result_dto.status == "failed":
+        err_msg = (
+            result_dto.error_message
+            or "Ocurrió un error inesperado durante la sincronización."
+        )
+        is_db_err = any(
+            tok in err_msg
+            for tok in [
+                "Connect call failed",
+                "OperationalError",
+                "database",
+                "5432",
+            ]
+        )
+        http_status = (
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+            if is_db_err
+            else status.HTTP_502_BAD_GATEWAY
+        )
+        err_code = (
+            "DATABASE_CONNECTION_ERROR"
+            if is_db_err
+            else "EXTERNAL_SERVICE_ERROR"
+        )
+        error_response = create_error_response(
+            message=f"Fallo en la sincronización de '{result_dto.source}'.",
+            status_code=http_status,
+            errors=[
+                ErrorDetail(
+                    code=err_code,
+                    detail=err_msg,
+                    field="source",
+                )
+            ],
+        )
+        return JSONResponse(
+            status_code=http_status,
+            content=error_response.model_dump(mode="json"),
+        )
+
     response_data = SyncExternalDataResponseData(
         source=result_dto.source,
         status=result_dto.status,
@@ -156,7 +211,7 @@ async def sync_world_bank_indicators(
         error_message=result_dto.error_message,
     )
 
-    msg = f"Sincronización de '{result_dto.source}' ({result_dto.status})."
+    msg = f"Sincronización de '{result_dto.source}' exitosa."
     return create_success_response(
         data=response_data,
         message=msg,
