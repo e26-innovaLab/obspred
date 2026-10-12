@@ -244,6 +244,83 @@
               "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Archivo CSV subido y persistido con éxito.\",\n  \"data\": {\n    \"filename\": \"1791399032_ok_file.csv\",\n    \"original_filename\": \"ok_file.csv\",\n    \"file_path\": \"data\\\\uploads\\\\1791399032_ok_file.csv\",\n    \"size_bytes\": 9,\n    \"content_type\": \"text/csv\"\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-07T18:50:32.235311Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "sync_world_bank",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"ARG\",\n    \"URY\",\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"pib_per_capita\"\n  ],\n  \"periodo_desde\": \"2020\",\n  \"periodo_hasta\": \"2024\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/world-bank",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "world-bank"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_world_bank",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"ARG\",\n    \"URY\",\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"pib_per_capita\"\n  ],\n  \"periodo_desde\": \"2020\",\n  \"periodo_hasta\": \"2024\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/world-bank",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "world-bank"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'World Bank' (success).\",\n  \"data\": {\n    \"source\": \"World Bank\",\n    \"status\": \"success\",\n    \"total_fetched\": 30,\n    \"total_persisted\": 30,\n    \"execution_time_seconds\": 2.14,\n    \"countries_synced\": [\n      \"ARG\",\n      \"CHL\",\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"pib_per_capita\",\n      \"tasa_desempleo\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-11T21:20:00.000000Z\"\n}"
+            }
+          ]
         }
       ]
     },
