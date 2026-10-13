@@ -49,6 +49,7 @@ INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
+BRECHAS_ROUTE= "/brechas"
 TENDENCIAS_ROUTE = "/tendencias"
 
 
