@@ -49,6 +49,7 @@ INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
 TENDENCIAS_ROUTE = "/tendencias"
+FUENTES_ROUTE = "/fuentes"
 
 
 # ==============================================================================
@@ -90,6 +91,7 @@ __all__ = [
     "INGESTA_ROUTE",
     "INGESTA_UPLOAD_ROUTE",
     "PRUEBA_ENDPOINT_BORRAR_ROUTE",
+    "FUENTES_ROUTE",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
     "CSV_FILE_EXTENSION",
