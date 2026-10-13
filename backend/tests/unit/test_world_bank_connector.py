@@ -1,7 +1,7 @@
 """Pruebas unitarias para el conector de World Bank Indicators API."""
 
 from datetime import date
-from typing import Any, Dict, List
+from typing import Any
 
 import httpx
 import pytest
@@ -45,7 +45,7 @@ class MockTransport(httpx.AsyncBaseTransport):
 
 
 @pytest.fixture
-def sample_world_bank_response() -> List[Any]:
+def sample_world_bank_response() -> list[Any]:
     """Fixture con respuesta representativa de World Bank Indicators API."""
     header = [
         {
@@ -183,14 +183,14 @@ async def test_world_bank_check_health_fallido() -> None:
 
 @pytest.mark.asyncio
 async def test_world_bank_fetch_indicators_exitoso(
-    sample_world_bank_response: List[Dict[str, Any]],
+    sample_world_bank_response: list[dict[str, Any]],
 ) -> None:
     """Verifica la extracción, filtrado de nulos y normalización de registros."""
     transport = MockTransport(status_code=200, payload=sample_world_bank_response)
     client = httpx.AsyncClient(transport=transport)
     connector = WorldBankConnector(client=client)
 
-    records: List[RawIndicatorRecord] = await connector.fetch_indicators(
+    records: list[RawIndicatorRecord] = await connector.fetch_indicators(
         paises=["ARG", "URY", "CHL"],
         indicadores=["tasa_desempleo"],
         periodo_desde="2023",

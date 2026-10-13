@@ -4,7 +4,7 @@ Configura middlewares de seguridad, rutas centrales, estandarización de respues
 y manejadores globales de excepciones bajo el esquema ApiResponse.
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -176,7 +176,7 @@ def create_application() -> FastAPI:
     # Ruta raíz básica estandarizada
     @application.get(
         ROOT_ROUTE,
-        response_model=ApiResponse[Dict[str, Any]],
+        response_model=ApiResponse[dict[str, Any]],
         status_code=status.HTTP_200_OK,
         tags=["Root"],
         summary="Ruta raíz del backend",
@@ -184,7 +184,7 @@ def create_application() -> FastAPI:
             "Retorna el estado base de la API bajo el formato estándar ApiResponse."
         ),
     )
-    async def root_endpoint() -> ApiResponse[Dict[str, Any]]:
+    async def root_endpoint() -> ApiResponse[dict[str, Any]]:
         """Endpoint raíz informativo.
 
         Returns:

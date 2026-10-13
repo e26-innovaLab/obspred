@@ -1,7 +1,6 @@
 """Objetos de Transferencia de Datos (DTO) para carga de archivos."""
 
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -20,4 +19,4 @@ class FileUploadDTO:
     original_filename: str
     file_path: str
     size_bytes: int
-    content_type: Optional[str] = None
+    content_type: str | None = None

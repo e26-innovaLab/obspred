@@ -6,34 +6,134 @@
 
 ## 1. Estándar de Respuesta Unificado (`ApiResponse[T]`)
 
-Toda petición a la API —exitosa o con error— responde bajo el esquema canónico `ApiResponse[T]`.
+Toda petición a la API —sea exitosa (2xx) o con error (4xx, 5xx)— responde bajo el esquema canónico `ApiResponse[T]`, implementando el patrón **Envelope Pattern** (Envoltorio Unificado).
 
-### Estructura General
+### 1.1 ¿Por qué usamos este patrón? (Justificación Arquitectónica)
+
+1. **Previsibilidad y Contrato Único para el Frontend:**
+   - El cliente (React, Axios, Fetch, etc.) nunca tiene que adivinar la forma de la respuesta. La raíz del JSON siempre contiene las mismas claves: `success`, `status_code`, `message`, `data`, `errors`, `meta`, `timestamp`.
+   - Si `success === true`, la carga útil de negocio se encuentra garantizada en `data`.
+   - Si `success === false`, la información diagnóstica detallada se encuentra garantizada en `errors`.
+2. **Separación Limpia de Datos de Negocio y Metadatos:**
+   - La información de paginación (`page`, `per_page`, `total`) y el contexto de ejecución o filtros aplicados (`extra`) viajan en `meta`, evitando contaminar los esquemas de entidades o listas dentro de `data`.
+3. **Auditoría y Trazabilidad Temporal:**
+   - Cada respuesta incorpora `timestamp` en formato ISO 8601 UTC, permitiendo rastrear la vigencia exacta de las respuestas en memoria caché o logs de cliente.
+4. **Resiliencia ante Errores:**
+   - Permite devolver errores estructurados a nivel de campo (`field`) para validaciones de formularios en UI, junto con un código máquina (`code`) legible para internacionalización o manejo lógico de excepciones.
+
+---
+
+### 1.2 Anatomía del Contrato (TypeScript / JSON)
 
 ```typescript
 interface ApiResponse<T> {
   success: boolean;            // true en 2xx, false en 4xx/5xx
-  status_code: number;        // Código HTTP numérico (ej. 200, 404, 502)
-  message: string;            // Mensaje legible para el cliente
-  data: T | null;             // Carga útil de negocio
-  errors: ApiError[] | null;  // Lista de errores detallados si success === false
-  meta: ApiMeta | null;       // Paginación o metadatos de filtros aplicados
-  timestamp: string;          // ISO 8601 UTC
+  status_code: number;        // Código HTTP numérico redundante (ej. 200, 201, 400, 404, 500)
+  message: string;            // Mensaje legible y descriptivo orientado al usuario
+  data: T | null;             // Payload con la información tipada de negocio (null en error)
+  errors: ApiError[] | null;  // Detalle de errores cuando success === false (null en éxito)
+  meta: ApiMeta | null;       // Paginación o metadatos contextuales (filtros aplicados)
+  timestamp: string;          // Estampa temporal ISO 8601 UTC (ej. "2026-10-13T22:40:00.123Z")
 }
 
 interface ApiError {
-  code: string;               // Código máquina (ej. "NOT_FOUND", "VALIDATION_ERROR")
-  detail: string;             // Explicación técnica o de negocio
-  field: string | null;       // Campo o parámetro causante (si aplica)
+  code: string;               // Código máquina (ej. "VALIDATION_ERROR", "NOT_FOUND", "CSV_TOO_LARGE")
+  detail: string;             // Explicación técnica o de negocio orientada al cliente
+  field: string | null;       // Campo o parámetro causante (si aplica, ej. "pais", "archivo")
 }
 
 interface ApiMeta {
-  page?: number | null;
-  per_page?: number | null;
-  total?: number | null;
-  extra?: Record<string, unknown> | null;
+  page?: number | null;       // Número de página actual en listados
+  per_page?: number | null;   // Registros por página
+  total?: number | null;      // Total absoluto de registros existentes
+  extra?: Record<string, unknown> | null; // Metadatos de contexto (ej. filtros aplicados)
 }
 ```
+
+---
+
+### 1.3 ¿Cómo usar `ApiResponse[T]` en el Backend? (Python / FastAPI)
+
+Toda la definición reside en [`backend/app/api/v1/schemas/response_schema.py`](file:///c:/repos/obspred/backend/app/api/v1/schemas/response_schema.py).
+
+#### A. Definición del Esquema en Endpoints (`response_model`)
+Al definir una ruta en FastAPI, siempre se declara `ApiResponse[T]` especificando el tipo genérico `T`:
+
+```python
+from fastapi import APIRouter, status
+from app.api.v1.schemas.response_schema import ApiResponse, create_success_response
+from app.api.v1.schemas.mi_entidad_schema import MiEntidadSchema
+
+router = APIRouter()
+
+# 1. Endpoint que devuelve un solo objeto:
+@router.get(
+    "/{id}",
+    response_model=ApiResponse[MiEntidadSchema],
+    status_code=status.HTTP_200_OK,
+)
+async def get_item(id: int) -> ApiResponse[MiEntidadSchema]:
+    item = await service.get_by_id(id)
+    return create_success_response(
+        data=MiEntidadSchema.model_validate(item),
+        message="Item obtenido exitosamente.",
+    )
+
+# 2. Endpoint que devuelve una lista con metadatos:
+@router.get(
+    "",
+    response_model=ApiResponse[list[MiEntidadSchema]],
+    status_code=status.HTTP_200_OK,
+)
+async def list_items() -> ApiResponse[list[MiEntidadSchema]]:
+    items = await service.list_all()
+    return create_success_response(
+        data=[MiEntidadSchema.model_validate(i) for i in items],
+        message="Listado obtenido con éxito.",
+        meta=ResponseMeta(total=len(items)),
+    )
+```
+
+#### B. Uso de las Funciones Constructoras (`create_success_response` vs `create_error_response`)
+
+El módulo provee funciones constructoras fuertemente tipadas diseñadas para resolver inferencias de tipos con **Pylance** y **mypy**:
+
+- **Para Respuestas Exitosas:**  
+  Usa `create_success_response(data=..., message=..., status_code=..., meta=...)`.  
+  *Beneficio:* Infiere automáticamente `T` a partir del argumento `data`, evitando advertencias de tipos genéricos invariantes.
+
+- **Para Respuestas de Error:**  
+  Usa `create_error_response(message=..., status_code=..., errors=..., meta=...)`.  
+  *Beneficio:* Retorna estrictamente `ApiResponse[None]` con `data=None` y `success=False`.  
+  *(Nota: En la arquitectura del proyecto, la mayoría de los errores se manejan automáticamente mediante los manejadores globales en `app/main.py` al lanzar una `DomainException`)*.
+
+---
+
+### 1.4 ¿Cómo consumir `ApiResponse<T>` en el Frontend? (React / TypeScript)
+
+En el frontend, los servicios consumen el envoltorio y extraen el payload de manera segura:
+
+```typescript
+// Ejemplo de servicio en React / TypeScript
+import axios from 'axios';
+
+interface MiEntidad {
+  id: number;
+  nombre: string;
+}
+
+export async function fetchMiEntidad(id: number): Promise<MiEntidad> {
+  const response = await axios.get<ApiResponse<MiEntidad>>(`/api/v1/mi-recurso/${id}`);
+  
+  // Verificación del contrato
+  if (!response.data.success || !response.data.data) {
+    throw new Error(response.data.message || 'Error al obtener la entidad');
+  }
+
+  return response.data.data;
+}
+```
+
 
 ---
 

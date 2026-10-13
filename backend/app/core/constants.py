@@ -4,7 +4,7 @@ Define enumeraciones y valores estáticos fuertemente tipados para entornos,
 rutas de la API, almacenamiento de ingesta y mensajes estándar del sistema.
 """
 
-from enum import Enum
+from enum import StrEnum
 from typing import Final
 
 # ==============================================================================
@@ -20,7 +20,7 @@ DEFAULT_API_VERSION: Final[str] = "v1"
 # ==============================================================================
 
 
-class AppEnvironment(str, Enum):
+class AppEnvironment(StrEnum):
     """Entornos posibles de ejecución de la aplicación."""
 
     DEVELOPMENT = "development"
@@ -28,12 +28,13 @@ class AppEnvironment(str, Enum):
     PRODUCTION = "production"
 
 
-class HealthStatus(str, Enum):
+class HealthStatus(StrEnum):
     """Estados del reporte de salud y disponibilidad de la API."""
 
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
+
 
 
 # ==============================================================================

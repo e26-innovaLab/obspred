@@ -2,7 +2,6 @@
 
 import unicodedata
 from datetime import date
-from typing import Dict, List, Optional
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,7 +29,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
     """Repositorio relacional y catálogo metodológico del Índice de Empleabilidad."""
 
     # Catálogo taxonómico armonizado de las 20 ocupaciones en 5 sectores
-    _CATALOGO_OCUPACIONES: Dict[str, dict] = {
+    _CATALOGO_OCUPACIONES: dict[str, dict] = {
         "dev-software": {
             "id": "dev-software",
             "nombre": "Desarrollador/a de software",
@@ -344,7 +343,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         },
     }
 
-    def __init__(self, session: Optional[AsyncSession] = None) -> None:
+    def __init__(self, session: AsyncSession | None = None) -> None:
         """Inicializa el repositorio con la sesión de base de datos opcional.
 
         Args:
@@ -352,7 +351,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         """
         self._session = session
 
-    def _resolve_catalog_entry(self, ocupacion: str) -> Optional[dict]:
+    def _resolve_catalog_entry(self, ocupacion: str) -> dict | None:
         """Localiza la entrada taxonómica de una ocupación por ID o alias.
 
         Args:
@@ -377,7 +376,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
 
         return None
 
-    def _get_fuente_por_pais(self, pais: Optional[str]) -> str:
+    def _get_fuente_por_pais(self, pais: str | None) -> str:
         """Determina la fuente trazable acorde al filtro de país.
 
         Args:
@@ -428,10 +427,10 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
     async def get_by_ocupacion(
         self,
         ocupacion: str,
-        pais: Optional[str] = None,
-        sector: Optional[str] = None,
-        periodo: Optional[str] = None,
-    ) -> Optional[IndiceEmpleabilidad]:
+        pais: str | None = None,
+        sector: str | None = None,
+        periodo: str | None = None,
+    ) -> IndiceEmpleabilidad | None:
         """Obtiene el Índice de Empleabilidad para una ocupación.
 
         Args:
@@ -457,7 +456,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                         func.upper(IndicadorModel.pais) == pais.upper().strip()
                     )
                 result = await self._session.execute(stmt)
-                db_records: List[IndicadorModel] = list(result.scalars().all())
+                db_records: list[IndicadorModel] = list(result.scalars().all())
             except Exception as exc:
                 logger.warning(
                     f"Fallo al consultar registros de BD para '{ocupacion}': {exc}"

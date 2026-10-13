@@ -1,12 +1,12 @@
-from enum import Enum
-from typing import List, Optional
+from enum import StrEnum
 
 from pydantic import BaseModel
 
 
-class TipoDato(str, Enum):
+class TipoDato(StrEnum):
     HISTORICO = "historico"
     PROYECCION = "proyeccion"
+
 
 
 class PuntoSerie(BaseModel):
@@ -18,21 +18,21 @@ class PuntoSerie(BaseModel):
 class PuntoProyeccion(BaseModel):
     periodo: str
     valor_estimado: float
-    valor_inferior: Optional[float] = None
-    valor_superior: Optional[float] = None
+    valor_inferior: float | None = None
+    valor_superior: float | None = None
 
 
 class CambioSignificativo(BaseModel):
     periodo: str
     titulo: str
     descripcion: str
-    tipo_alerta: Optional[str] = "info"
+    tipo_alerta: str | None = "info"
 
 
 class MetadatosFuente(BaseModel):
     fuente: str
     fecha: str
-    metodologia: Optional[str] = None
+    metodologia: str | None = None
 
 
 class TendenciasResponse(BaseModel):
@@ -40,8 +40,8 @@ class TendenciasResponse(BaseModel):
     sector: str
     ocupacion: str
     indicador: str
-    serie_historica: List[PuntoSerie]
-    cambios_significativos: List[CambioSignificativo]
-    proyeccion: List[PuntoProyeccion]
+    serie_historica: list[PuntoSerie]
+    cambios_significativos: list[CambioSignificativo]
+    proyeccion: list[PuntoProyeccion]
     metadatos_historico: MetadatosFuente
     metadatos_proyeccion: MetadatosFuente

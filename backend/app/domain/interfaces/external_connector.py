@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -29,11 +29,11 @@ class RawIndicatorRecord(BaseModel):
         ...,
         description="Código normalizado del país (ej. ARG, URY, CHL)",
     )
-    sector: Optional[str] = Field(
+    sector: str | None = Field(
         default=None,
         description="Sector económico o productivo asociado",
     )
-    ocupacion: Optional[str] = Field(
+    ocupacion: str | None = Field(
         default=None,
         description="Ocupación de referencia según taxonomía",
     )
@@ -61,7 +61,7 @@ class RawIndicatorRecord(BaseModel):
         ...,
         description="Fecha de publicación o última actualización del dato",
     )
-    metadatos: Optional[Dict[str, Any]] = Field(
+    metadatos: dict[str, Any] | None = Field(
         default=None,
         description="Metadatos técnicos y contextuales de trazabilidad",
     )
@@ -79,11 +79,11 @@ class IExternalDataConnector(ABC):
     @abstractmethod
     async def fetch_indicators(
         self,
-        paises: Optional[List[str]] = None,
-        indicadores: Optional[List[str]] = None,
-        periodo_desde: Optional[str] = None,
-        periodo_hasta: Optional[str] = None,
-    ) -> List[RawIndicatorRecord]:
+        paises: list[str] | None = None,
+        indicadores: list[str] | None = None,
+        periodo_desde: str | None = None,
+        periodo_hasta: str | None = None,
+    ) -> list[RawIndicatorRecord]:
         """Extrae y transforma datos desde la API externa a registros normalizados.
 
         Args:

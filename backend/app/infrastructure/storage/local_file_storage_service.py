@@ -1,7 +1,6 @@
 """Servicio de infraestructura para persistencia de archivos en disco local."""
 
 from pathlib import Path
-from typing import Union
 
 import anyio
 
@@ -19,7 +18,7 @@ class LocalFileStorageService(IFileStorageService):
         base_dir: Directorio base de persistencia de archivos.
     """
 
-    def __init__(self, base_dir: Union[str, Path]) -> None:
+    def __init__(self, base_dir: str | Path) -> None:
         """Inicializa el servicio configurando el directorio base.
 
         Args:

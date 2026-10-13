@@ -4,8 +4,8 @@ Implementa el patrón de envoltorio unificado (Envelope Pattern) para asegurar
 consistencia estructural tanto en respuestas exitosas como en errores.
 """
 
-from datetime import datetime, timezone
-from typing import Any, Dict, Generic, List, Optional, TypeVar
+from datetime import UTC, datetime
+from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -37,7 +37,7 @@ class ErrorDetail(BaseModel):
         ...,
         description="Mensaje descriptivo del error",
     )
-    field: Optional[str] = Field(
+    field: str | None = Field(
         default=None,
         description="Nombre del parámetro o campo inválido si aplica",
     )
@@ -55,12 +55,12 @@ class ResponseMeta(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    page: Optional[int] = Field(default=None, description="Número de página actual")
-    per_page: Optional[int] = Field(default=None, description="Tamaño de la página")
-    total: Optional[int] = Field(
+    page: int | None = Field(default=None, description="Número de página actual")
+    per_page: int | None = Field(default=None, description="Tamaño de la página")
+    total: int | None = Field(
         default=None, description="Cantidad total de registros"
     )
-    extra: Optional[Dict[str, Any]] = Field(
+    extra: dict[str, Any] | None = Field(
         default=None, description="Metadatos adicionales de la consulta"
     )
 
@@ -94,30 +94,30 @@ class ApiResponse(BaseModel, Generic[T]):
         default=DEFAULT_SUCCESS_MESSAGE,
         description="Mensaje resumen de la operación",
     )
-    data: Optional[T] = Field(
+    data: T | None = Field(
         default=None,
         description="Payload o cuerpo principal del resultado",
     )
-    errors: Optional[List[ErrorDetail]] = Field(
+    errors: list[ErrorDetail] | None = Field(
         default=None,
         description="Listado detallado de errores en caso de fallo",
     )
-    meta: Optional[ResponseMeta] = Field(
+    meta: ResponseMeta | None = Field(
         default=None,
         description="Metadatos auxiliares de la respuesta",
     )
     timestamp: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=lambda: datetime.now(UTC),
         description="Fecha y hora UTC de la respuesta",
     )
 
     @classmethod
     def create_success(
         cls,
-        data: Optional[T] = None,
+        data: T | None = None,
         message: str = DEFAULT_SUCCESS_MESSAGE,
         status_code: int = 200,
-        meta: Optional[ResponseMeta] = None,
+        meta: ResponseMeta | None = None,
     ) -> "ApiResponse[T]":
         """Crea una respuesta estándar exitosa."""
         return cls(
@@ -134,11 +134,11 @@ class ApiResponse(BaseModel, Generic[T]):
         cls,
         message: str = DEFAULT_ERROR_MESSAGE,
         status_code: int = 400,
-        errors: Optional[List[ErrorDetail]] = None,
-        meta: Optional[ResponseMeta] = None,
+        errors: list[ErrorDetail] | None = None,
+        meta: ResponseMeta | None = None,
     ) -> "ApiResponse[None]":
         """Crea una respuesta estándar de error."""
-        return cls(
+        return ApiResponse[None](
             success=False,
             status_code=status_code,
             message=message,
@@ -148,11 +148,12 @@ class ApiResponse(BaseModel, Generic[T]):
         )
 
 
+
 def create_success_response(
-    data: Optional[T] = None,
+    data: T | None = None,
     message: str = DEFAULT_SUCCESS_MESSAGE,
     status_code: int = 200,
-    meta: Optional[ResponseMeta] = None,
+    meta: ResponseMeta | None = None,
 ) -> ApiResponse[T]:
     """Función constructora genérica para inferir con tipado estricto ApiResponse[T].
 
@@ -172,8 +173,8 @@ def create_success_response(
 def create_error_response(
     message: str = DEFAULT_ERROR_MESSAGE,
     status_code: int = 400,
-    errors: Optional[List[ErrorDetail]] = None,
-    meta: Optional[ResponseMeta] = None,
+    errors: list[ErrorDetail] | None = None,
+    meta: ResponseMeta | None = None,
 ) -> ApiResponse[None]:
     """Función constructora para respuestas estándar de error fuertemente tipadas."""
     return ApiResponse[None](

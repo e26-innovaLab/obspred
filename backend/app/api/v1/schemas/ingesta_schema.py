@@ -1,6 +1,5 @@
 """Esquemas Pydantic para los endpoints del módulo de Ingesta."""
 
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -40,7 +39,7 @@ class FileUploadData(BaseModel):
         description="Tamaño total del archivo persistido en bytes",
         examples=[2048],
     )
-    content_type: Optional[str] = Field(
+    content_type: str | None = Field(
         default=None,
         description="Tipo MIME del archivo informado por el cliente",
         examples=["text/csv"],
@@ -55,22 +54,22 @@ class SyncExternalDataRequestSchema(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    paises: Optional[List[str]] = Field(
+    paises: list[str] | None = Field(
         default=None,
         description="Lista de códigos ISO de país (ej. ['ARG', 'URY', 'CHL'])",
         examples=[["ARG", "URY", "CHL"]],
     )
-    indicadores: Optional[List[str]] = Field(
+    indicadores: list[str] | None = Field(
         default=None,
         description="Lista de indicadores o códigos a sincronizar",
         examples=[["tasa_desempleo", "pib_per_capita"]],
     )
-    periodo_desde: Optional[str] = Field(
+    periodo_desde: str | None = Field(
         default=None,
         description="Año o período inicial de extracción",
         examples=["2018"],
     )
-    periodo_hasta: Optional[str] = Field(
+    periodo_hasta: str | None = Field(
         default=None,
         description="Año o período final de extracción",
         examples=["2024"],
@@ -107,17 +106,17 @@ class SyncExternalDataResponseData(BaseModel):
         description="Tiempo de ejecución del proceso en segundos",
         examples=[1.42],
     )
-    countries_synced: List[str] = Field(
+    countries_synced: list[str] = Field(
         default_factory=list,
         description="Países efectivamente procesados",
         examples=[["ARG", "CHL", "URY"]],
     )
-    indicators_synced: List[str] = Field(
+    indicators_synced: list[str] = Field(
         default_factory=list,
         description="Indicadores efectivamente procesados",
         examples=[["pib_per_capita", "tasa_desempleo"]],
     )
-    error_message: Optional[str] = Field(
+    error_message: str | None = Field(
         default=None,
         description="Mensaje de error en caso de fallo",
     )

@@ -4,7 +4,6 @@ Permite cargar y validar variables de entorno desde archivos .env
 o el entorno del sistema operativo sin acoplar cadenas fijas.
 """
 
-from typing import List
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -57,7 +56,7 @@ class Settings(BaseSettings):
     server_host: str = "0.0.0.0"
     server_port: int = 8000
 
-    cors_origins: List[str] = [
+    cors_origins: list[str] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",

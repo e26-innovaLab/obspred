@@ -1,7 +1,6 @@
 """Implementación SQLAlchemy para el repositorio de persistencia de Indicadores."""
 
-from datetime import datetime, timezone
-from typing import List, Optional
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +22,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         """
         self._session = session
 
-    async def upsert_batch(self, records: List[RawIndicatorRecord]) -> int:
+    async def upsert_batch(self, records: list[RawIndicatorRecord]) -> int:
         """Inserta o actualiza indicadores respetando unicidad de clave lógica.
 
         La clave lógica de unicidad se compone de:
@@ -39,7 +38,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             return 0
 
         persisted_count = 0
-        now_utc = datetime.now(timezone.utc)
+        now_utc = datetime.now(UTC)
 
         for record in records:
             # Búsqueda de registro existente bajo clave lógica
@@ -95,13 +94,13 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
 
     async def get_by_filters(
         self,
-        pais: Optional[str] = None,
-        sector: Optional[str] = None,
-        ocupacion: Optional[str] = None,
-        indicador: Optional[str] = None,
-        desde: Optional[str] = None,
-        hasta: Optional[str] = None,
-    ) -> List[IndicadorModel]:
+        pais: str | None = None,
+        sector: str | None = None,
+        ocupacion: str | None = None,
+        indicador: str | None = None,
+        desde: str | None = None,
+        hasta: str | None = None,
+    ) -> list[IndicadorModel]:
         """Consulta indicadores aplicando la jerarquía estricta de filtros.
 
         Args:

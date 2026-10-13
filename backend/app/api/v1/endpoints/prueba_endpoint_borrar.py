@@ -5,7 +5,6 @@ respondiendo con el envoltorio estándar ApiResponse para verificar la conectivi
 y el estándar unificado de la API.
 """
 
-from typing import Optional
 
 from fastapi import APIRouter, Path, status
 
@@ -114,7 +113,7 @@ async def create_simulated_item(
 )
 async def update_simulated_item(
     item_id: str = Path(..., description="Identificador único del recurso a modificar"),
-    payload: Optional[PruebaPayloadSchema] = None,
+    payload: PruebaPayloadSchema | None = None,
 ) -> PruebaResponseSchema:
     """Simula la actualización de un elemento por ID.
 

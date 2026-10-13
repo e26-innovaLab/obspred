@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from datetime import date
-from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -19,7 +18,7 @@ class DimensionIndice:
     nombre: str
     valor: float
     peso: float
-    descripcion: Optional[str] = None
+    descripcion: str | None = None
 
     def __post_init__(self) -> None:
         """Valida invariantes de la dimensión tras inicializarse.
@@ -87,7 +86,7 @@ class IndiceEmpleabilidad:
     ocupacion_nombre: str
     score: float
     nivel: str
-    dimensiones: List[DimensionIndice]
+    dimensiones: list[DimensionIndice]
     tipo: str = "calculado"
     fuente: str = "Observatorio Predictivo / Fuentes Oficiales Armonizadas"
     fecha_actualizacion: date = field(default_factory=date.today)
@@ -96,10 +95,10 @@ class IndiceEmpleabilidad:
         "Demanda 35%, Estabilidad salarial 25%, Cobertura formativa 20%, "
         "Crecimiento reciente 20%)"
     )
-    pais: Optional[str] = None
-    sector: Optional[str] = None
-    periodo: Optional[str] = None
-    evolucion: List[EvolucionIndicePunto] = field(default_factory=list)
+    pais: str | None = None
+    sector: str | None = None
+    periodo: str | None = None
+    evolucion: list[EvolucionIndicePunto] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Valida invariantes de la entidad tras su inicialización.
@@ -133,7 +132,7 @@ class IndiceEmpleabilidad:
         return "Bajo"
 
     @classmethod
-    def calcular_score_ponderado(cls, dimensiones: List[DimensionIndice]) -> float:
+    def calcular_score_ponderado(cls, dimensiones: list[DimensionIndice]) -> float:
         """Calcula el score global ponderado a partir de sus dimensiones.
 
         Args:
