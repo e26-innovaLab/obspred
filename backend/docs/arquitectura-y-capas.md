@@ -105,3 +105,15 @@ Punto de entrada HTTP expuesto a través de FastAPI:
    - Nombres de clases, métodos, variables, atributos y rutas: **Inglés** (ej. `fetch_indicators`, `sync_service`).
    - Docstrings, mensajes de log, mensajes de error y documentación: **Español**.
 3. **Tipado Estricto:** Toda función y método debe declarar tipos completos para argumentos y valor de retorno (`type hinting`).
+
+---
+
+## 5. Guías Técnicas Complementarias
+
+- 📖 [Guía de Creación de CRUDs (`guia-creacion-crud.md`)](file:///c:/repos/obspred/backend/docs/guia-creacion-crud.md)
+- 📖 [Guía de Creación de Conectores Externos (`guia-creacion-conectores.md`)](file:///c:/repos/obspred/backend/docs/guia-creacion-conectores.md)
+- 📖 [Inyección de Dependencias (`inyeccion-de-dependencias.md`)](file:///c:/repos/obspred/backend/docs/inyeccion-de-dependencias.md)
+- 📖 [Manejo de Errores y Excepciones (`manejo-de-errores-y-excepciones.md`)](file:///c:/repos/obspred/backend/docs/manejo-de-errores-y-excepciones.md)
+- 📖 [Base de Datos y Migraciones (`guia-base-datos-y-migraciones.md`)](file:///c:/repos/obspred/backend/docs/guia-base-datos-y-migraciones.md)
+- 📖 [Testing y Calidad (`guia-de-testing-y-calidad.md`)](file:///c:/repos/obspred/backend/docs/guia-de-testing-y-calidad.md)
+
