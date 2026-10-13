@@ -34,6 +34,37 @@ obspred/
 
 ---
 
+## 🚀 Entorno de Desarrollo (Monorepo)
+
+Para ejecutar el Frontend y Backend simultáneamente en modo desarrollo con un solo comando:
+
+### Prerrequisitos
+1. **Node.js** (v18+) instalado.
+2. **Python** (3.11+) con entorno virtual configurado en la raíz (`.venv/`) o en `backend/` con sus dependencias instaladas (`pip install -r backend/requirements.txt`).
+3. Dependencias del frontend instaladas (`cd frontend && npm install`).
+
+### Puesta en marcha en un solo comando
+Estando en la raíz del repositorio (`obspred/`):
+
+```bash
+# 1. Instalar dependencias del root (solo la primera vez)
+npm install
+
+# 2. Levantar Backend y Frontend concurrentemente:
+npm run dev
+```
+
+Esto ejecutará:
+- **Backend (FastAPI):** `http://localhost:8000` (docs en `/docs`) con recarga automática (*hot reload*).
+- **Frontend (Vite):** `http://localhost:5173` con HMR activo.
+
+*Alternativa con script de Python (sin depender de `npm` en la raíz):*
+```bash
+python scripts/dev.py
+```
+
+---
+
 ## 🧩 Componentes del Sistema
  
  El proyecto se divide en tres componentes principales:

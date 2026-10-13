@@ -1,0 +1,20 @@
+{
+  "name": "obspred",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Observatorio Predictivo de Tendencias Socioeconómicas, Laborales y Educativas",
+  "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"blue.bold,green.bold\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "node scripts/run-backend.js",
+    "dev:py": "python scripts/dev.py",
+    "build:frontend": "npm run build --prefix frontend",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:backend": "ruff check backend",
+    "test:backend": "pytest backend/tests"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}
