@@ -47,8 +47,10 @@ INDICADORES_ROUTE: Final[str] = "/indicadores"
 INDICE_EMPLEABILIDAD_ROUTE: Final[str] = "/indice-empleabilidad"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
+INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
 TENDENCIAS_ROUTE = "/tendencias"
+
 
 
 # ==============================================================================
@@ -62,7 +64,15 @@ DEFAULT_MAX_UPLOAD_SIZE_BYTES: Final[int] = 52_428_800  # 50 MB
 
 
 # ==============================================================================
-# 5. Mensajes Estándar para Respuestas REST (ApiResponse)
+# 5. Configuración de Conectores Externos y APIs Oficiales
+# ==============================================================================
+
+DEFAULT_WORLD_BANK_BASE_URL: Final[str] = "https://api.worldbank.org/v2"
+DEFAULT_WORLD_BANK_TIMEOUT_SECONDS: Final[float] = 30.0
+
+
+# ==============================================================================
+# 6. Mensajes Estándar para Respuestas REST (ApiResponse)
 # ==============================================================================
 
 DEFAULT_SUCCESS_MESSAGE: Final[str] = "Operación ejecutada con éxito."
@@ -89,12 +99,16 @@ __all__ = [
     "INDICE_EMPLEABILIDAD_ROUTE",
     "INGESTA_ROUTE",
     "INGESTA_UPLOAD_ROUTE",
+    "INGESTA_SYNC_ROUTE",
     "PRUEBA_ENDPOINT_BORRAR_ROUTE",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
     "CSV_FILE_EXTENSION",
     "DEFAULT_CSV_CONTENT_TYPE",
     "DEFAULT_MAX_UPLOAD_SIZE_BYTES",
+    # Conectores Externos
+    "DEFAULT_WORLD_BANK_BASE_URL",
+    "DEFAULT_WORLD_BANK_TIMEOUT_SECONDS",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",
