@@ -1,4 +1,5 @@
 from typing import Optional
+
 from fastapi import APIRouter, Path, Query, status
 
 from app.api.v1.schemas.brechas_schema import (
@@ -19,11 +20,14 @@ brechas_router = APIRouter(
     response_model=BrechasResponse,
     status_code=status.HTTP_200_OK,
     summary="Consultar brechas de habilidades por ocupacion",
-    description="Expone la comparación entre la demanda del mercado y la oferta formativa para una ocupación dada.",
+    description=(
+        "Expone la comparación entre la demanda del mercado y "
+        "la oferta formativa para una ocupación dada."
+    ),
 )
 async def get_brechas_por_ocupacion(
     ocupacion: str = Path(
-        ...,
+        default="desarrollador_software",
         description="Identificador o nombre normalizado de la ocupación",
         examples=["desarrollador_software"],
     ),
@@ -65,7 +69,9 @@ async def get_brechas_por_ocupacion(
     metadatos = MetadatosFuente(
         fuente="SENCE SABE / ESCO",
         fecha_actualizacion="2026-09-30",
-        metodologia="Taxonomía de referencia ESCO con demanda observada en avisos SABE.",
+        metodologia=(
+            "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+        ),
     )
 
     return BrechasResponse(
