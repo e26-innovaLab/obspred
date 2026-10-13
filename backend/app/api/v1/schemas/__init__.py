@@ -23,11 +23,6 @@ from app.api.v1.schemas.ingesta_schema import (
     SyncExternalDataResponseData,
     SyncExternalDataResponseSchema,
 )
-from app.api.v1.schemas.prueba_schema import (
-    PruebaItemData,
-    PruebaPayloadSchema,
-    PruebaResponseSchema,
-)
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
     ErrorDetail,
@@ -51,9 +46,6 @@ __all__ = [
     "IndiceEmpleabilidadDataSchema",
     "IndiceEmpleabilidadFilterSchema",
     "IndiceEmpleabilidadResponseSchema",
-    "PruebaItemData",
-    "PruebaPayloadSchema",
-    "PruebaResponseSchema",
     "ResponseMeta",
     "SyncExternalDataRequestSchema",
     "SyncExternalDataResponseData",
