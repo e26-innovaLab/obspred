@@ -1,7 +1,6 @@
 """Pruebas unitarias para el repositorio SqlAlchemyIndicadorRepository."""
 
 from datetime import date
-from typing import List
 
 import pytest
 from sqlalchemy.ext.asyncio import (
@@ -42,7 +41,7 @@ async def test_indicador_repository_upsert_batch_e_idempotencia(
     """Verifica inserción inicial y actualización idempotente de registros."""
     repo = SqlAlchemyIndicadorRepository(session=in_memory_session)
 
-    initial_records: List[RawIndicatorRecord] = [
+    initial_records: list[RawIndicatorRecord] = [
         RawIndicatorRecord(
             pais="ARG",
             sector=None,
@@ -78,7 +77,7 @@ async def test_indicador_repository_upsert_batch_e_idempotencia(
     assert found[0].indicador == "tasa_desempleo"
 
     # Segunda ejecución con valor actualizado (upsert)
-    updated_records: List[RawIndicatorRecord] = [
+    updated_records: list[RawIndicatorRecord] = [
         RawIndicatorRecord(
             pais="ARG",
             sector=None,
@@ -109,7 +108,7 @@ async def test_indicador_repository_get_by_filters_jerarquia(
     """Verifica que el filtrado jerárquico responda correctamente por país y período."""
     repo = SqlAlchemyIndicadorRepository(session=in_memory_session)
 
-    records: List[RawIndicatorRecord] = [
+    records: list[RawIndicatorRecord] = [
         RawIndicatorRecord(
             pais="ARG",
             sector="Tecnología",

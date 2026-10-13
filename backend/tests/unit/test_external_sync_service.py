@@ -1,7 +1,6 @@
 """Pruebas unitarias para el servicio de aplicación ExternalSyncService."""
 
 from datetime import date
-from typing import List, Optional
 from unittest.mock import AsyncMock
 
 import pytest
@@ -17,7 +16,7 @@ from app.domain.interfaces.indicador_repository import IIndicadorRepository
 class FakeConnector(IExternalDataConnector):
     """Implementación fake de IExternalDataConnector para pruebas."""
 
-    def __init__(self, records: Optional[List[RawIndicatorRecord]] = None) -> None:
+    def __init__(self, records: list[RawIndicatorRecord] | None = None) -> None:
         self.records = records or []
         self.should_fail = False
 
@@ -27,11 +26,11 @@ class FakeConnector(IExternalDataConnector):
 
     async def fetch_indicators(
         self,
-        paises: Optional[List[str]] = None,
-        indicadores: Optional[List[str]] = None,
-        periodo_desde: Optional[str] = None,
-        periodo_hasta: Optional[str] = None,
-    ) -> List[RawIndicatorRecord]:
+        paises: list[str] | None = None,
+        indicadores: list[str] | None = None,
+        periodo_desde: str | None = None,
+        periodo_hasta: str | None = None,
+    ) -> list[RawIndicatorRecord]:
         if self.should_fail:
             raise ConnectionError("Error de conexión simulado")
         return self.records

@@ -1,7 +1,6 @@
 """Servicio de aplicación para coordinar la sincronización de fuentes externas."""
 
 import time
-from typing import List, Optional
 
 from app.application.dtos.sync_dto import ExternalSyncResultDTO
 from app.core.logging import logger
@@ -33,10 +32,10 @@ class ExternalSyncService:
 
     async def sync_data(
         self,
-        paises: Optional[List[str]] = None,
-        indicadores: Optional[List[str]] = None,
-        periodo_desde: Optional[str] = None,
-        periodo_hasta: Optional[str] = None,
+        paises: list[str] | None = None,
+        indicadores: list[str] | None = None,
+        periodo_desde: str | None = None,
+        periodo_hasta: str | None = None,
     ) -> ExternalSyncResultDTO:
         """Ejecuta el ciclo de extracción, validación y persistencia idempotente.
 

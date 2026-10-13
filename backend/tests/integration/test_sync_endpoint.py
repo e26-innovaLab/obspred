@@ -1,7 +1,7 @@
 """Pruebas de integración para endpoint POST /ingesta/sync/world-bank."""
 
+from collections.abc import Generator
 from datetime import date
-from typing import Generator, List
 
 import pytest
 from httpx import AsyncClient
@@ -29,7 +29,7 @@ class MockWorldBankConnector(IExternalDataConnector):
         indicadores: list[str] | None = None,
         periodo_desde: str | None = None,
         periodo_hasta: str | None = None,
-    ) -> List[RawIndicatorRecord]:
+    ) -> list[RawIndicatorRecord]:
         return [
             RawIndicatorRecord(
                 pais="ARG",
@@ -122,7 +122,7 @@ class FailingMockConnector(IExternalDataConnector):
     def source_name(self) -> str:
         return "World Bank"
 
-    async def fetch_indicators(self, **kwargs) -> List[RawIndicatorRecord]:
+    async def fetch_indicators(self, **kwargs) -> list[RawIndicatorRecord]:
         raise ConnectionError("Fallo de timeout en World Bank API")
 
     async def check_health(self) -> bool:

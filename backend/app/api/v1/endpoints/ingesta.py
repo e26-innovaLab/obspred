@@ -1,6 +1,6 @@
 """Controlador y endpoints asociados al módulo de ingesta y sincronización de datos."""
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -136,7 +136,7 @@ async def sync_world_bank_indicators(
         ExternalSyncService,
         Depends(provide_world_bank_sync_service),
     ],
-    payload: Optional[SyncExternalDataRequestSchema] = None,
+    payload: SyncExternalDataRequestSchema | None = None,
 ) -> SyncExternalDataResponseSchema | JSONResponse:
     """Sincroniza indicadores oficiales del Banco Mundial.
 

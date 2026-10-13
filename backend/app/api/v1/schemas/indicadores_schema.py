@@ -1,6 +1,6 @@
 """Esquemas Pydantic para la consulta y serialización de indicadores."""
 
-from typing import Any, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -27,23 +27,23 @@ class IndicadoresFilterSchema(BaseModel):
         extra="forbid",
     )
 
-    pais: Optional[str] = Field(
+    pais: str | None = Field(
         default=None,
         description="Filtro jerárquico por país (ej. ARG, URY, CHL)",
     )
-    sector: Optional[str] = Field(
+    sector: str | None = Field(
         default=None,
         description="Filtro por sector productivo o económico",
     )
-    ocupacion: Optional[str] = Field(
+    ocupacion: str | None = Field(
         default=None,
         description="Filtro por ocupación de referencia",
     )
-    desde: Optional[str] = Field(
+    desde: str | None = Field(
         default=None,
         description="Límite temporal inicial del rango (ej. 2023, 2024-Q1)",
     )
-    hasta: Optional[str] = Field(
+    hasta: str | None = Field(
         default=None,
         description="Límite temporal final del rango (ej. 2024, 2024-Q4)",
     )
@@ -78,11 +78,11 @@ class IndicadorItemSchema(BaseModel):
         ...,
         description="Identificador o código del país (ej. ARG, URY, CHL)",
     )
-    sector: Optional[str] = Field(
+    sector: str | None = Field(
         default=None,
         description="Sector productivo o rama de actividad económica",
     )
-    ocupacion: Optional[str] = Field(
+    ocupacion: str | None = Field(
         default=None,
         description="Ocupación de referencia según taxonomía normalizada",
     )
@@ -113,4 +113,4 @@ class IndicadorItemSchema(BaseModel):
 
 
 # Envoltorio tipado de respuesta estándar para el listado de indicadores
-IndicadoresResponseSchema = ApiResponse[List[IndicadorItemSchema]]
+IndicadoresResponseSchema = ApiResponse[list[IndicadorItemSchema]]

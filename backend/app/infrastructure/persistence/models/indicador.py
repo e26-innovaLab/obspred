@@ -1,7 +1,6 @@
 """Modelo de datos relacional para la entidad de Indicadores."""
 
 from datetime import date, datetime
-from typing import Optional
 
 from sqlalchemy import Date, DateTime, Float, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
@@ -31,13 +30,13 @@ class IndicadorModel(Base):
         index=True,
         doc="Identificador o código del país (ej. ARG, URY, CHL)",
     )
-    sector: Mapped[Optional[str]] = mapped_column(
+    sector: Mapped[str | None] = mapped_column(
         String(100),
         nullable=True,
         index=True,
         doc="Sector productivo o rama de actividad económica",
     )
-    ocupacion: Mapped[Optional[str]] = mapped_column(
+    ocupacion: Mapped[str | None] = mapped_column(
         String(150),
         nullable=True,
         index=True,
@@ -81,7 +80,7 @@ class IndicadorModel(Base):
         server_default=func.now(),
         doc="Marca de tiempo UTC de inserción en el sistema",
     )
-    updated_at: Mapped[Optional[datetime]] = mapped_column(
+    updated_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
         onupdate=func.now(),

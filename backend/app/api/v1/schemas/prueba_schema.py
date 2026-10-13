@@ -1,6 +1,6 @@
 """Esquemas Pydantic para el controlador temporal de prueba CRUD."""
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -10,11 +10,11 @@ from app.api.v1.schemas.response_schema import ApiResponse
 class PruebaPayloadSchema(BaseModel):
     """Modelo para recibir datos en operaciones POST y PUT simuladas."""
 
-    name: Optional[str] = Field(
+    name: str | None = Field(
         default=None,
         description="Nombre de prueba",
     )
-    description: Optional[str] = Field(
+    description: str | None = Field(
         default=None,
         description="Descripción de prueba",
     )
@@ -35,11 +35,11 @@ class PruebaItemData(BaseModel):
         ...,
         description="Verbo HTTP ejecutado",
     )
-    item_id: Optional[str] = Field(
+    item_id: str | None = Field(
         default=None,
         description="Identificador del ítem si aplica",
     )
-    payload: Optional[Dict[str, Any]] = Field(
+    payload: dict[str, Any] | None = Field(
         default=None,
         description="Datos opcionales recibidos o simulados",
     )

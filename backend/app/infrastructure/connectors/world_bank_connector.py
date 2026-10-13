@@ -2,7 +2,7 @@
 
 import asyncio
 from datetime import date
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import httpx
 
@@ -26,11 +26,11 @@ class WorldBankConnector(IExternalDataConnector):
     """
 
     DEFAULT_BASE_URL: str = DEFAULT_WORLD_BANK_BASE_URL
-    DEFAULT_COUNTRIES: List[str] = ["ARG", "URY", "CHL"]
+    DEFAULT_COUNTRIES: list[str] = ["ARG", "URY", "CHL"]
     DEFAULT_TIMEOUT_SECONDS: float = DEFAULT_WORLD_BANK_TIMEOUT_SECONDS
 
     # Catálogo de indicadores oficiales verificados y su mapeo al modelo de dominio
-    INDICATOR_MAPPINGS: Dict[str, Dict[str, Any]] = {
+    INDICATOR_MAPPINGS: dict[str, dict[str, Any]] = {
         "SL.UEM.TOTL.ZS": {
             "slug": "tasa_desempleo",
             "sector": None,
@@ -83,8 +83,8 @@ class WorldBankConnector(IExternalDataConnector):
 
     def __init__(
         self,
-        base_url: Optional[str] = None,
-        client: Optional[httpx.AsyncClient] = None,
+        base_url: str | None = None,
+        client: httpx.AsyncClient | None = None,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
     ) -> None:
         """Inicializa el conector del Banco Mundial.
@@ -131,11 +131,11 @@ class WorldBankConnector(IExternalDataConnector):
 
     async def fetch_indicators(
         self,
-        paises: Optional[List[str]] = None,
-        indicadores: Optional[List[str]] = None,
-        periodo_desde: Optional[str] = None,
-        periodo_hasta: Optional[str] = None,
-    ) -> List[RawIndicatorRecord]:
+        paises: list[str] | None = None,
+        indicadores: list[str] | None = None,
+        periodo_desde: str | None = None,
+        periodo_hasta: str | None = None,
+    ) -> list[RawIndicatorRecord]:
         """Extrae y transforma datos de World Bank API a modelos normalizados.
 
         Args:
@@ -156,7 +156,7 @@ class WorldBankConnector(IExternalDataConnector):
         # Parámetro de rango temporal (date=2015:2024)
         date_param = self._build_date_param(periodo_desde, periodo_hasta)
 
-        records: List[RawIndicatorRecord] = []
+        records: list[RawIndicatorRecord] = []
         should_close_client = self._custom_client is None
         client = await self._get_client()
 
@@ -203,9 +203,9 @@ class WorldBankConnector(IExternalDataConnector):
         client: httpx.AsyncClient,
         url: str,
         indicator_code: str,
-        indicator_meta: Dict[str, Any],
+        indicator_meta: dict[str, Any],
         max_retries: int = 2,
-    ) -> List[RawIndicatorRecord]:
+    ) -> list[RawIndicatorRecord]:
         """Ejecuta la solicitud HTTP con reintentos para una serie específica.
 
         Args:
@@ -218,7 +218,7 @@ class WorldBankConnector(IExternalDataConnector):
         Returns:
             List[RawIndicatorRecord]: Registros procesados de la serie.
         """
-        response_data: Optional[List[Any]] = None
+        response_data: list[Any] | None = None
 
         for attempt in range(max_retries + 1):
             try:
@@ -256,7 +256,7 @@ class WorldBankConnector(IExternalDataConnector):
         fecha_actualizacion = self._parse_update_date(last_updated_str)
 
         raw_items = response_data[1]
-        records: List[RawIndicatorRecord] = []
+        records: list[RawIndicatorRecord] = []
 
         if not isinstance(raw_items, list):
             return records
@@ -322,8 +322,8 @@ class WorldBankConnector(IExternalDataConnector):
                 await client.aclose()
 
     def _resolve_indicator_codes(
-        self, requested: Optional[List[str]]
-    ) -> List[str]:
+        self, requested: list[str] | None
+    ) -> list[str]:
         """Resuelve códigos oficiales a partir de códigos directos o slugs."""
         if not requested:
             return list(self.INDICATOR_MAPPINGS.keys())
@@ -332,7 +332,7 @@ class WorldBankConnector(IExternalDataConnector):
             meta["slug"]: code for code, meta in self.INDICATOR_MAPPINGS.items()
         }
 
-        resolved: List[str] = []
+        resolved: list[str] = []
         for req in requested:
             if req in self.INDICATOR_MAPPINGS:
                 resolved.append(req)
@@ -345,8 +345,8 @@ class WorldBankConnector(IExternalDataConnector):
 
     @staticmethod
     def _build_date_param(
-        desde: Optional[str], hasta: Optional[str]
-    ) -> Optional[str]:
+        desde: str | None, hasta: str | None
+    ) -> str | None:
         """Construye el parámetro date=XXXX:YYYY requerido por la API."""
         if desde and hasta:
             return f"{desde}:{hasta}"
@@ -357,7 +357,7 @@ class WorldBankConnector(IExternalDataConnector):
         return "2015:2024"
 
     @staticmethod
-    def _parse_update_date(date_str: Optional[str]) -> date:
+    def _parse_update_date(date_str: str | None) -> date:
         """Parsea la fecha de actualización reportada o devuelve la fecha actual."""
         if not date_str:
             return date.today()

@@ -1,6 +1,5 @@
 """Servicio de aplicación para coordinar la consulta del Índice de Empleabilidad."""
 
-from typing import Optional
 
 from app.application.dtos.indice_empleabilidad_dto import (
     DimensionIndiceDTO,
@@ -28,9 +27,9 @@ class IndiceEmpleabilidadService:
     async def get_indice_por_ocupacion(
         self,
         ocupacion: str,
-        pais: Optional[str] = None,
-        sector: Optional[str] = None,
-        periodo: Optional[str] = None,
+        pais: str | None = None,
+        sector: str | None = None,
+        periodo: str | None = None,
     ) -> IndiceEmpleabilidadDTO:
         """Consulta el Índice de Empleabilidad para una ocupación y filtros dados.
 

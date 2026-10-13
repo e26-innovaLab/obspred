@@ -1,6 +1,6 @@
 """Controlador y endpoints asociados a la consulta de indicadores."""
 
-from typing import Annotated, List
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query, status
 
@@ -64,7 +64,7 @@ async def get_indicadores(
         hasta=filtros.hasta,
     )
 
-    data: List[IndicadorItemSchema] = [
+    data: list[IndicadorItemSchema] = [
         IndicadorItemSchema(
             pais=r.pais,
             sector=r.sector,

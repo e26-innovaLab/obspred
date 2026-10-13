@@ -1,6 +1,5 @@
 """DTOs para operaciones de sincronización e ingesta de datos externos."""
 
-from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -41,15 +40,15 @@ class ExternalSyncResultDTO(BaseModel):
         ...,
         description="Tiempo transcurrido en segundos",
     )
-    countries_synced: List[str] = Field(
+    countries_synced: list[str] = Field(
         default_factory=list,
         description="Países involucrados en la extracción",
     )
-    indicators_synced: List[str] = Field(
+    indicators_synced: list[str] = Field(
         default_factory=list,
         description="Indicadores procesados en la extracción",
     )
-    error_message: Optional[str] = Field(
+    error_message: str | None = Field(
         default=None,
         description="Mensaje descriptivo en caso de error durante la ejecución",
     )

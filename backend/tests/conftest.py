@@ -1,6 +1,6 @@
 """Configuración y fixtures compartidas para la suite de pruebas con Pytest."""
 
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 import pytest
 from httpx import ASGITransport, AsyncClient
