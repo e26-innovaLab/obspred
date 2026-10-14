@@ -167,4 +167,3 @@ def provide_world_bank_sync_service(
         ExternalSyncService: Servicio de aplicación listo para ejecución.
     """
     return ExternalSyncService(connector=connector, repository=repository)
-

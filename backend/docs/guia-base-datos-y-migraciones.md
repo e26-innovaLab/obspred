@@ -96,3 +96,11 @@ alembic revision --autogenerate -m "descripcion_del_cambio"
 ```
 
 > ⚠️ **Importante:** Siempre inspeccionar manualmente el archivo generado en `backend/migrations/versions/` antes de comitear para verificar que las sentencias `upgrade()` y `downgrade()` sean exactas e inocuas para los datos existentes.
+
+---
+
+## 5. Documentación Relacionada
+
+- 📖 [Patrón Repositorio y Persistencia en Base de Datos (`patron-repositorio-y-persistencia.md`)](file:///c:/repos/obspred/backend/docs/patron-repositorio-y-persistencia.md)
+- 📖 [Arquitectura de Capas y Principios de Diseño (`arquitectura-y-capas.md`)](file:///c:/repos/obspred/backend/docs/arquitectura-y-capas.md)
+- 📖 [Inyección de Dependencias (`inyeccion-de-dependencias.md`)](file:///c:/repos/obspred/backend/docs/inyeccion-de-dependencias.md)

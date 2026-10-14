@@ -8,7 +8,6 @@ class TipoDato(StrEnum):
     PROYECCION = "proyeccion"
 
 
-
 class PuntoSerie(BaseModel):
     periodo: str  # "T1 2025"
     valor: float

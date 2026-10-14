@@ -8,7 +8,10 @@ import httpx
 
 from app.core.constants import (
     DEFAULT_WORLD_BANK_BASE_URL,
+    DEFAULT_WORLD_BANK_SOURCE,
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
+    PaisCodigo,
+    TipoIndicador,
 )
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import (
@@ -26,7 +29,11 @@ class WorldBankConnector(IExternalDataConnector):
     """
 
     DEFAULT_BASE_URL: str = DEFAULT_WORLD_BANK_BASE_URL
-    DEFAULT_COUNTRIES: list[str] = ["ARG", "URY", "CHL"]
+    DEFAULT_COUNTRIES: list[str] = [
+        PaisCodigo.ARG,
+        PaisCodigo.URY,
+        PaisCodigo.CHL,
+    ]
     DEFAULT_TIMEOUT_SECONDS: float = DEFAULT_WORLD_BANK_TIMEOUT_SECONDS
 
     # Catálogo de indicadores oficiales verificados y su mapeo al modelo de dominio
@@ -108,7 +115,7 @@ class WorldBankConnector(IExternalDataConnector):
     @property
     def source_name(self) -> str:
         """Nombre oficial de la fuente institucional."""
-        return "World Bank"
+        return DEFAULT_WORLD_BANK_SOURCE
 
     @property
     def base_url(self) -> str:
@@ -181,9 +188,7 @@ class WorldBankConnector(IExternalDataConnector):
                 )
 
             series_results = await asyncio.gather(*tasks, return_exceptions=True)
-            for code, res in zip(
-                target_indicator_codes, series_results, strict=True
-            ):
+            for code, res in zip(target_indicator_codes, series_results, strict=True):
                 if isinstance(res, Exception):
                     logger.error(
                         "Error consultando indicador %s en World Bank API: %s",
@@ -282,7 +287,7 @@ class WorldBankConnector(IExternalDataConnector):
                 indicador=indicator_meta["slug"],
                 periodo=periodo,
                 valor=valor,
-                tipo="observado",
+                tipo=TipoIndicador.OBSERVADO,
                 fuente=self.source_name,
                 fecha_actualizacion=fecha_actualizacion,
                 metadatos={
@@ -321,9 +326,7 @@ class WorldBankConnector(IExternalDataConnector):
             if should_close_client:
                 await client.aclose()
 
-    def _resolve_indicator_codes(
-        self, requested: list[str] | None
-    ) -> list[str]:
+    def _resolve_indicator_codes(self, requested: list[str] | None) -> list[str]:
         """Resuelve códigos oficiales a partir de códigos directos o slugs."""
         if not requested:
             return list(self.INDICATOR_MAPPINGS.keys())
@@ -344,9 +347,7 @@ class WorldBankConnector(IExternalDataConnector):
         return resolved or list(self.INDICATOR_MAPPINGS.keys())
 
     @staticmethod
-    def _build_date_param(
-        desde: str | None, hasta: str | None
-    ) -> str | None:
+    def _build_date_param(desde: str | None, hasta: str | None) -> str | None:
         """Construye el parámetro date=XXXX:YYYY requerido por la API."""
         if desde and hasta:
             return f"{desde}:{hasta}"

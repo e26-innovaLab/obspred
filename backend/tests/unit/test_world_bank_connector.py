@@ -26,9 +26,7 @@ class MockTransport(httpx.AsyncBaseTransport):
         self.raise_timeout = raise_timeout
         self.request_count = 0
 
-    async def handle_async_request(
-        self, request: httpx.Request
-    ) -> httpx.Response:
+    async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
         self.request_count += 1
         if self.raise_timeout:
             raise httpx.ReadTimeout("Timeout simulado", request=request)
@@ -118,7 +116,6 @@ async def test_world_bank_configurable_base_url_and_timeout() -> None:
     )
     assert connector.base_url == "https://mock-wb.example.com/api"
     assert connector.timeout == 12.5
-
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,8 @@
 """DTOs para operaciones de sincronización e ingesta de datos externos."""
 
-
 from pydantic import BaseModel, ConfigDict, Field
+
+from app.core.constants import SyncStatus
 
 
 class ExternalSyncResultDTO(BaseModel):
@@ -9,7 +10,7 @@ class ExternalSyncResultDTO(BaseModel):
 
     Attributes:
         source: Denominación de la fuente externa sincronizada.
-        status: Estado final de la operación ('success', 'partial', 'failed').
+        status: Estado final de la operación (SyncStatus: success, partial, failed).
         total_fetched: Cantidad total de registros obtenidos desde el origen remoto.
         total_persisted: Cantidad de registros persistidos en la base de datos.
         execution_time_seconds: Duración total de la sincronización en segundos.
@@ -24,9 +25,9 @@ class ExternalSyncResultDTO(BaseModel):
         ...,
         description="Identificador o denominación de la fuente oficial",
     )
-    status: str = Field(
+    status: SyncStatus = Field(
         ...,
-        description="Estado de la sincronización: 'success', 'partial' o 'failed'",
+        description="Estado de la sincronización según SyncStatus",
     )
     total_fetched: int = Field(
         ...,

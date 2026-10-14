@@ -3,6 +3,7 @@
 import time
 
 from app.application.dtos.sync_dto import ExternalSyncResultDTO
+from app.core.constants import SyncStatus
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import IExternalDataConnector
 from app.domain.interfaces.indicador_repository import IIndicadorRepository
@@ -76,7 +77,7 @@ class ExternalSyncService:
                 duration = time.perf_counter() - start_time
                 return ExternalSyncResultDTO(
                     source=source_name,
-                    status="success",
+                    status=SyncStatus.SUCCESS,
                     total_fetched=0,
                     total_persisted=0,
                     execution_time_seconds=round(duration, 3),
@@ -103,7 +104,7 @@ class ExternalSyncService:
 
             return ExternalSyncResultDTO(
                 source=source_name,
-                status="success",
+                status=SyncStatus.SUCCESS,
                 total_fetched=total_fetched,
                 total_persisted=total_persisted,
                 execution_time_seconds=round(duration, 3),
@@ -120,7 +121,7 @@ class ExternalSyncService:
             )
             return ExternalSyncResultDTO(
                 source=source_name,
-                status="failed",
+                status=SyncStatus.FAILED,
                 total_fetched=0,
                 total_persisted=0,
                 execution_time_seconds=round(duration, 3),

@@ -103,6 +103,7 @@ from app.domain.interfaces.external_connector import (
     RawIndicatorRecord,
 )
 
+
 class MiNuevaFuenteConnector(IExternalDataConnector):
     """Adaptador de infraestructura para consumir la API de <Fuente>."""
 
@@ -150,7 +151,7 @@ class MiNuevaFuenteConnector(IExternalDataConnector):
         target_indicators = indicadores or list(self.INDICATOR_MAPPING.keys())
 
         records: List[RawIndicatorRecord] = []
-        
+
         # Tip: Usar asyncio.gather para consultar países/indicadores en paralelo
         tasks = [
             self._fetch_single(country, ind, periodo_desde, periodo_hasta)
@@ -200,7 +201,10 @@ Cada elemento debe normalizarse con estos atributos:
 En `backend/app/api/v1/endpoints/ingesta.py`:
 
 ```python
-from app.infrastructure.connectors.mi_nueva_fuente_connector import MiNuevaFuenteConnector
+from app.infrastructure.connectors.mi_nueva_fuente_connector import (
+    MiNuevaFuenteConnector,
+)
+
 
 @router.post(
     "/sync/mi-nueva-fuente",

@@ -66,6 +66,7 @@ from app.api.v1.schemas.mi_entidad_schema import MiEntidadSchema
 
 router = APIRouter()
 
+
 # 1. Endpoint que devuelve un solo objeto:
 @router.get(
     "/{id}",
@@ -78,6 +79,7 @@ async def get_item(id: int) -> ApiResponse[MiEntidadSchema]:
         data=MiEntidadSchema.model_validate(item),
         message="Item obtenido exitosamente.",
     )
+
 
 # 2. Endpoint que devuelve una lista con metadatos:
 @router.get(

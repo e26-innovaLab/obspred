@@ -57,9 +57,7 @@ class ResponseMeta(BaseModel):
 
     page: int | None = Field(default=None, description="Número de página actual")
     per_page: int | None = Field(default=None, description="Tamaño de la página")
-    total: int | None = Field(
-        default=None, description="Cantidad total de registros"
-    )
+    total: int | None = Field(default=None, description="Cantidad total de registros")
     extra: dict[str, Any] | None = Field(
         default=None, description="Metadatos adicionales de la consulta"
     )
@@ -146,7 +144,6 @@ class ApiResponse(BaseModel, Generic[T]):
             errors=errors,
             meta=meta,
         )
-
 
 
 def create_success_response(

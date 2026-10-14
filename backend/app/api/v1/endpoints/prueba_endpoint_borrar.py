@@ -5,7 +5,6 @@ respondiendo con el envoltorio estándar ApiResponse para verificar la conectivi
 y el estándar unificado de la API.
 """
 
-
 from fastapi import APIRouter, Path, status
 
 from app.api.v1.schemas.prueba_schema import (

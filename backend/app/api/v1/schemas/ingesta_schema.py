@@ -1,6 +1,5 @@
 """Esquemas Pydantic para los endpoints del módulo de Ingesta."""
 
-
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.api.v1.schemas.response_schema import ApiResponse

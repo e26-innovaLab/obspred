@@ -79,7 +79,54 @@ Implementa los puertos definidos en el dominio utilizando herramientas tecnológ
 Punto de entrada HTTP expuesto a través de FastAPI:
 - **`v1/endpoints/`:** Controladores que reciben requests HTTP, validan parámetros de entrada, invocan dependencias inyectadas y devuelven respuestas.
 - **`v1/schemas/`:** Esquemas Pydantic que validan solicitudes entrantes y serializan las respuestas salientes bajo el estándar `ApiResponse[T]`.
-- **`dependencies.py`:** Contenedor y cables de conexión que construyen e inyectan las instancias concretas hacia los controladores.
+### E. Distinción Clave: `Entity` vs `DTO` vs `Schema` vs `Model`
+
+Para mantener la pureza de cada capa y el desacoplamiento, el proyecto utiliza cuatro modelos de datos con responsabilidades claramente delimitadas:
+
+```
+  [ Cliente HTTP / Frontend ]
+               │
+               │ (JSON / Query Params)
+               ▼
+  ┌────────────────────────┐
+  │      Capa API          │ ──► SCHEMAS (Pydantic BaseModel)
+  │                        │     • Validación sintáctica y de formato HTTP.
+  │                        │     • Serialización de salida (ApiResponse[T]).
+  │                        │     • Generación automática de contratos OpenAPI / Swagger.
+  └────────────────────────┘
+               │
+               │ (Objetos de transporte internos)
+               ▼
+  ┌────────────────────────┐
+  │   Capa de Aplicación   │ ──► DTOs (Data Transfer Objects con @dataclass)
+  │                        │     • Desacoplan la lógica de aplicación del framework web.
+  │                        │     • Empaquetan inputs/outputs entre servicios y casos de uso.
+  │                        │     • Sin dependencias de FastAPI ni de librerías ORM.
+  └────────────────────────┘
+               │
+               │ (Reglas e invariantes puras)
+               ▼
+  ┌────────────────────────┐
+  │    Capa de Dominio     │ ──► ENTITIES (@dataclass o clases de dominio)
+  │                        │     • Núcleo del negocio con reglas e invariantes inmutables.
+  │                        │     • Totalmente agnósticas de la tecnología y base de datos.
+  │                        │     • No conocen Pydantic, SQLAlchemy ni HTTP.
+  └────────────────────────┘
+               ▲
+               │ (Mapeo desde/hacia la base de datos)
+  ┌────────────────────────┐
+  │ Capa de Infraestructura│ ──► ORM MODELS (SQLAlchemy Base / Mapped)
+  │                        │     • Definición de tablas, columnas, claves foráneas e índices.
+  │                        │     • Exclusivos del repositorio de persistencia.
+  └────────────────────────┘
+```
+
+| Concepto | Capa | Tecnología | Responsabilidad Principal | ¿Qué protege? |
+|---|---|---|---|---|
+| **`Schema`** | API / Presentación | Pydantic (`BaseModel`) | Validación de payloads entrantes, sanitización de queries y serialización JSON. | El contrato externo de la API y la documentación pública. |
+| **`DTO`** | Aplicación | Python `@dataclass(frozen=True)` | Transportar información entre casos de uso, repositorios y controladores. | Desacopla la lógica interna del protocolo de transporte (HTTP, CLI, etc.). |
+| **`Entity`** | Dominio | Python `@dataclass` o clase pura | Modelar el concepto de negocio y velar por sus reglas e invariantes. | La lógica y consistencia de negocio frente a cambios de librerías o DB. |
+| **`ORM Model`** | Infraestructura | SQLAlchemy `Mapped[...]` | Mapeo objeto-relacional contra las tablas de PostgreSQL / SQLite. | La estructura física de almacenamiento y las consultas SQL. |
 
 ---
 
@@ -87,8 +134,10 @@ Punto de entrada HTTP expuesto a través de FastAPI:
 
 | Si necesitas... | Pertenece a... | Ubicación |
 |---|---|---|
+| Definir un concepto de negocio con reglas e invariantes | **Domain (Entities)** | `app/domain/entities/` |
 | Definir un nuevo contrato de repositorio o conector | **Domain (Interfaces)** | `app/domain/interfaces/` |
 | Lanzar un error por una regla de negocio rota | **Domain (Exceptions)** | `app/domain/exceptions/` |
+| Transportar datos puros entre casos de uso y adaptadores | **Application (DTOs)** | `app/application/dtos/` |
 | Orquestar un nuevo caso de uso o cálculo | **Application (Services)** | `app/application/services/` |
 | Consumir una nueva API externa (ej. CEPAL) | **Infrastructure (Connectors)** | `app/infrastructure/connectors/` |
 | Crear una nueva tabla o modificar consultas SQL | **Infrastructure (Persistence)** | `app/infrastructure/persistence/` |
@@ -114,6 +163,7 @@ Punto de entrada HTTP expuesto a través de FastAPI:
 - 📖 [Guía de Creación de Conectores Externos (`guia-creacion-conectores.md`)](file:///c:/repos/obspred/backend/docs/guia-creacion-conectores.md)
 - 📖 [Inyección de Dependencias (`inyeccion-de-dependencias.md`)](file:///c:/repos/obspred/backend/docs/inyeccion-de-dependencias.md)
 - 📖 [Manejo de Errores y Excepciones (`manejo-de-errores-y-excepciones.md`)](file:///c:/repos/obspred/backend/docs/manejo-de-errores-y-excepciones.md)
-- 📖 [Base de Datos y Migraciones (`guia-base-datos-y-migraciones.md`)](file:///c:/repos/obspred/backend/docs/guia-base-datos-y-migraciones.md)
+- 📖 [Guía de Base de Datos y Migraciones (`guia-base-datos-y-migraciones.md`)](file:///c:/repos/obspred/backend/docs/guia-base-datos-y-migraciones.md)
+- 📖 [Patrón Repositorio y Persistencia (`patron-repositorio-y-persistencia.md`)](file:///c:/repos/obspred/backend/docs/patron-repositorio-y-persistencia.md)
 - 📖 [Testing y Calidad (`guia-de-testing-y-calidad.md`)](file:///c:/repos/obspred/backend/docs/guia-de-testing-y-calidad.md)
 

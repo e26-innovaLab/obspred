@@ -14,12 +14,12 @@ from app.api.v1.schemas.response_schema import (
     ResponseMeta,
     create_success_response,
 )
-from app.core.constants import INDICADORES_ROUTE
+from app.core.constants import INDICADORES_ROUTE, OPENAPI_TAG_INDICADORES
 from app.domain.interfaces.indicador_repository import IIndicadorRepository
 
 indicadores_router = APIRouter(
     prefix=INDICADORES_ROUTE,
-    tags=["Indicadores"],
+    tags=[OPENAPI_TAG_INDICADORES],
 )
 
 

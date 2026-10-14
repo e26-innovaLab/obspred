@@ -4,7 +4,6 @@ Permite cargar y validar variables de entorno desde archivos .env
 o el entorno del sistema operativo sin acoplar cadenas fijas.
 """
 
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.core.constants import (

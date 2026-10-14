@@ -183,8 +183,12 @@ class OcupacionModel(Base):
 
     __tablename__ = "ocupaciones"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True, index=True)
-    codigo: Mapped[str] = mapped_column(String(50), unique=True, nullable=False, index=True)
+    id: Mapped[int] = mapped_column(
+        Integer, primary_key=True, autoincrement=True, index=True
+    )
+    codigo: Mapped[str] = mapped_column(
+        String(50), unique=True, nullable=False, index=True
+    )
     nombre: Mapped[str] = mapped_column(String(150), nullable=False, index=True)
     sector: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
     descripcion: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
@@ -350,7 +354,9 @@ class OcupacionService:
     ) -> Ocupacion:
         existente = await self._repository.get_by_codigo(codigo)
         if existente:
-            raise InvalidOperationException(f"Ya existe una ocupación con el código '{codigo}'.")
+            raise InvalidOperationException(
+                f"Ya existe una ocupación con el código '{codigo}'."
+            )
 
         nueva = Ocupacion(
             id=None,
@@ -427,18 +433,29 @@ from app.api.v1.schemas.response_schema import ApiResponse
 
 class OcupacionBaseSchema(BaseModel):
     """Campos base compartidos."""
-    nombre: str = Field(..., min_length=2, max_length=150, description="Nombre de la ocupación")
-    sector: str = Field(..., min_length=2, max_length=100, description="Sector económico canónico")
-    descripcion: Optional[str] = Field(None, max_length=500, description="Descripción opcional")
+
+    nombre: str = Field(
+        ..., min_length=2, max_length=150, description="Nombre de la ocupación"
+    )
+    sector: str = Field(
+        ..., min_length=2, max_length=100, description="Sector económico canónico"
+    )
+    descripcion: Optional[str] = Field(
+        None, max_length=500, description="Descripción opcional"
+    )
 
 
 class OcupacionCreateSchema(OcupacionBaseSchema):
     """Payload para crear ocupación (POST)."""
-    codigo: str = Field(..., min_length=2, max_length=50, description="Código único de la ocupación")
+
+    codigo: str = Field(
+        ..., min_length=2, max_length=50, description="Código único de la ocupación"
+    )
 
 
 class OcupacionUpdateSchema(BaseModel):
     """Payload para actualización parcial (PATCH/PUT)."""
+
     nombre: Optional[str] = Field(None, min_length=2, max_length=150)
     sector: Optional[str] = Field(None, min_length=2, max_length=100)
     descripcion: Optional[str] = Field(None, max_length=500)
@@ -447,6 +464,7 @@ class OcupacionUpdateSchema(BaseModel):
 
 class OcupacionItemSchema(OcupacionBaseSchema):
     """Estructura de respuesta individual de una ocupación."""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -560,12 +578,16 @@ async def listar_ocupaciones(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
 ) -> OcupacionListResponseSchema:
-    lista = await service.listar(sector=sector, solo_activos=solo_activos, skip=skip, limit=limit)
+    lista = await service.listar(
+        sector=sector, solo_activos=solo_activos, skip=skip, limit=limit
+    )
     items = [OcupacionItemSchema.model_validate(item) for item in lista]
     return create_success_response(
         data=items,
         message="Listado de ocupaciones obtenido con éxito.",
-        meta=ResponseMeta(total=len(items), extra={"sector": sector, "solo_activos": solo_activos}),
+        meta=ResponseMeta(
+            total=len(items), extra={"sector": sector, "solo_activos": solo_activos}
+        ),
     )
 
 

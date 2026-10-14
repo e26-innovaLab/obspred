@@ -19,14 +19,18 @@ Es un patrón de diseño donde una clase o función **recibe sus colaboradores e
   # ❌ MAL: El servicio está fuertemente acoplado a SQLAlchemy y a Postgres
   class ExternalSyncService:
       def __init__(self):
-          self.repository = SqlAlchemyIndicadorRepository()  # No se puede testear con mocks fácilmente
+          self.repository = (
+              SqlAlchemyIndicadorRepository()
+          )  # No se puede testear con mocks fácilmente
   ```
 
 - **Con Inyección (Desacoplado - Clean Architecture):**
   ```python
   # ✅ BIEN: El servicio solo depende de una interfaz abstracta
   class ExternalSyncService:
-      def __init__(self, repository: IIndicadorRepository, connector: IExternalDataConnector):
+      def __init__(
+          self, repository: IIndicadorRepository, connector: IExternalDataConnector
+      ):
           self.repository = repository
           self.connector = connector
   ```
@@ -93,6 +97,7 @@ async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     async for session in get_db_session():
         yield session
 
+
 # 2. Provee el conector de API externa configurado
 def provide_world_bank_connector() -> IExternalDataConnector:
     return WorldBankConnector(
@@ -100,11 +105,13 @@ def provide_world_bank_connector() -> IExternalDataConnector:
         timeout=settings.world_bank_timeout_seconds,
     )
 
+
 # 3. Provee el repositorio inyectándole la sesión de DB
 def provide_indicador_repository(
     session: Annotated[AsyncSession, Depends(provide_db_session)],
 ) -> IIndicadorRepository:
     return SqlAlchemyIndicadorRepository(session=session)
+
 
 # 4. Provee el servicio de aplicación inyectándole el conector y el repositorio
 def provide_world_bank_sync_service(

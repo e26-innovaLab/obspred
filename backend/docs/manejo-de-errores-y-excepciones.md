@@ -127,8 +127,10 @@ Cualquier error inesperado o bug no controlado se registra en los logs de Uvicor
    ```python
    from app.domain.exceptions.base import DomainException
 
+
    class ConectorNoDisponibleException(DomainException):
        """Se lanza cuando un conector externo está deshabilitado."""
+
        def __init__(self, nombre_fuente: str) -> None:
            super().__init__(f"La fuente externa '{nombre_fuente}' no se encuentra activa.")
            self.nombre_fuente = nombre_fuente
@@ -136,13 +138,21 @@ Cualquier error inesperado o bug no controlado se registra en los logs de Uvicor
 2. Registrar el manejador en `app/main.py`:
    ```python
    @app.exception_handler(ConectorNoDisponibleException)
-   async def conector_no_disponible_handler(request: Request, exc: ConectorNoDisponibleException):
+   async def conector_no_disponible_handler(
+       request: Request, exc: ConectorNoDisponibleException
+   ):
        return JSONResponse(
            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
            content=create_error_response(
                message=exc.message,
                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-               errors=[ErrorDetail(code="CONNECTOR_UNAVAILABLE", detail=exc.message, field=exc.nombre_fuente)],
+               errors=[
+                   ErrorDetail(
+                       code="CONNECTOR_UNAVAILABLE",
+                       detail=exc.message,
+                       field=exc.nombre_fuente,
+                   )
+               ],
            ).model_dump(mode="json"),
        )
    ```

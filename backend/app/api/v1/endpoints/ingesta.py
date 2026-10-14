@@ -26,13 +26,17 @@ from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.core.constants import (
     INGESTA_ROUTE,
-    INGESTA_SYNC_ROUTE,
+    INGESTA_SYNC_WORLD_BANK_ROUTE,
     INGESTA_UPLOAD_ROUTE,
+    JSON_SERIALIZATION_MODE,
+    OPENAPI_TAG_INGESTA,
+    ApiErrorCode,
+    SyncStatus,
 )
 
 ingesta_router = APIRouter(
     prefix=INGESTA_ROUTE,
-    tags=["Ingesta"],
+    tags=[OPENAPI_TAG_INGESTA],
 )
 
 
@@ -107,7 +111,7 @@ async def upload_csv_file(
 
 
 @ingesta_router.post(
-    f"{INGESTA_SYNC_ROUTE}/world-bank",
+    INGESTA_SYNC_WORLD_BANK_ROUTE,
     response_model=SyncExternalDataResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Sincronizar indicadores oficiales desde World Bank Indicators API",
@@ -160,7 +164,7 @@ async def sync_world_bank_indicators(
         periodo_hasta=periodo_hasta,
     )
 
-    if result_dto.status == "failed":
+    if result_dto.status == SyncStatus.FAILED:
         err_msg = (
             result_dto.error_message
             or "Ocurrió un error inesperado durante la sincronización."
@@ -180,9 +184,9 @@ async def sync_world_bank_indicators(
             else status.HTTP_502_BAD_GATEWAY
         )
         err_code = (
-            "DATABASE_CONNECTION_ERROR"
+            ApiErrorCode.DATABASE_CONNECTION_ERROR
             if is_db_err
-            else "EXTERNAL_SERVICE_ERROR"
+            else ApiErrorCode.EXTERNAL_SERVICE_ERROR
         )
         error_response = create_error_response(
             message=f"Fallo en la sincronización de '{result_dto.source}'.",
@@ -197,7 +201,7 @@ async def sync_world_bank_indicators(
         )
         return JSONResponse(
             status_code=http_status,
-            content=error_response.model_dump(mode="json"),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
     response_data = SyncExternalDataResponseData(

@@ -1,6 +1,5 @@
 """Servicio de aplicación para coordinar la consulta del Índice de Empleabilidad."""
 
-
 from app.application.dtos.indice_empleabilidad_dto import (
     DimensionIndiceDTO,
     EvolucionIndicePuntoDTO,

@@ -8,7 +8,16 @@ from httpx import AsyncClient
 
 from app.api.dependencies import provide_world_bank_connector
 from app.core.config import settings
-from app.core.constants import INDICADORES_ROUTE, INGESTA_ROUTE, INGESTA_SYNC_ROUTE
+from app.core.constants import (
+    DEFAULT_WORLD_BANK_SOURCE,
+    INDICADORES_ROUTE,
+    INGESTA_ROUTE,
+    INGESTA_SYNC_WORLD_BANK_ROUTE,
+    ApiErrorCode,
+    PaisCodigo,
+    SyncStatus,
+    TipoIndicador,
+)
 from app.domain.interfaces.external_connector import (
     IExternalDataConnector,
     RawIndicatorRecord,
@@ -21,7 +30,7 @@ class MockWorldBankConnector(IExternalDataConnector):
 
     @property
     def source_name(self) -> str:
-        return "World Bank"
+        return DEFAULT_WORLD_BANK_SOURCE
 
     async def fetch_indicators(
         self,
@@ -32,25 +41,25 @@ class MockWorldBankConnector(IExternalDataConnector):
     ) -> list[RawIndicatorRecord]:
         return [
             RawIndicatorRecord(
-                pais="ARG",
+                pais=PaisCodigo.ARG,
                 sector=None,
                 ocupacion=None,
                 indicador="tasa_desempleo",
                 periodo="2023",
                 valor=6.14,
-                tipo="observado",
-                fuente="World Bank",
+                tipo=TipoIndicador.OBSERVADO,
+                fuente=DEFAULT_WORLD_BANK_SOURCE,
                 fecha_actualizacion=date(2024, 3, 28),
             ),
             RawIndicatorRecord(
-                pais="URY",
+                pais=PaisCodigo.URY,
                 sector=None,
                 ocupacion=None,
                 indicador="tasa_desempleo",
                 periodo="2023",
                 valor=8.05,
-                tipo="observado",
-                fuente="World Bank",
+                tipo=TipoIndicador.OBSERVADO,
+                fuente=DEFAULT_WORLD_BANK_SOURCE,
                 fecha_actualizacion=date(2024, 3, 28),
             ),
         ]
@@ -62,8 +71,8 @@ class MockWorldBankConnector(IExternalDataConnector):
 @pytest.fixture(autouse=True)
 def override_connector_dependency() -> Generator[None, None, None]:
     """Aísla las llamadas de red externas inyectando el mock del conector."""
-    app.dependency_overrides[provide_world_bank_connector] = (
-        lambda: MockWorldBankConnector()
+    app.dependency_overrides[provide_world_bank_connector] = lambda: (
+        MockWorldBankConnector()
     )
     yield
     app.dependency_overrides.pop(provide_world_bank_connector, None)
@@ -74,9 +83,9 @@ async def test_sync_world_bank_endpoint_e_integracion_indicadores(
     async_client: AsyncClient,
 ) -> None:
     """Verifica que el sync persista datos y que luego GET /indicadores los retorne."""
-    sync_url = f"{settings.api_v1_prefix}{INGESTA_ROUTE}{INGESTA_SYNC_ROUTE}/world-bank"
+    sync_url = f"{settings.api_v1_prefix}{INGESTA_ROUTE}{INGESTA_SYNC_WORLD_BANK_ROUTE}"
     sync_payload = {
-        "paises": ["ARG", "URY"],
+        "paises": [PaisCodigo.ARG, PaisCodigo.URY],
         "indicadores": ["tasa_desempleo"],
         "periodo_desde": "2023",
         "periodo_hasta": "2023",
@@ -87,18 +96,16 @@ async def test_sync_world_bank_endpoint_e_integracion_indicadores(
 
     body = sync_response.json()
     assert body["success"] is True
-    assert body["data"]["source"] == "World Bank"
-    assert body["data"]["status"] == "success"
+    assert body["data"]["source"] == DEFAULT_WORLD_BANK_SOURCE
+    assert body["data"]["status"] == SyncStatus.SUCCESS
     assert body["data"]["total_fetched"] == 2
     assert body["data"]["total_persisted"] == 2
-    assert "ARG" in body["data"]["countries_synced"]
+    assert PaisCodigo.ARG in body["data"]["countries_synced"]
     assert "tasa_desempleo" in body["data"]["indicators_synced"]
 
     # Consultamos GET /indicadores para verificar que el dato quedó visible y trazable
     indicadores_url = f"{settings.api_v1_prefix}{INDICADORES_ROUTE}"
-    get_response = await async_client.get(
-        indicadores_url, params={"pais": "ARG"}
-    )
+    get_response = await async_client.get(indicadores_url, params={"pais": "ARG"})
     assert get_response.status_code == 200
 
     get_body = get_response.json()
@@ -120,7 +127,7 @@ class FailingMockConnector(IExternalDataConnector):
 
     @property
     def source_name(self) -> str:
-        return "World Bank"
+        return DEFAULT_WORLD_BANK_SOURCE
 
     async def fetch_indicators(self, **kwargs) -> list[RawIndicatorRecord]:
         raise ConnectionError("Fallo de timeout en World Bank API")
@@ -134,13 +141,12 @@ async def test_sync_world_bank_endpoint_error_servicio_externo(
     async_client: AsyncClient,
 ) -> None:
     """Verifica que fallos remotos retornen HTTP 502 con ApiResponse de error."""
-    app.dependency_overrides[provide_world_bank_connector] = (
-        lambda: FailingMockConnector()
+    app.dependency_overrides[provide_world_bank_connector] = lambda: (
+        FailingMockConnector()
     )
     try:
         sync_url = (
-            f"{settings.api_v1_prefix}{INGESTA_ROUTE}"
-            f"{INGESTA_SYNC_ROUTE}/world-bank"
+            f"{settings.api_v1_prefix}{INGESTA_ROUTE}{INGESTA_SYNC_WORLD_BANK_ROUTE}"
         )
         response = await async_client.post(sync_url, json={})
         assert response.status_code == 502
@@ -150,8 +156,7 @@ async def test_sync_world_bank_endpoint_error_servicio_externo(
         assert payload["status_code"] == 502
         assert payload["data"] is None
         assert payload["errors"] is not None
-        assert payload["errors"][0]["code"] == "EXTERNAL_SERVICE_ERROR"
+        assert payload["errors"][0]["code"] == ApiErrorCode.EXTERNAL_SERVICE_ERROR
         assert "timeout" in payload["errors"][0]["detail"].lower()
     finally:
         app.dependency_overrides.pop(provide_world_bank_connector, None)
-

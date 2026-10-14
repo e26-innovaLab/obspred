@@ -6,9 +6,7 @@ import sys
 from app.core.constants import PROJECT_IDENTIFIER
 
 
-def get_logger(
-    name: str | None = None, log_level: str | None = None
-) -> logging.Logger:
+def get_logger(name: str | None = None, log_level: str | None = None) -> logging.Logger:
     """Obtiene o inicializa una instancia de logger configurada.
 
     Args:

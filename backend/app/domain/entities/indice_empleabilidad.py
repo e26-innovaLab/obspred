@@ -3,6 +3,12 @@
 from dataclasses import dataclass, field
 from datetime import date
 
+from app.core.constants import (
+    DEFAULT_INDICE_METODOLOGIA_FUENTE,
+    NivelEmpleabilidad,
+    TipoIndicador,
+)
+
 
 @dataclass(frozen=True)
 class DimensionIndice:
@@ -87,8 +93,8 @@ class IndiceEmpleabilidad:
     score: float
     nivel: str
     dimensiones: list[DimensionIndice]
-    tipo: str = "calculado"
-    fuente: str = "Observatorio Predictivo / Fuentes Oficiales Armonizadas"
+    tipo: str = TipoIndicador.CALCULADO
+    fuente: str = DEFAULT_INDICE_METODOLOGIA_FUENTE
     fecha_actualizacion: date = field(default_factory=date.today)
     metodologia: str = (
         "Índice de Empleabilidad — Metodología v1 (ponderación multidimensional: "
@@ -114,22 +120,22 @@ class IndiceEmpleabilidad:
             )
 
     @classmethod
-    def determinar_nivel(cls, score: float) -> str:
+    def determinar_nivel(cls, score: float) -> NivelEmpleabilidad:
         """Determina la clasificación cualitativa según la escala definida.
 
         Args:
             score: Valor numérico entre 0.0 y 100.0.
 
         Returns:
-            str: 'Muy Alto', 'Alto', 'Medio' o 'Bajo'.
+            NivelEmpleabilidad: 'Muy Alto', 'Alto', 'Medio' o 'Bajo'.
         """
         if score >= 80.0:
-            return "Muy Alto"
+            return NivelEmpleabilidad.MUY_ALTO
         if score >= 65.0:
-            return "Alto"
+            return NivelEmpleabilidad.ALTO
         if score >= 50.0:
-            return "Medio"
-        return "Bajo"
+            return NivelEmpleabilidad.MEDIO
+        return NivelEmpleabilidad.BAJO
 
     @classmethod
     def calcular_score_ponderado(cls, dimensiones: list[DimensionIndice]) -> float:

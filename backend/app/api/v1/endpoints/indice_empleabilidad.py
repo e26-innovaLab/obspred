@@ -20,11 +20,14 @@ from app.api.v1.schemas.response_schema import (
 from app.application.services.indice_empleabilidad_service import (
     IndiceEmpleabilidadService,
 )
-from app.core.constants import INDICE_EMPLEABILIDAD_ROUTE
+from app.core.constants import (
+    INDICE_EMPLEABILIDAD_ROUTE,
+    OPENAPI_TAG_INDICE_EMPLEABILIDAD,
+)
 
 indice_empleabilidad_router = APIRouter(
     prefix=INDICE_EMPLEABILIDAD_ROUTE,
-    tags=["Indice de Empleabilidad"],
+    tags=[OPENAPI_TAG_INDICE_EMPLEABILIDAD],
 )
 
 

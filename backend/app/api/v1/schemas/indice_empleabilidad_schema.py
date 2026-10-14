@@ -6,6 +6,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.api.v1.schemas.response_schema import ApiResponse
+from app.core.constants import NivelEmpleabilidad, TipoIndicador
 
 
 class IndiceEmpleabilidadFilterSchema(BaseModel):
@@ -145,18 +146,18 @@ class IndiceEmpleabilidadDataSchema(BaseModel):
         description="Score global agregado del Índice de Empleabilidad (0 a 100)",
         examples=[81.3],
     )
-    nivel: str = Field(
+    nivel: NivelEmpleabilidad = Field(
         ...,
-        description="Nivel cualitativo: Muy Alto, Alto, Medio o Bajo",
-        examples=["Muy Alto"],
+        description="Nivel cualitativo según NivelEmpleabilidad",
+        examples=[NivelEmpleabilidad.MUY_ALTO],
     )
     dimensiones: list[DimensionIndiceSchema] = Field(
         ...,
         description="Desglose de dimensiones componentes con sus pesos",
     )
-    tipo: str = Field(
-        default="calculado",
-        description="Tipo metodológico del indicador (calculado)",
+    tipo: TipoIndicador = Field(
+        default=TipoIndicador.CALCULADO,
+        description="Tipo metodológico del indicador según TipoIndicador",
     )
     fuente: str = Field(
         ...,
