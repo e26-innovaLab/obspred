@@ -126,7 +126,6 @@ INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 INGESTA_SYNC_WORLD_BANK_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/world-bank"
-PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
 TENDENCIAS_ROUTE: Final[str] = "/tendencias"
 DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
@@ -200,7 +199,6 @@ __all__ = [
     "INGESTA_UPLOAD_ROUTE",
     "INGESTA_SYNC_ROUTE",
     "INGESTA_SYNC_WORLD_BANK_ROUTE",
-    "PRUEBA_ENDPOINT_BORRAR_ROUTE",
     "TENDENCIAS_ROUTE",
     "DOCS_ROUTE",
     "REDOC_ROUTE",
