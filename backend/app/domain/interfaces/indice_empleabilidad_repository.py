@@ -1,7 +1,6 @@
 """Contrato abstracto del repositorio para el Índice de Empleabilidad."""
 
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from app.domain.entities.indice_empleabilidad import IndiceEmpleabilidad
 
@@ -13,10 +12,10 @@ class IIndiceEmpleabilidadRepository(ABC):
     async def get_by_ocupacion(
         self,
         ocupacion: str,
-        pais: Optional[str] = None,
-        sector: Optional[str] = None,
-        periodo: Optional[str] = None,
-    ) -> Optional[IndiceEmpleabilidad]:
+        pais: str | None = None,
+        sector: str | None = None,
+        periodo: str | None = None,
+    ) -> IndiceEmpleabilidad | None:
         """Obtiene el Índice de Empleabilidad calculado para una ocupación y filtros.
 
         Args:

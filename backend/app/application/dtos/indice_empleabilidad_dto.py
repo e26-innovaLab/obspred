@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from datetime import date
-from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -12,7 +11,7 @@ class DimensionIndiceDTO:
     nombre: str
     valor: float
     peso: float
-    descripcion: Optional[str] = None
+    descripcion: str | None = None
 
 
 @dataclass(frozen=True)
@@ -31,12 +30,12 @@ class IndiceEmpleabilidadDTO:
     ocupacion_nombre: str
     score: float
     nivel: str
-    dimensiones: List[DimensionIndiceDTO]
+    dimensiones: list[DimensionIndiceDTO]
     tipo: str
     fuente: str
     fecha_actualizacion: date
     metodologia: str
-    pais: Optional[str] = None
-    sector: Optional[str] = None
-    periodo: Optional[str] = None
-    evolucion: List[EvolucionIndicePuntoDTO] = field(default_factory=list)
+    pais: str | None = None
+    sector: str | None = None
+    periodo: str | None = None
+    evolucion: list[EvolucionIndicePuntoDTO] = field(default_factory=list)

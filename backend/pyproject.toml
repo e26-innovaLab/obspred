@@ -38,7 +38,15 @@ pythonpath = ["."]
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+exclude = [
+    ".venv",
+    "venv",
+    "__pycache__",
+    "migrations",
+    "alembic",
+]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "B"]
-ignore = []
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["B008"]
+

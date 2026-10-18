@@ -8,9 +8,14 @@ from app.api.v1.schemas.health_schema import (
 )
 from app.api.v1.schemas.response_schema import create_success_response
 from app.core.config import settings
-from app.core.constants import DEFAULT_API_VERSION, HEALTH_CHECK_ROUTE, HealthStatus
+from app.core.constants import (
+    DEFAULT_API_VERSION,
+    HEALTH_CHECK_ROUTE,
+    OPENAPI_TAG_HEALTH,
+    HealthStatus,
+)
 
-health_router = APIRouter(tags=["Health"])
+health_router = APIRouter(tags=[OPENAPI_TAG_HEALTH])
 
 
 @health_router.get(

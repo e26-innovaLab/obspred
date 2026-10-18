@@ -1,8 +1,7 @@
 """Servicio de aplicación para coordinar validación y guardado de CSV."""
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional
 
 from app.application.dtos.file_upload_dto import FileUploadDTO
 from app.core.constants import DEFAULT_CSV_CONTENT_TYPE
@@ -36,7 +35,7 @@ class FileUploadService:
         self,
         filename: str,
         content: bytes,
-        content_type: Optional[str] = None,
+        content_type: str | None = None,
     ) -> FileUploadDTO:
         """Valida que el archivo cumpla las reglas de negocio y lo persiste.
 
@@ -58,7 +57,7 @@ class FileUploadService:
         clean_original_name = Path(filename.strip()).name
 
         # Prefijo temporal UTC para trazabilidad y prevención de colisiones
-        timestamp = int(datetime.now(timezone.utc).timestamp())
+        timestamp = int(datetime.now(UTC).timestamp())
         stored_filename = f"{timestamp}_{clean_original_name}"
 
         # Persistencia asíncrona no bloqueante mediante la interfaz inyectada
