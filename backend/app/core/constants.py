@@ -129,6 +129,7 @@ INGESTA_SYNC_WORLD_BANK_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/world-bank"
 TENDENCIAS_ROUTE: Final[str] = "/tendencias"
 DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
+INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 
 # Tags para OpenAPI / Swagger
 OPENAPI_TAG_ROOT: Final[str] = "Root"
@@ -156,6 +157,11 @@ JSON_SERIALIZATION_MODE: Final[str] = "json"
 DEFAULT_WORLD_BANK_SOURCE: Final[str] = "World Bank"
 DEFAULT_WORLD_BANK_BASE_URL: Final[str] = "https://api.worldbank.org/v2"
 DEFAULT_WORLD_BANK_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para conector ILOSTAT (OIT)
+DEFAULT_ILOSTAT_SOURCE: Final[str] = "ILOSTAT"
+DEFAULT_ILOSTAT_BASE_URL: Final[str] = "https://rplumber.ilo.org/data/indicator/"
+DEFAULT_ILOSTAT_TIMEOUT_SECONDS: Final[float] = 60.0
 
 
 # ==============================================================================
@@ -218,6 +224,9 @@ __all__ = [
     "DEFAULT_WORLD_BANK_SOURCE",
     "DEFAULT_WORLD_BANK_BASE_URL",
     "DEFAULT_WORLD_BANK_TIMEOUT_SECONDS",
+    "DEFAULT_ILOSTAT_SOURCE",
+    "DEFAULT_ILOSTAT_BASE_URL",
+    "DEFAULT_ILOSTAT_TIMEOUT_SECONDS",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",
