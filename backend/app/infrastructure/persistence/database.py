@@ -4,17 +4,20 @@ Soporta conexiones nativas a PostgreSQL (mediante asyncpg) y fallback local
 en SQLite con pooling optimizado y verificación de liveness (pool_pre_ping).
 """
 
-from typing import Any, AsyncGenerator, Dict
+from collections.abc import AsyncGenerator
+from typing import Any
+
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
 from sqlalchemy.orm import declarative_base
+
 from app.core.config import settings
 
 # Argumentos base del motor
-engine_options: Dict[str, Any] = {
+engine_options: dict[str, Any] = {
     "echo": settings.database_echo,
     "future": True,
 }
@@ -51,7 +54,8 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Generador asíncrono para inyectar sesiones de base de datos en peticiones HTTP.
 
     Yields:
-        AsyncSession: Sesión transaccional activa vinculada al ciclo de vida del request.
+        AsyncSession: Sesión transaccional activa vinculada al ciclo de
+            vida del request.
     """
     async with async_session_factory() as session:
         try:

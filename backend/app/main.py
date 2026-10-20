@@ -4,12 +4,14 @@ Configura middlewares de seguridad, rutas centrales, estandarización de respues
 y manejadores globales de excepciones bajo el esquema ApiResponse.
 """
 
-from typing import Any, Dict
+from typing import Any
+
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.api.v1.router import api_v1_router
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
@@ -19,16 +21,23 @@ from app.api.v1.schemas.response_schema import (
 )
 from app.core.config import settings
 from app.core.constants import (
+    DEFAULT_APP_VERSION,
     DEFAULT_ERROR_MESSAGE,
+    DOCS_ROUTE,
     INTERNAL_SERVER_ERROR_MESSAGE,
+    JSON_SERIALIZATION_MODE,
+    OPENAPI_TAG_ROOT,
+    REDOC_ROUTE,
     ROOT_ROUTE,
+    ApiErrorCode,
 )
 from app.core.logging import logger
 from app.domain.exceptions.base import DomainException, EntityNotFoundException
 
 
 def register_exception_handlers(app: FastAPI) -> None:
-    """Registra los manejadores globales de errores para formatear toda excepción con ApiResponse.
+    """Registra los manejadores globales de errores para formatear toda
+    excepción con ApiResponse.
 
     Args:
         app: Instancia de la aplicación FastAPI.
@@ -44,7 +53,7 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_404_NOT_FOUND,
             errors=[
                 ErrorDetail(
-                    code="ENTITY_NOT_FOUND",
+                    code=ApiErrorCode.ENTITY_NOT_FOUND,
                     detail=exc.message,
                     field=exc.entity_name,
                 )
@@ -52,7 +61,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
         return JSONResponse(
             status_code=status.HTTP_404_NOT_FOUND,
-            content=error_response.model_dump(mode="json"),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
     @app.exception_handler(DomainException)
@@ -65,24 +74,26 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_400_BAD_REQUEST,
             errors=[
                 ErrorDetail(
-                    code="DOMAIN_RULE_VIOLATION",
+                    code=ApiErrorCode.DOMAIN_RULE_VIOLATION,
                     detail=exc.message,
                 )
             ],
         )
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content=error_response.model_dump(mode="json"),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
     @app.exception_handler(RequestValidationError)
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError
     ) -> JSONResponse:
-        """Maneja errores de validación de sintaxis o tipos en peticiones entrantes (HTTP 422)."""
+        """Maneja errores de validación de sintaxis o tipos en peticiones
+        entrantes (HTTP 422).
+        """
         errors = [
             ErrorDetail(
-                code="VALIDATION_ERROR",
+                code=ApiErrorCode.VALIDATION_ERROR,
                 detail=err.get("msg", "Error de validación"),
                 field=".".join(str(loc) for loc in err.get("loc", [])),
             )
@@ -95,7 +106,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            content=error_response.model_dump(mode="json"),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
     @app.exception_handler(StarletteHTTPException)
@@ -109,14 +120,14 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=exc.status_code,
             errors=[
                 ErrorDetail(
-                    code="HTTP_EXCEPTION",
+                    code=ApiErrorCode.HTTP_EXCEPTION,
                     detail=detail_msg,
                 )
             ],
         )
         return JSONResponse(
             status_code=exc.status_code,
-            content=error_response.model_dump(mode="json"),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
     @app.exception_handler(Exception)
@@ -130,14 +141,14 @@ def register_exception_handlers(app: FastAPI) -> None:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             errors=[
                 ErrorDetail(
-                    code="INTERNAL_SERVER_ERROR",
+                    code=ApiErrorCode.INTERNAL_SERVER_ERROR,
                     detail="Consulte con el equipo de soporte técnico.",
                 )
             ],
         )
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=error_response.model_dump(mode="json"),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
 
@@ -150,9 +161,9 @@ def create_application() -> FastAPI:
     application = FastAPI(
         title=settings.app_name,
         description=settings.app_description,
-        version="0.1.0",
-        docs_url="/docs" if settings.debug else None,
-        redoc_url="/redoc" if settings.debug else None,
+        version=DEFAULT_APP_VERSION,
+        docs_url=DOCS_ROUTE if settings.debug else None,
+        redoc_url=REDOC_ROUTE if settings.debug else None,
     )
 
     # Configuración de CORS
@@ -171,13 +182,15 @@ def create_application() -> FastAPI:
     # Ruta raíz básica estandarizada
     @application.get(
         ROOT_ROUTE,
-        response_model=ApiResponse[Dict[str, Any]],
+        response_model=ApiResponse[dict[str, Any]],
         status_code=status.HTTP_200_OK,
-        tags=["Root"],
+        tags=[OPENAPI_TAG_ROOT],
         summary="Ruta raíz del backend",
-        description="Retorna el estado base de la API bajo el formato estándar ApiResponse.",
+        description=(
+            "Retorna el estado base de la API bajo el formato estándar ApiResponse."
+        ),
     )
-    async def root_endpoint() -> ApiResponse[Dict[str, Any]]:
+    async def root_endpoint() -> ApiResponse[dict[str, Any]]:
         """Endpoint raíz informativo.
 
         Returns:
@@ -186,7 +199,7 @@ def create_application() -> FastAPI:
         payload = {
             "name": settings.app_name,
             "status": "online",
-            "docs": "/docs" if settings.debug else "disabled",
+            "docs": DOCS_ROUTE if settings.debug else "disabled",
         }
         return create_success_response(
             data=payload,

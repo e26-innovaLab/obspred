@@ -9,14 +9,19 @@ from app.api.v1.schemas.indicadores_schema import (
     IndicadoresResponseSchema,
     IndicadorItemSchema,
 )
+from app.api.v1.schemas.indice_empleabilidad_schema import (
+    DimensionIndiceSchema,
+    EvolucionIndicePuntoSchema,
+    IndiceEmpleabilidadDataSchema,
+    IndiceEmpleabilidadFilterSchema,
+    IndiceEmpleabilidadResponseSchema,
+)
 from app.api.v1.schemas.ingesta_schema import (
     FileUploadData,
     FileUploadResponseSchema,
-)
-from app.api.v1.schemas.prueba_schema import (
-    PruebaItemData,
-    PruebaPayloadSchema,
-    PruebaResponseSchema,
+    SyncExternalDataRequestSchema,
+    SyncExternalDataResponseData,
+    SyncExternalDataResponseSchema,
 )
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
@@ -28,7 +33,9 @@ from app.api.v1.schemas.response_schema import (
 
 __all__ = [
     "ApiResponse",
+    "DimensionIndiceSchema",
     "ErrorDetail",
+    "EvolucionIndicePuntoSchema",
     "FileUploadData",
     "FileUploadResponseSchema",
     "HealthDataSchema",
@@ -36,10 +43,13 @@ __all__ = [
     "IndicadorItemSchema",
     "IndicadoresFilterSchema",
     "IndicadoresResponseSchema",
-    "PruebaItemData",
-    "PruebaPayloadSchema",
-    "PruebaResponseSchema",
+    "IndiceEmpleabilidadDataSchema",
+    "IndiceEmpleabilidadFilterSchema",
+    "IndiceEmpleabilidadResponseSchema",
     "ResponseMeta",
+    "SyncExternalDataRequestSchema",
+    "SyncExternalDataResponseData",
+    "SyncExternalDataResponseSchema",
     "create_error_response",
     "create_success_response",
 ]

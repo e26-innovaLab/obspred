@@ -29,6 +29,7 @@ backend/
 │           ├── router.py  # Enrutador central v1 (agrega todos los controladores)
 │           ├── endpoints/ # Controladores HTTP (health, ingesta, prueba, etc.)
 │           └── schemas/   # Esquemas Pydantic (Request/Response DTOs)
+├── docs/                  # Documentación técnica, guías de conectores y colecciones Postman
 ├── tests/                 # Suite de pruebas unitarias e integración
 │   ├── unit/              # Pruebas unitarias de servicios y almacenamiento
 │   └── integration/       # Pruebas de integración de endpoints HTTP
@@ -40,10 +41,12 @@ backend/
 
 ### ¿Dónde se ubican los Controllers? (Capa API `app/api/`)
 En esta implementación de Clean Architecture con FastAPI, el rol tradicional de los **Controllers** se distribuye de la siguiente manera:
-- **Controladores / Endpoints ([`app/api/v1/endpoints/`](app/api/v1/endpoints/)):** Albergan los handlers de rutas (`APIRouter`). Su función exclusiva es recibir las solicitudes HTTP, aplicar validaciones de entrada, coordinar la inyección de dependencias y delegar la lógica de negocio a los casos de uso correspondientes ([`app/application/use_cases/`](app/application/use_cases/)).
+- **Controladores / Endpoints ([`app/api/v1/endpoints/`](app/api/v1/endpoints/)):** Albergan los handlers de rutas (`APIRouter`). Su función exclusiva es recibir las solicitudes HTTP, aplicar validaciones de entrada, coordinar la inyección de dependencias y delegar la lógica de negocio a los servicios y casos de uso correspondientes ([`app/application/services/`](app/application/services/)).
 - **Enrutador Central ([`app/api/v1/router.py`](app/api/v1/router.py)):** Centraliza y monta todos los submódulos de endpoints bajo la versión de la API correspondiente.
 - **Punto de Entrada ([`app/main.py`](app/main.py)):** Inicializa la aplicación FastAPI, registra middlewares (como CORS) e incluye el enrutador central.
-- **Modelos de Transferencia / Schemas ([`app/api/v1/schemas/`](app/api/v1/schemas/)):** Definen los contratos estrictos de entrada y salida mediante modelos Pydantic.
+- **Modelos de Entrada/Salida HTTP / Schemas ([`app/api/v1/schemas/`](app/api/v1/schemas/)):** Modelos Pydantic para validar entradas y serializar salidas JSON.
+- **Objetos de Transferencia / DTOs ([`app/application/dtos/`](app/application/dtos/)):** Dataclasses inmutables para transportar datos desacoplados entre la API y los servicios de aplicación.
+- **Entidades de Dominio ([`app/domain/entities/`](app/domain/entities/)):** Modelos puros que encapsulan el núcleo del negocio y sus invariantes, agnósticos de frameworks y bases de datos.
 
 ### Estándar de Respuestas REST (`ApiResponse[T]`)
 Todas las llamadas a la API (tanto exitosas como con errores o excepciones) responden con un envoltorio uniforme bajo el esquema `ApiResponse[T]` ([`app/api/v1/schemas/response_schema.py`](app/api/v1/schemas/response_schema.py)):
@@ -217,9 +220,108 @@ curl -X GET "http://localhost:8000/api/v1/indicadores?pais=ARG&sector=Tecnolog%C
 }
 ```
 
+## Módulo de Índice de Empleabilidad (`feature/backend_indice_empleabilidad_ocupacion`)
+
+Permite la consulta del Índice de Empleabilidad multidimensional (score 0–100) para las ocupaciones priorizadas, desglosando sus dimensiones ponderadas, trazabilidad oficial y evolución histórica.
+
+### Endpoint: `GET /api/v1/indice-empleabilidad/{ocupacion}`
+
+Consulta el índice individual para una ocupación dada por su identificador normalizado (ej. `dev-software`), slug o nombre canónico, aplicando filtros jerárquicos opcionales.
+
+- **Parámetros de Ruta (Path Parameters):**
+  - `ocupacion`: Slug, identificador o denominación canónica de la ocupación (ej. `dev-software`, `enfermeria`, `Desarrollador de software`).
+- **Parámetros de Consulta (Query Parameters):**
+  - `pais`: Código opcional del país (ej. `ARG`, `URY`, `CHL`).
+  - `sector`: Sector estratégico asociado (ej. `tecnologia`, `salud`, `energia`, `turismo`, `economia-conocimiento`).
+  - `periodo`: Período temporal de corte (ej. `2026-Q1`).
+- **Dimensiones Ponderadas Metodológicas (Metodología v1):**
+  1. **Demanda de puestos (35%):** Dinamismo y volumen de vacantes en bolsas laborales.
+  2. **Estabilidad salarial (25%):** Nivel salarial y preservación del poder adquisitivo.
+  3. **Cobertura formativa (20%):** Tasa de graduados e inserción de programas formativos.
+  4. **Crecimiento reciente (20%):** Variación interanual de ocupación sectorial.
+- **Trazabilidad Total:** Cada resultado declara fuente oficial armonizada (`fuente`), fecha de corte (`fecha_actualizacion`), tipo metodológico (`tipo="calculado"`) y serie histórica de evolución (≥ 3 períodos).
+
+#### Ejemplo de Petición (`curl`):
+```bash
+curl -X GET "http://localhost:8000/api/v1/indice-empleabilidad/dev-software?pais=ARG&sector=tecnologia&periodo=2026-Q1" \
+  -H "accept: application/json"
+```
+
+#### Ejemplo de Respuesta Exitosa (`HTTP 200 OK`):
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "message": "Índice de Empleabilidad obtenido con éxito.",
+  "data": {
+    "ocupacion_id": "dev-software",
+    "ocupacion_nombre": "Desarrollador/a de software",
+    "score": 81.3,
+    "nivel": "Muy Alto",
+    "dimensiones": [
+      {
+        "nombre": "Demanda de puestos",
+        "valor": 88.0,
+        "peso": 0.35,
+        "descripcion": "Alta demanda vacantes digitales"
+      },
+      {
+        "nombre": "Estabilidad salarial",
+        "valor": 84.0,
+        "peso": 0.25,
+        "descripcion": "Remuneración competitiva"
+      },
+      {
+        "nombre": "Cobertura formativa",
+        "valor": 68.0,
+        "peso": 0.20,
+        "descripcion": "Déficit de graduados afines"
+      },
+      {
+        "nombre": "Crecimiento reciente",
+        "valor": 86.0,
+        "peso": 0.20,
+        "descripcion": "Expansión interanual sostenida"
+      }
+    ],
+    "tipo": "calculado",
+    "fuente": "INDEC — Encuesta Permanente de Hogares / Secretaría de Trabajo",
+    "fecha_actualizacion": "2026-09-30",
+    "metodologia": "Índice de Empleabilidad — Metodología v1 (ponderación: Demanda 35%, Estabilidad 25%, Cobertura 20%, Crecimiento 20%)",
+    "pais": "ARG",
+    "sector": "tecnologia",
+    "periodo": "2026-Q1",
+    "evolucion": [
+      { "periodo": "2025-Q3", "valor": 78.1 },
+      { "periodo": "2025-Q4", "valor": 79.8 },
+      { "periodo": "2026-Q1", "valor": 81.3 },
+      { "periodo": "2026-Q2", "valor": 82.4 }
+    ]
+  },
+  "errors": null,
+  "meta": {
+    "page": null,
+    "per_page": null,
+    "total": 1,
+    "extra": {
+      "filtros": {
+        "pais": "ARG",
+        "sector": "tecnologia",
+        "periodo": "2026-Q1"
+      }
+    }
+  },
+  "timestamp": "2026-10-08T10:30:00.000000Z"
+}
+```
+
 ## Persistencia y Migraciones de Base de Datos (SQLAlchemy + Alembic)
 
 El Observatorio utiliza SQLAlchemy 2.0 (modo asíncrono) junto con Alembic para la gestión reproducible del esquema de base de datos.
+
+> 📖 **Documentación Técnica Detallada:**
+> - [Patrón Repositorio y Persistencia en Base de Datos](docs/patron-repositorio-y-persistencia.md)
+> - [Guía de Base de Datos y Migraciones con Alembic](docs/guia-base-datos-y-migraciones.md)
 
 ### 1. Modelo Relacional: `IndicadorModel` (`app/infrastructure/persistence/models/indicador.py`)
 

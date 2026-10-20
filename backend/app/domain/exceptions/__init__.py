@@ -8,6 +8,10 @@ from app.domain.exceptions.file_upload import (
     InvalidFileContentException,
     InvalidFileExtensionException,
 )
+from app.domain.exceptions.indice_empleabilidad import (
+    InsufficientDataException,
+    InvalidOccupationException,
+)
 
 __all__ = [
     "DomainException",
@@ -15,6 +19,8 @@ __all__ = [
     "EntityNotFoundException",
     "FileSizeExceededException",
     "FileStorageException",
+    "InsufficientDataException",
     "InvalidFileContentException",
     "InvalidFileExtensionException",
+    "InvalidOccupationException",
 ]

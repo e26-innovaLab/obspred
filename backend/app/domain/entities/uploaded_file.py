@@ -1,8 +1,10 @@
 """Entidad de dominio que representa un archivo cargado en el sistema."""
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
+
+from app.core.constants import DEFAULT_CSV_CONTENT_TYPE
 
 
 @dataclass(frozen=True)
@@ -22,10 +24,8 @@ class UploadedFile:
     original_filename: str
     file_path: Path
     size_bytes: int
-    content_type: str = "text/csv"
-    uploaded_at: datetime = field(
-        default_factory=lambda: datetime.now(timezone.utc)
-    )
+    content_type: str = DEFAULT_CSV_CONTENT_TYPE
+    uploaded_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def __post_init__(self) -> None:
         """Valida las invariantes de la entidad tras su inicialización.

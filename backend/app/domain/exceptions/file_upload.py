@@ -1,12 +1,17 @@
 """Excepciones de dominio para la carga y almacenamiento de archivos."""
 
+from app.core.constants import CSV_FILE_EXTENSION
 from app.domain.exceptions.base import DomainException
 
 
 class InvalidFileExtensionException(DomainException):
     """Excepción lanzada si el archivo no tiene el formato permitido."""
 
-    def __init__(self, filename: str, allowed_extension: str = ".csv") -> None:
+    def __init__(
+        self,
+        filename: str,
+        allowed_extension: str = CSV_FILE_EXTENSION,
+    ) -> None:
         """Inicializa la excepción detallando el archivo y la extensión requerida.
 
         Args:
