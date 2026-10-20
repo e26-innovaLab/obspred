@@ -6,4 +6,5 @@ from app.infrastructure.connectors.world_bank_connector import (
 
 __all__ = [
     "WorldBankConnector",
+    "ILOSTATConnector"
 ]

@@ -30,6 +30,7 @@ from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
 
+from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provee una sesión de base de datos asíncrona por cada petición.
@@ -161,6 +162,32 @@ def provide_world_bank_sync_service(
 
     Args:
         connector: Conector de World Bank inyectado.
+        repository: Repositorio de indicadores inyectado.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+def provide_ilostat_connector() -> IExternalDataConnector:
+    """Provee una instancia del conector oficial de ILOSTAT."""
+    return ILOSTATConnector()
+
+
+def provide_ilostat_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_ilostat_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con ILOSTAT.
+
+    Args:
+        connector: Conector de ILOSTAT inyectado.
         repository: Repositorio de indicadores inyectado.
 
     Returns:
