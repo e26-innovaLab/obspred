@@ -70,6 +70,13 @@ class Settings(BaseSettings):
     world_bank_api_base_url: str = DEFAULT_WORLD_BANK_BASE_URL
     world_bank_timeout_seconds: float = DEFAULT_WORLD_BANK_TIMEOUT_SECONDS
 
+# Banco Central de Chile (SIETE REST WS)
+   bcentral_chile_user: str = ""
+   bcentral_chile_pass: str = ""
+   bcentral_chile_base_url: str = (
+      "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
+  )
+  bcentral_chile_timeout_seconds: float = 30.0
 
 # Instancia única reutilizable para inyección o importación directa
 settings = Settings()
