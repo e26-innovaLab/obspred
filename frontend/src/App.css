@@ -511,21 +511,62 @@
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  user-select: none;
 }
 
-.filtros-comparacion__pais input {
-  accent-color: var(--azul-claro);
-  width: 16px;
-  height: 16px;
+/* Checkbox nativo oculto — el span hace de indicador visual */
+.filtros-comparacion__input-oculto {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
+/* Cuadradito con color del país */
 .filtros-comparacion__muestra {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--color-pais);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Tilde dibujado con pseudo-elemento: oculto por defecto */
+.filtros-comparacion__muestra::after {
+  content: '';
+  display: block;
   width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  height: 5px;
+  border-left: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+/* Tildado: fondo lleno + tilde blanco visible */
+.filtros-comparacion__muestra[data-checked='true'] {
+  background: var(--color-pais);
+}
+
+.filtros-comparacion__muestra[data-checked='true']::after {
+  opacity: 1;
+}
+
+/* Foco accesible por teclado */
+.filtros-comparacion__pais:focus-within .filtros-comparacion__muestra {
+  box-shadow: 0 0 0 3px var(--amarillo);
+  outline: none;
 }
 
 /* Tarjetas de indicadores comparativos */

@@ -13,13 +13,29 @@ export function PaisesCheckboxes({ seleccionados, onToggle }: Props) {
   return (
     <fieldset className="filtros-comparacion__paises">
       <legend>Países</legend>
-      {PAISES.map((p) => (
-        <label key={p.id} className="filtros-comparacion__pais">
-          <input type="checkbox" checked={seleccionados.includes(p.id)} onChange={() => onToggle(p.id)} />
-          <span className="filtros-comparacion__muestra" style={{ background: SERIE_PAIS[p.id].color }} aria-hidden />
-          {p.nombre}
-        </label>
-      ))}
+      {PAISES.map((p) => {
+        const checked = seleccionados.includes(p.id);
+        return (
+          <label
+            key={p.id}
+            className="filtros-comparacion__pais"
+            style={{ '--color-pais': SERIE_PAIS[p.id].color } as React.CSSProperties}
+          >
+            <input
+              type="checkbox"
+              checked={checked}
+              onChange={() => onToggle(p.id)}
+              className="filtros-comparacion__input-oculto"
+            />
+            <span
+              className="filtros-comparacion__muestra"
+              data-checked={checked}
+              aria-hidden
+            />
+            {p.nombre}
+          </label>
+        );
+      })}
     </fieldset>
   );
 }
