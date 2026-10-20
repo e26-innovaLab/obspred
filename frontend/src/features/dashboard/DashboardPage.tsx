@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FiltrosBar } from '../../components/common/FiltrosBar';
 import { KpiCard } from '../../components/common/KpiCard';
 import { SinDatos } from '../../components/common/SinDatos';
@@ -8,6 +9,10 @@ import { useDashboardData, useDashboardGraficos, KPIS_INICIO } from './hooks/use
 import { TendenciaSectorList } from './components/TendenciaSectorList';
 import { AlertasPanel } from './components/AlertasPanel';
 import { RankingList } from './components/RankingList';
+import { PAISES } from '../../services/mock/catalogo';
+import type { Pais } from '../../types/kpi';
+
+const ORDEN_PAISES = PAISES.map((p) => p.id as Pais);
 
 // Vista 1 — Dashboard general (Figma: "Inicio").
 // Indicadores principales con variación, evolución de la demanda, rankings,
@@ -18,11 +23,18 @@ export function DashboardPage() {
   const { tendenciasPorSector, alertas } = useDashboardData();
   const g = useDashboardGraficos();
 
+  const [paises, setPaisesLocal] = useState<Pais[]>(ORDEN_PAISES);
+  const togglePais = (pais: Pais) =>
+    setPaisesLocal((prev) => {
+      const nuevos = prev.includes(pais) ? prev.filter((p) => p !== pais) : [...prev, pais];
+      return ORDEN_PAISES.filter((p) => nuevos.includes(p));
+    });
+
   return (
     <section className="page">
       <h2>Panorama general</h2>
       <p className="page__descripcion">Vista general de los principales indicadores del observatorio.</p>
-      <FiltrosBar mostrarSector mostrarPeriodo />
+      <FiltrosBar mostrarSector mostrarPeriodo paisesMultiples={{ seleccionados: paises, onToggle: togglePais }} />
 
       <h3 className="page__seccion">Indicadores principales</h3>
       {g.kpis.state.status === 'loading' && (
@@ -89,7 +101,7 @@ export function DashboardPage() {
         </ChartCard>
       </div>
 
-      <div className="page__columns">
+      <div className="dashboard__graficos">
         <ChartCard
           titulo="Ocupaciones destacadas"
           descripcion={filtros.sector ? 'Dentro del sector elegido' : 'Todas las ocupaciones'}
@@ -114,7 +126,7 @@ export function DashboardPage() {
         </ChartCard>
       </div>
 
-      <div className="page__columns">
+      <div className="dashboard__graficos">
         <div>
           <h3>Estado de tendencia por sector</h3>
           <TendenciaSectorList tendencias={tendenciasPorSector} />
