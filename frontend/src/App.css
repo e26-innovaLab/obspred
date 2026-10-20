@@ -123,6 +123,10 @@
   border-left: 4px solid var(--azul-claro);
   border-radius: 8px;
   background: var(--code-bg);
+  position: sticky;
+  z-index: 10;
+  top: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.20);
 }
 
 .filtros-bar label {
