@@ -99,9 +99,7 @@ export function DashboardPage() {
         >
           {(r) => <RankingList ranking={r} />}
         </ChartCard>
-      </div>
 
-      <div className="dashboard__graficos">
         <ChartCard
           titulo="Ocupaciones destacadas"
           descripcion={filtros.sector ? 'Dentro del sector elegido' : 'Todas las ocupaciones'}
@@ -124,13 +122,12 @@ export function DashboardPage() {
         >
           {(r) => <RankingList ranking={r} />}
         </ChartCard>
-      </div>
 
-      <div className="dashboard__graficos">
         <div>
           <h3>Estado de tendencia por sector</h3>
           <TendenciaSectorList tendencias={tendenciasPorSector} />
         </div>
+
         <div>
           <h3>Alertas activas</h3>
           <AlertasPanel alertas={alertas} />
