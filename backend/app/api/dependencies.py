@@ -31,6 +31,10 @@ from app.infrastructure.storage.local_file_storage_service import (
 )
 
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
+from app.infrastructure.connectors.bcentral_chile_connector import (
+    BCentralChileConnector,
+)
+
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provee una sesión de base de datos asíncrona por cada petición.
@@ -169,6 +173,7 @@ def provide_world_bank_sync_service(
     """
     return ExternalSyncService(connector=connector, repository=repository)
 
+
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -192,5 +197,41 @@ def provide_ilostat_sync_service(
 
     Returns:
         ExternalSyncService: Servicio de aplicación listo para ejecución.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_bcentral_chile_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial del Banco Central de Chile (SIETE).
+
+    Returns:
+        IExternalDataConnector: Instancia de BCentralChileConnector configurada.
+    """
+    return BCentralChileConnector(
+        base_url=getattr(settings, "bcentral_chile_base_url", None),
+        user=getattr(settings, "bcentral_chile_user", None),
+        password=getattr(settings, "bcentral_chile_pass", None),
+        timeout=getattr(settings, "bcentral_chile_timeout_seconds", 30.0),
+    )
+
+
+def provide_bcentral_chile_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_bcentral_chile_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con el Banco Central de Chile.
+
+    Args:
+        connector: Conector de BCentral Chile inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
     """
     return ExternalSyncService(connector=connector, repository=repository)
