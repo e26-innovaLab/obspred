@@ -11,6 +11,9 @@ from app.application.services.file_upload_service import FileUploadService
 from app.application.services.indice_empleabilidad_service import (
     IndiceEmpleabilidadService,
 )
+from app.application.services.series_historicas_service import (
+    SeriesHistoricasService,
+)
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
 from app.domain.interfaces.external_connector import IExternalDataConnector
@@ -20,17 +23,25 @@ from app.domain.interfaces.indicador_repository import IIndicadorRepository
 from app.domain.interfaces.indice_empleabilidad_repository import (
     IIndiceEmpleabilidadRepository,
 )
+from app.domain.interfaces.serie_historica_repository import (
+    ISerieHistoricaRepository,
+)
+from app.infrastructure.connectors.bcentral_chile_connector import (
+    BCentralChileConnector,
+)
+from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndicadorRepository,
     SqlAlchemyIndiceEmpleabilidadRepository,
 )
+from app.infrastructure.persistence.repositories.serie_historica_repository import (
+    SqlAlchemySerieHistoricaRepository,
+)
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
-
-from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provee una sesión de base de datos asíncrona por cada petición.
@@ -136,6 +147,41 @@ def provide_indicador_repository(
     return SqlAlchemyIndicadorRepository(session=session)
 
 
+def provide_serie_historica_repository(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> ISerieHistoricaRepository:
+    """Provee el repositorio para la consulta de Series Históricas.
+
+    Args:
+        session: Sesión transaccional inyectada por FastAPI.
+
+    Returns:
+        ISerieHistoricaRepository: Instancia de
+            SqlAlchemySerieHistoricaRepository.
+    """
+    return SqlAlchemySerieHistoricaRepository(session=session)
+
+
+def provide_series_historicas_service(
+    repository: Annotated[
+        ISerieHistoricaRepository,
+        Depends(provide_serie_historica_repository),
+    ],
+) -> SeriesHistoricasService:
+    """Provee el servicio de aplicación para Series Históricas.
+
+    Args:
+        repository: Repositorio de dominio inyectado por FastAPI.
+
+    Returns:
+        SeriesHistoricasService: Servicio de aplicación listo para el controlador.
+    """
+    return SeriesHistoricasService(repository=repository)
+
+
 def provide_world_bank_connector() -> IExternalDataConnector:
     """Provee la instancia del conector oficial de World Bank Indicators API.
 
@@ -169,6 +215,7 @@ def provide_world_bank_sync_service(
     """
     return ExternalSyncService(connector=connector, repository=repository)
 
+
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -192,5 +239,41 @@ def provide_ilostat_sync_service(
 
     Returns:
         ExternalSyncService: Servicio de aplicación listo para ejecución.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_bcentral_chile_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial del Banco Central de Chile (SIETE).
+
+    Returns:
+        IExternalDataConnector: Instancia de BCentralChileConnector configurada.
+    """
+    return BCentralChileConnector(
+        base_url=getattr(settings, "bcentral_chile_base_url", None),
+        user=getattr(settings, "bcentral_chile_user", None),
+        password=getattr(settings, "bcentral_chile_pass", None),
+        timeout=getattr(settings, "bcentral_chile_timeout_seconds", 30.0),
+    )
+
+
+def provide_bcentral_chile_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_bcentral_chile_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con el Banco Central de Chile.
+
+    Args:
+        connector: Conector de BCentral Chile inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
     """
     return ExternalSyncService(connector=connector, repository=repository)
