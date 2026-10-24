@@ -130,6 +130,8 @@ TENDENCIAS_ROUTE: Final[str] = "/tendencias"
 DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
+INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+
 
 # Tags para OpenAPI / Swagger
 OPENAPI_TAG_ROOT: Final[str] = "Root"
@@ -162,6 +164,13 @@ DEFAULT_WORLD_BANK_TIMEOUT_SECONDS: Final[float] = 30.0
 DEFAULT_ILOSTAT_SOURCE: Final[str] = "ILOSTAT"
 DEFAULT_ILOSTAT_BASE_URL: Final[str] = "https://rplumber.ilo.org/data/indicator/"
 DEFAULT_ILOSTAT_TIMEOUT_SECONDS: Final[float] = 60.0
+
+# Constantes de configuración para conector Banco Central de Chile (SIETE REST WS)
+DEFAULT_BCENTRAL_CHILE_SOURCE: Final[str] = "Banco Central de Chile"
+DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
+    "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
+)
+DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 
 
 # ==============================================================================
@@ -208,6 +217,7 @@ __all__ = [
     "TENDENCIAS_ROUTE",
     "DOCS_ROUTE",
     "REDOC_ROUTE",
+    "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
     # OpenAPI Tags
     "OPENAPI_TAG_ROOT",
     "OPENAPI_TAG_HEALTH",
@@ -227,6 +237,9 @@ __all__ = [
     "DEFAULT_ILOSTAT_SOURCE",
     "DEFAULT_ILOSTAT_BASE_URL",
     "DEFAULT_ILOSTAT_TIMEOUT_SECONDS",
+    "DEFAULT_BCENTRAL_CHILE_SOURCE",
+    "DEFAULT_BCENTRAL_CHILE_BASE_URL",
+    "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",

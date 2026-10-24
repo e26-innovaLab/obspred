@@ -43,6 +43,7 @@ from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
 
+
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provee una sesión de base de datos asíncrona por cada petición.
 
@@ -267,7 +268,8 @@ def provide_bcentral_chile_sync_service(
         Depends(provide_indicador_repository),
     ],
 ) -> ExternalSyncService:
-    """Provee el servicio de aplicación para sincronización con el Banco Central de Chile.
+    """Provee el servicio de aplicación para sincronización
+    con el Banco Central de Chile.
 
     Args:
         connector: Conector de BCentral Chile inyectado.
