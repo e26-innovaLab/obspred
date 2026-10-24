@@ -6,10 +6,10 @@ from fastapi import APIRouter, Depends, File, UploadFile, status
 from fastapi.responses import JSONResponse
 
 from app.api.dependencies import (
-    provide_file_upload_service,
-    provide_world_bank_sync_service,
-    provide_ilostat_sync_service,
     provide_bcentral_chile_sync_service,
+    provide_file_upload_service,
+    provide_ilostat_sync_service,
+    provide_world_bank_sync_service,
 )
 from app.api.v1.schemas.ingesta_schema import (
     FileUploadData,
@@ -28,9 +28,9 @@ from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.core.constants import (
     INGESTA_ROUTE,
-    INGESTA_SYNC_WORLD_BANK_ROUTE,
-    INGESTA_SYNC_ILOSTAT_ROUTE,
     INGESTA_SYNC_BCENTRAL_CHILE_ROUTE,
+    INGESTA_SYNC_ILOSTAT_ROUTE,
+    INGESTA_SYNC_WORLD_BANK_ROUTE,
     INGESTA_UPLOAD_ROUTE,
     JSON_SERIALIZATION_MODE,
     OPENAPI_TAG_INGESTA,

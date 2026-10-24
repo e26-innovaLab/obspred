@@ -1,8 +1,9 @@
-"""Adaptador de infraestructura para consumir series del Banco Central de Chile (SIETE REST WS)."""
+"""Adaptador para consumir series del Banco Central de Chile (SIETE REST WS)."""
 
-from datetime import date
 import json
+from datetime import date
 from typing import Any, Final
+
 import httpx
 
 from app.core.config import settings
@@ -21,7 +22,7 @@ from app.domain.interfaces.external_connector import (
 
 
 class BCentralChileConnector(IExternalDataConnector):
-    """Adaptador de infraestructura para consumir SIETE REST WS del Banco Central de Chile.
+    """Adaptador para consumir SIETE REST WS del Banco Central de Chile.
 
     Provee extracción y normalización de indicadores laborales, económicos
     y productivos para Chile (CHL) mediante autenticación BDE.
@@ -192,7 +193,7 @@ class BCentralChileConnector(IExternalDataConnector):
         periodo_desde: str | None = None,
         periodo_hasta: str | None = None,
     ) -> list[RawIndicatorRecord]:
-        """Extrae y transforma observaciones de SIETE a modelos normalizados RawIndicatorRecord."""
+        """Extrae y transforma observaciones de SIETE a RawIndicatorRecord."""
         if paises:
             norm_countries = [
                 p.value if hasattr(p, "value") else str(p).upper() for p in paises

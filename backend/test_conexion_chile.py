@@ -1,4 +1,5 @@
 import asyncio
+
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )

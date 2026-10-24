@@ -20,6 +20,10 @@ from app.domain.interfaces.indicador_repository import IIndicadorRepository
 from app.domain.interfaces.indice_empleabilidad_repository import (
     IIndiceEmpleabilidadRepository,
 )
+from app.infrastructure.connectors.bcentral_chile_connector import (
+    BCentralChileConnector,
+)
+from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
@@ -28,11 +32,6 @@ from app.infrastructure.persistence.repositories import (
 )
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
-)
-
-from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
-from app.infrastructure.connectors.bcentral_chile_connector import (
-    BCentralChileConnector,
 )
 
 
@@ -225,7 +224,8 @@ def provide_bcentral_chile_sync_service(
         Depends(provide_indicador_repository),
     ],
 ) -> ExternalSyncService:
-    """Provee el servicio de aplicación para sincronización con el Banco Central de Chile.
+    """Provee el servicio de aplicación para sincronización
+    con el Banco Central de Chile.
 
     Args:
         connector: Conector de BCentral Chile inyectado.

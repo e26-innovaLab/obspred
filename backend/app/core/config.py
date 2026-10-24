@@ -8,6 +8,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.core.constants import (
     API_V1_PREFIX,
+    DEFAULT_BCENTRAL_CHILE_BASE_URL,
+    DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
     DEFAULT_MAX_UPLOAD_SIZE_BYTES,
     DEFAULT_UPLOAD_DIR,
     DEFAULT_WORLD_BANK_BASE_URL,
@@ -73,10 +75,8 @@ class Settings(BaseSettings):
     # Banco Central de Chile (SIETE REST WS)
     bcentral_chile_user: str = ""
     bcentral_chile_pass: str = ""
-    bcentral_chile_base_url: str = (
-        "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
-    )
-    bcentral_chile_timeout_seconds: float = 30.0
+    bcentral_chile_base_url: str = DEFAULT_BCENTRAL_CHILE_BASE_URL
+    bcentral_chile_timeout_seconds: float = DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS
 
 
 # Instancia única reutilizable para inyección o importación directa
