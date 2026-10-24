@@ -3,12 +3,11 @@ from app.domain.entities.indice_empleabilidad import (
     EvolucionIndicePunto,
     IndiceEmpleabilidad,
 )
-from app.domain.entities.uploaded_file import UploadedFile
-
 from app.domain.entities.serie_historica import (
     PuntoSerieTemporal,
     SerieHistorica,
 )
+from app.domain.entities.uploaded_file import UploadedFile
 
 __all__ = [
     "DimensionIndice",

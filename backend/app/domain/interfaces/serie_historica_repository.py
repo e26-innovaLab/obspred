@@ -1,7 +1,9 @@
 """Contrato abstracto del repositorio para Series Temporales Históricas."""
+
 from abc import ABC, abstractmethod
 
 from app.domain.entities.serie_historica import PuntoSerieTemporal
+
 
 class ISerieHistoricaRepository(ABC):
     """Puerto abstracto para la consulta y recuperación de series temporales."""
@@ -19,13 +21,14 @@ class ISerieHistoricaRepository(ABC):
 
         Args:
             pais: Código ISO3 del país (ej. ARG, URY, CHL).
-            indicador: Identificador estándar del indicador (ej. tasa_desempleo, tasa_empleo).
+            indicador: Identificador estándar (ej. tasa_desempleo, tasa_empleo).
             sector: Sector económico opcional de filtrado (None para agregado nacional).
             periodo_desde: Período inicial opcional (ej. 2024 o 2024-Q1).
             periodo_hasta: Período final opcional (ej. 2026 o 2026-Q4).
 
         Returns:
-            list[PuntoSerieTemporal]: Observaciones ordenadas cronológicamente de forma ascendente.
+            list[PuntoSerieTemporal]: Observaciones ordenadas
+            cronológicamente de forma ascendente.
         """
         pass
 
@@ -36,7 +39,7 @@ class ISerieHistoricaRepository(ABC):
         indicador: str,
         sector: str | None = None,
     ) -> PuntoSerieTemporal | None:
-        """Obtiene la observación más reciente disponible para alimentar tarjetas resumen.
+        """Obtiene la observación más reciente para alimentar tarjetas resumen.
 
         Args:
             pais: Código ISO3 del país.
@@ -44,6 +47,6 @@ class ISerieHistoricaRepository(ABC):
             sector: Sector económico opcional.
 
         Returns:
-            PuntoSerieTemporal | None: El punto más reciente registrado o None si no existen datos.
+            PuntoSerieTemporal | None: El punto más reciente o None si no hay datos.
         """
         pass

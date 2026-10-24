@@ -106,7 +106,8 @@ async def get_serie_historica(
         meta=meta,
     )
 
-#INDICADORES 
+
+# INDICADORES
 @indicadores_router.get(
     "",
     response_model=IndicadoresResponseSchema,

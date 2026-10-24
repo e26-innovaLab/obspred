@@ -13,7 +13,8 @@ class SerieNoEncontradaError(IndicadorError):
     def __init__(self, pais: str, indicador: str, detalle: str = "") -> None:
         self.pais = pais
         self.indicador = indicador
-        msg = f"No se encontró serie histórica para el país '{pais}' y el indicador '{indicador}'."
+        msg = f"No se encontró serie histórica para el país '{pais}'"
+        f"y el indicador '{indicador}'."
         if detalle:
             msg = f"{msg} {detalle}"
         super().__init__(msg)

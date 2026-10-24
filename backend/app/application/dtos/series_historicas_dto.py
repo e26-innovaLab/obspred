@@ -33,6 +33,3 @@ class SerieHistoricaResultadoDTO:
     sector: str | None
     total_observaciones: int
     observaciones: list[PuntoSerieDTO]
-
-
-
