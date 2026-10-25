@@ -6,7 +6,7 @@
 
 .app-header {
   display: flex;
-  align-items: center;
+  align-items: left;
   flex-direction: column;
   gap: 24px;
   padding: 16px 24px;
@@ -41,8 +41,9 @@
   opacity: 0.75;
   font-size: 14px;
   font-weight: 500;
-  padding-bottom: 2px;
-  border-bottom: 2px solid transparent;
+  padding: 6px;
+  border-radius: 5px;
+
 }
 
 .app-header nav a:hover {
@@ -51,9 +52,8 @@
 
 .app-header nav a.active {
   opacity: 1;
-  font-weight: 700;
   color: var(--amarillo);
-  border-bottom-color: var(--amarillo);
+  background-color: #004661;
 }
 
 .app-content {
@@ -123,6 +123,10 @@
   border-left: 4px solid var(--azul-claro);
   border-radius: 8px;
   background: var(--code-bg);
+  position: sticky;
+  z-index: 10;
+  top: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.20);
 }
 
 .filtros-bar label {
@@ -511,21 +515,62 @@
   display: inline-flex !important;
   flex-direction: row !important;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
+  user-select: none;
 }
 
-.filtros-comparacion__pais input {
-  accent-color: var(--azul-claro);
-  width: 16px;
-  height: 16px;
+/* Input nativo completamente oculto — solo existe para accesibilidad */
+.filtros-comparacion__input-oculto {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 
+/* Cuadrado custom con el color del país */
 .filtros-comparacion__muestra {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid var(--color-pais);
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Tilde blanca con pseudo-elemento */
+.filtros-comparacion__muestra::after {
+  content: '';
+  display: block;
   width: 10px;
-  height: 10px;
-  border-radius: 2px;
+  height: 5px;
+  border-left: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+/* Seleccionado: fondo del color del país + tilde visible */
+.filtros-comparacion__muestra[data-checked='true'] {
+  background: var(--color-pais);
+}
+
+.filtros-comparacion__muestra[data-checked='true']::after {
+  opacity: 1;
+}
+
+/* Focus visible para teclado */
+.filtros-comparacion__pais:focus-within .filtros-comparacion__muestra {
+  box-shadow: 0 0 0 3px var(--amarillo);
+  outline: none;
 }
 
 /* Tarjetas de indicadores comparativos */
@@ -706,20 +751,23 @@
 
 .dashboard__graficos {
   display: grid;
-  grid-template-columns: 3fr 2fr;
-  gap: 24px;
-  margin-top: 24px;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-top: 32px;
+}
+
+.page__columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-top: 32px;
 }
 
 .dashboard__graficos .chart-card,
 .page__columns .chart-card {
   margin-bottom: 0;
-}
-
-@media (max-width: 900px) {
-  .dashboard__graficos {
-    grid-template-columns: 1fr;
-  }
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ranking-list {
@@ -1021,18 +1069,13 @@
 
 @media (min-width: 1500px) {
   .ocupaciones__layout {
-    grid-template-columns: minmax(0, 1.45fr) minmax(360px, 1fr);
-  }
-
-  .ocupaciones__detalle {
-    position: sticky;
-    top: 24px;
+    grid-template-columns: 1fr;
   }
 }
 
 @media (min-width: 901px) and (max-width: 1499px) {
   .ocupaciones__detalle {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 

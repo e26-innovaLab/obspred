@@ -1,9 +1,10 @@
 """Controlador y endpoints asociados a la consulta de indicadores."""
 
-from typing import Annotated, List
+from typing import Annotated
 
-from fastapi import APIRouter, Query, status
+from fastapi import APIRouter, Depends, Query, status
 
+from app.api.dependencies import provide_indicador_repository
 from app.api.v1.schemas.indicadores_schema import (
     IndicadoresFilterSchema,
     IndicadoresResponseSchema,
@@ -13,11 +14,12 @@ from app.api.v1.schemas.response_schema import (
     ResponseMeta,
     create_success_response,
 )
-from app.core.constants import INDICADORES_ROUTE
+from app.core.constants import INDICADORES_ROUTE, OPENAPI_TAG_INDICADORES
+from app.domain.interfaces.indicador_repository import IIndicadorRepository
 
 indicadores_router = APIRouter(
     prefix=INDICADORES_ROUTE,
-    tags=["Indicadores"],
+    tags=[OPENAPI_TAG_INDICADORES],
 )
 
 
@@ -39,18 +41,44 @@ indicadores_router = APIRouter(
 )
 async def get_indicadores(
     filtros: Annotated[IndicadoresFilterSchema, Query()],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
 ) -> IndicadoresResponseSchema:
-    """Procesa la consulta inicial de indicadores aplicando filtros parametrizados.
+    """Procesa la consulta de indicadores aplicando filtros jerárquicos en repositorio.
 
     Args:
         filtros: Parámetros validados y sanitizados de filtrado jerárquico.
+        repository: Repositorio de indicadores inyectado.
 
     Returns:
         IndicadoresResponseSchema: Envoltorio estándar ApiResponse con la lista
             de indicadores y metadatos con el estado de los filtros.
     """
-    # Por ahora devolvemos el OK con lista vacía en data según requerimiento inicial
-    data: List[IndicadorItemSchema] = []
+    db_records = await repository.get_by_filters(
+        pais=filtros.pais,
+        sector=filtros.sector,
+        ocupacion=filtros.ocupacion,
+        desde=filtros.desde,
+        hasta=filtros.hasta,
+    )
+
+    data: list[IndicadorItemSchema] = [
+        IndicadorItemSchema(
+            pais=r.pais,
+            sector=r.sector,
+            ocupacion=r.ocupacion,
+            indicador=r.indicador,
+            periodo=r.periodo,
+            valor=r.valor,
+            tipo=r.tipo,
+            fuente=r.fuente,
+            fecha_actualizacion=r.fecha_actualizacion.isoformat(),
+        )
+        for r in db_records
+    ]
+
     meta = ResponseMeta(
         total=len(data),
         extra={"filtros": filtros.model_dump()},

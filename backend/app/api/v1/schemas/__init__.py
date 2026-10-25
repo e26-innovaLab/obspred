@@ -19,11 +19,9 @@ from app.api.v1.schemas.indice_empleabilidad_schema import (
 from app.api.v1.schemas.ingesta_schema import (
     FileUploadData,
     FileUploadResponseSchema,
-)
-from app.api.v1.schemas.prueba_schema import (
-    PruebaItemData,
-    PruebaPayloadSchema,
-    PruebaResponseSchema,
+    SyncExternalDataRequestSchema,
+    SyncExternalDataResponseData,
+    SyncExternalDataResponseSchema,
 )
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
@@ -48,10 +46,10 @@ __all__ = [
     "IndiceEmpleabilidadDataSchema",
     "IndiceEmpleabilidadFilterSchema",
     "IndiceEmpleabilidadResponseSchema",
-    "PruebaItemData",
-    "PruebaPayloadSchema",
-    "PruebaResponseSchema",
     "ResponseMeta",
+    "SyncExternalDataRequestSchema",
+    "SyncExternalDataResponseData",
+    "SyncExternalDataResponseSchema",
     "create_error_response",
     "create_success_response",
 ]

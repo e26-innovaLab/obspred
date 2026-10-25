@@ -4,7 +4,8 @@ Soporta conexiones nativas a PostgreSQL (mediante asyncpg) y fallback local
 en SQLite con pooling optimizado y verificación de liveness (pool_pre_ping).
 """
 
-from typing import Any, AsyncGenerator, Dict
+from collections.abc import AsyncGenerator
+from typing import Any
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -16,7 +17,7 @@ from sqlalchemy.orm import declarative_base
 from app.core.config import settings
 
 # Argumentos base del motor
-engine_options: Dict[str, Any] = {
+engine_options: dict[str, Any] = {
     "echo": settings.database_echo,
     "future": True,
 }

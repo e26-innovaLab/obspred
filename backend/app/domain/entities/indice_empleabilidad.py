@@ -2,7 +2,12 @@
 
 from dataclasses import dataclass, field
 from datetime import date
-from typing import List, Optional
+
+from app.core.constants import (
+    DEFAULT_INDICE_METODOLOGIA_FUENTE,
+    NivelEmpleabilidad,
+    TipoIndicador,
+)
 
 
 @dataclass(frozen=True)
@@ -19,7 +24,7 @@ class DimensionIndice:
     nombre: str
     valor: float
     peso: float
-    descripcion: Optional[str] = None
+    descripcion: str | None = None
 
     def __post_init__(self) -> None:
         """Valida invariantes de la dimensión tras inicializarse.
@@ -87,19 +92,19 @@ class IndiceEmpleabilidad:
     ocupacion_nombre: str
     score: float
     nivel: str
-    dimensiones: List[DimensionIndice]
-    tipo: str = "calculado"
-    fuente: str = "Observatorio Predictivo / Fuentes Oficiales Armonizadas"
+    dimensiones: list[DimensionIndice]
+    tipo: str = TipoIndicador.CALCULADO
+    fuente: str = DEFAULT_INDICE_METODOLOGIA_FUENTE
     fecha_actualizacion: date = field(default_factory=date.today)
     metodologia: str = (
         "Índice de Empleabilidad — Metodología v1 (ponderación multidimensional: "
         "Demanda 35%, Estabilidad salarial 25%, Cobertura formativa 20%, "
         "Crecimiento reciente 20%)"
     )
-    pais: Optional[str] = None
-    sector: Optional[str] = None
-    periodo: Optional[str] = None
-    evolucion: List[EvolucionIndicePunto] = field(default_factory=list)
+    pais: str | None = None
+    sector: str | None = None
+    periodo: str | None = None
+    evolucion: list[EvolucionIndicePunto] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Valida invariantes de la entidad tras su inicialización.
@@ -115,25 +120,25 @@ class IndiceEmpleabilidad:
             )
 
     @classmethod
-    def determinar_nivel(cls, score: float) -> str:
+    def determinar_nivel(cls, score: float) -> NivelEmpleabilidad:
         """Determina la clasificación cualitativa según la escala definida.
 
         Args:
             score: Valor numérico entre 0.0 y 100.0.
 
         Returns:
-            str: 'Muy Alto', 'Alto', 'Medio' o 'Bajo'.
+            NivelEmpleabilidad: 'Muy Alto', 'Alto', 'Medio' o 'Bajo'.
         """
         if score >= 80.0:
-            return "Muy Alto"
+            return NivelEmpleabilidad.MUY_ALTO
         if score >= 65.0:
-            return "Alto"
+            return NivelEmpleabilidad.ALTO
         if score >= 50.0:
-            return "Medio"
-        return "Bajo"
+            return NivelEmpleabilidad.MEDIO
+        return NivelEmpleabilidad.BAJO
 
     @classmethod
-    def calcular_score_ponderado(cls, dimensiones: List[DimensionIndice]) -> float:
+    def calcular_score_ponderado(cls, dimensiones: list[DimensionIndice]) -> float:
         """Calcula el score global ponderado a partir de sus dimensiones.
 
         Args:

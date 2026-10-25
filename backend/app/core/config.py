@@ -4,14 +4,16 @@ Permite cargar y validar variables de entorno desde archivos .env
 o el entorno del sistema operativo sin acoplar cadenas fijas.
 """
 
-from typing import List
-
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.core.constants import (
     API_V1_PREFIX,
+    DEFAULT_BCENTRAL_CHILE_BASE_URL,
+    DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
     DEFAULT_MAX_UPLOAD_SIZE_BYTES,
     DEFAULT_UPLOAD_DIR,
+    DEFAULT_WORLD_BANK_BASE_URL,
+    DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
     AppEnvironment,
 )
 
@@ -32,6 +34,8 @@ class Settings(BaseSettings):
         database_echo: Habilita el registro de sentencias SQL generadas por el ORM.
         upload_dir: Ruta del directorio local para persistencia de archivos de ingesta.
         max_upload_size_bytes: Límite máximo en bytes para subida de archivos.
+        world_bank_api_base_url: URL base para la API del Banco Mundial.
+        world_bank_timeout_seconds: Timeout en segundos para solicitudes a World Bank.
     """
 
     model_config = SettingsConfigDict(
@@ -53,7 +57,7 @@ class Settings(BaseSettings):
     server_host: str = "0.0.0.0"
     server_port: int = 8000
 
-    cors_origins: List[str] = [
+    cors_origins: list[str] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
@@ -64,6 +68,15 @@ class Settings(BaseSettings):
 
     upload_dir: str = DEFAULT_UPLOAD_DIR
     max_upload_size_bytes: int = DEFAULT_MAX_UPLOAD_SIZE_BYTES
+
+    world_bank_api_base_url: str = DEFAULT_WORLD_BANK_BASE_URL
+    world_bank_timeout_seconds: float = DEFAULT_WORLD_BANK_TIMEOUT_SECONDS
+
+    # Banco Central de Chile (SIETE REST WS)
+    bcentral_chile_user: str = ""
+    bcentral_chile_pass: str = ""
+    bcentral_chile_base_url: str = DEFAULT_BCENTRAL_CHILE_BASE_URL
+    bcentral_chile_timeout_seconds: float = DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS
 
 
 # Instancia única reutilizable para inyección o importación directa

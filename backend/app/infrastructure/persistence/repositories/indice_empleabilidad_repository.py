@@ -2,11 +2,17 @@
 
 import unicodedata
 from datetime import date
-from typing import Dict, List, Optional
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.constants import (
+    INDICADOR_INDICE_EMPLEABILIDAD,
+    DimensionIndiceNombre,
+    PaisCodigo,
+    SectorEstrategico,
+    TipoIndicador,
+)
 from app.core.logging import logger
 from app.domain.entities.indice_empleabilidad import (
     DimensionIndice,
@@ -30,11 +36,11 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
     """Repositorio relacional y catálogo metodológico del Índice de Empleabilidad."""
 
     # Catálogo taxonómico armonizado de las 20 ocupaciones en 5 sectores
-    _CATALOGO_OCUPACIONES: Dict[str, dict] = {
+    _CATALOGO_OCUPACIONES: dict[str, dict] = {
         "dev-software": {
             "id": "dev-software",
             "nombre": "Desarrollador/a de software",
-            "sector": "tecnologia",
+            "sector": SectorEstrategico.TECNOLOGIA,
             "sector_nombre": "Tecnología",
             "aliases": [
                 "dev-software",
@@ -43,42 +49,102 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "software developer",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 88.0, 0.35, "Alta demanda vacantes digitales"),
-                ("Estabilidad salarial", 84.0, 0.25, "Remuneración competitiva"),
-                ("Cobertura formativa", 68.0, 0.20, "Déficit de graduados afines"),
-                ("Crecimiento reciente", 86.0, 0.20, "Expansión interanual sostenida"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    88.0,
+                    0.35,
+                    "Alta demanda vacantes digitales",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    84.0,
+                    0.25,
+                    "Remuneración competitiva",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    68.0,
+                    0.20,
+                    "Déficit de graduados afines",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    86.0,
+                    0.20,
+                    "Expansión interanual sostenida",
+                ),
             ],
         },
         "analista-datos": {
             "id": "analista-datos",
             "nombre": "Analista de datos",
-            "sector": "tecnologia",
+            "sector": SectorEstrategico.TECNOLOGIA,
             "sector_nombre": "Tecnología",
             "aliases": ["analista-datos", "analista de datos", "data analyst"],
             "dimensiones": [
-                ("Demanda de puestos", 84.0, 0.35, "Demanda creciente en BI y data"),
-                ("Estabilidad salarial", 82.0, 0.25, "Salarios sobre la media"),
-                ("Cobertura formativa", 62.0, 0.20, "Oferta formativa emergente"),
-                ("Crecimiento reciente", 88.0, 0.20, "Adopción veloz en empresas"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    84.0,
+                    0.35,
+                    "Demanda creciente en BI y data",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    82.0,
+                    0.25,
+                    "Salarios sobre la media",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    62.0,
+                    0.20,
+                    "Oferta formativa emergente",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    88.0,
+                    0.20,
+                    "Adopción veloz en empresas",
+                ),
             ],
         },
         "soporte-ti": {
             "id": "soporte-ti",
             "nombre": "Soporte técnico TI",
-            "sector": "tecnologia",
+            "sector": SectorEstrategico.TECNOLOGIA,
             "sector_nombre": "Tecnología",
             "aliases": ["soporte-ti", "soporte tecnico ti", "soporte tecnico"],
             "dimensiones": [
-                ("Demanda de puestos", 72.0, 0.35, "Demanda continua operativa"),
-                ("Estabilidad salarial", 60.0, 0.25, "Rango salarial medio"),
-                ("Cobertura formativa", 75.0, 0.20, "Buena disponibilidad técnica"),
-                ("Crecimiento reciente", 64.0, 0.20, "Crecimiento moderado estable"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    72.0,
+                    0.35,
+                    "Demanda continua operativa",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    60.0,
+                    0.25,
+                    "Rango salarial medio",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    75.0,
+                    0.20,
+                    "Buena disponibilidad técnica",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    64.0,
+                    0.20,
+                    "Crecimiento moderado estable",
+                ),
             ],
         },
         "diseno-ux": {
             "id": "diseno-ux",
             "nombre": "Diseñador/a UX/UI",
-            "sector": "tecnologia",
+            "sector": SectorEstrategico.TECNOLOGIA,
             "sector_nombre": "Tecnología",
             "aliases": [
                 "diseno-ux",
@@ -87,55 +153,135 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "ux ui",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 76.0, 0.35, "Foco en productos digitales"),
-                ("Estabilidad salarial", 78.0, 0.25, "Buena compensación técnica"),
-                ("Cobertura formativa", 70.0, 0.20, "Oferta formativa en auge"),
-                ("Crecimiento reciente", 74.0, 0.20, "Demanda sostenida en apps"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    76.0,
+                    0.35,
+                    "Foco en productos digitales",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    78.0,
+                    0.25,
+                    "Buena compensación técnica",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    70.0,
+                    0.20,
+                    "Oferta formativa en auge",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    74.0,
+                    0.20,
+                    "Demanda sostenida en apps",
+                ),
             ],
         },
         "enfermeria": {
             "id": "enfermeria",
             "nombre": "Enfermería",
-            "sector": "salud",
+            "sector": SectorEstrategico.SALUD,
             "sector_nombre": "Salud",
             "aliases": ["enfermeria", "enfermera", "enfermero"],
             "dimensiones": [
-                ("Demanda de puestos", 92.0, 0.35, "Demanda estructural crítica"),
-                ("Estabilidad salarial", 66.0, 0.25, "Estabilidad laboral alta"),
-                ("Cobertura formativa", 55.0, 0.20, "Déficit formativo persistente"),
-                ("Crecimiento reciente", 78.0, 0.20, "Expansión sanitaria continua"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    92.0,
+                    0.35,
+                    "Demanda estructural crítica",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    66.0,
+                    0.25,
+                    "Estabilidad laboral alta",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    55.0,
+                    0.20,
+                    "Déficit formativo persistente",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    78.0,
+                    0.20,
+                    "Expansión sanitaria continua",
+                ),
             ],
         },
         "tecnico-laboratorio": {
             "id": "tecnico-laboratorio",
             "nombre": "Técnico/a de laboratorio",
-            "sector": "salud",
+            "sector": SectorEstrategico.SALUD,
             "sector_nombre": "Salud",
             "aliases": ["tecnico-laboratorio", "tecnico de laboratorio"],
             "dimensiones": [
-                ("Demanda de puestos", 74.0, 0.35, "Demanda diagnóstica continua"),
-                ("Estabilidad salarial", 68.0, 0.25, "Puestos conveniados estables"),
-                ("Cobertura formativa", 72.0, 0.20, "Oferta técnica acorde"),
-                ("Crecimiento reciente", 66.0, 0.20, "Crecimiento moderado"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    74.0,
+                    0.35,
+                    "Demanda diagnóstica continua",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    68.0,
+                    0.25,
+                    "Puestos conveniados estables",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    72.0,
+                    0.20,
+                    "Oferta técnica acorde",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    66.0,
+                    0.20,
+                    "Crecimiento moderado",
+                ),
             ],
         },
         "kinesiologia": {
             "id": "kinesiologia",
             "nombre": "Kinesiología",
-            "sector": "salud",
+            "sector": SectorEstrategico.SALUD,
             "sector_nombre": "Salud",
             "aliases": ["kinesiologia", "kinesiologo", "fisioterapia"],
             "dimensiones": [
-                ("Demanda de puestos", 70.0, 0.35, "Rehabilitación ambulatoria"),
-                ("Estabilidad salarial", 64.0, 0.25, "Ingresos variables"),
-                ("Cobertura formativa", 68.0, 0.20, "Graduados suficientes"),
-                ("Crecimiento reciente", 70.0, 0.20, "Demanda por longevidad"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    70.0,
+                    0.35,
+                    "Rehabilitación ambulatoria",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    64.0,
+                    0.25,
+                    "Ingresos variables",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    68.0,
+                    0.20,
+                    "Graduados suficientes",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    70.0,
+                    0.20,
+                    "Demanda por longevidad",
+                ),
             ],
         },
         "gestion-hospitalaria": {
             "id": "gestion-hospitalaria",
             "nombre": "Gestión hospitalaria",
-            "sector": "salud",
+            "sector": SectorEstrategico.SALUD,
             "sector_nombre": "Salud",
             "aliases": [
                 "gestion-hospitalaria",
@@ -143,16 +289,36 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "administracion de salud",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 75.0, 0.35, "Complejidad en salud"),
-                ("Estabilidad salarial", 80.0, 0.25, "Cargos de jefatura"),
-                ("Cobertura formativa", 62.0, 0.20, "Escasa oferta de posgrado"),
-                ("Crecimiento reciente", 72.0, 0.20, "Eficiencia operativa"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    75.0,
+                    0.35,
+                    "Complejidad en salud",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    80.0,
+                    0.25,
+                    "Cargos de jefatura",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    62.0,
+                    0.20,
+                    "Escasa oferta de posgrado",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    72.0,
+                    0.20,
+                    "Eficiencia operativa",
+                ),
             ],
         },
         "tecnico-energias-renovables": {
             "id": "tecnico-energias-renovables",
             "nombre": "Técnico/a en energías renovables",
-            "sector": "energia",
+            "sector": SectorEstrategico.ENERGIA,
             "sector_nombre": "Energía",
             "aliases": [
                 "tecnico-energias-renovables",
@@ -160,16 +326,36 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "solar eolica",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 85.0, 0.35, "Transición energética"),
-                ("Estabilidad salarial", 74.0, 0.25, "Salarios sobre industria"),
-                ("Cobertura formativa", 50.0, 0.20, "Escasez de técnicos"),
-                ("Crecimiento reciente", 89.0, 0.20, "Expansión solar y eólica"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    85.0,
+                    0.35,
+                    "Transición energética",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    74.0,
+                    0.25,
+                    "Salarios sobre industria",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    50.0,
+                    0.20,
+                    "Escasez de técnicos",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    89.0,
+                    0.20,
+                    "Expansión solar y eólica",
+                ),
             ],
         },
         "ingenieria-electrica": {
             "id": "ingenieria-electrica",
             "nombre": "Ingeniería eléctrica",
-            "sector": "energia",
+            "sector": SectorEstrategico.ENERGIA,
             "sector_nombre": "Energía",
             "aliases": [
                 "ingenieria-electrica",
@@ -177,16 +363,36 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "ingeniero electrico",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 82.0, 0.35, "Demanda en infraestructura"),
-                ("Estabilidad salarial", 85.0, 0.25, "Remuneraciones altas"),
-                ("Cobertura formativa", 58.0, 0.20, "Baja graduación técnica"),
-                ("Crecimiento reciente", 76.0, 0.20, "Inversiones en redes"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    82.0,
+                    0.35,
+                    "Demanda en infraestructura",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    85.0,
+                    0.25,
+                    "Remuneraciones altas",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    58.0,
+                    0.20,
+                    "Baja graduación técnica",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    76.0,
+                    0.20,
+                    "Inversiones en redes",
+                ),
             ],
         },
         "operador-planta": {
             "id": "operador-planta",
             "nombre": "Operador/a de planta energética",
-            "sector": "energia",
+            "sector": SectorEstrategico.ENERGIA,
             "sector_nombre": "Energía",
             "aliases": [
                 "operador-planta",
@@ -194,29 +400,69 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "operador de planta energetica",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 70.0, 0.35, "Operación de generación"),
-                ("Estabilidad salarial", 78.0, 0.25, "Turnos con compensación"),
-                ("Cobertura formativa", 66.0, 0.20, "Formación técnica de planta"),
-                ("Crecimiento reciente", 68.0, 0.20, "Estabilidad operativa"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    70.0,
+                    0.35,
+                    "Operación de generación",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    78.0,
+                    0.25,
+                    "Turnos con compensación",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    66.0,
+                    0.20,
+                    "Formación técnica de planta",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    68.0,
+                    0.20,
+                    "Estabilidad operativa",
+                ),
             ],
         },
         "guia-turistico": {
             "id": "guia-turistico",
             "nombre": "Guía turístico/a",
-            "sector": "turismo",
+            "sector": SectorEstrategico.TURISMO,
             "sector_nombre": "Turismo",
             "aliases": ["guia-turistico", "guia turistico", "guia de turismo"],
             "dimensiones": [
-                ("Demanda de puestos", 68.0, 0.35, "Fuerte demanda estacional"),
-                ("Estabilidad salarial", 52.0, 0.25, "Dependencia de temporada"),
-                ("Cobertura formativa", 75.0, 0.20, "Formación accesible"),
-                ("Crecimiento reciente", 71.0, 0.20, "Turismo receptivo"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    68.0,
+                    0.35,
+                    "Fuerte demanda estacional",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    52.0,
+                    0.25,
+                    "Dependencia de temporada",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    75.0,
+                    0.20,
+                    "Formación accesible",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    71.0,
+                    0.20,
+                    "Turismo receptivo",
+                ),
             ],
         },
         "gestion-hotelera": {
             "id": "gestion-hotelera",
             "nombre": "Gestión hotelera",
-            "sector": "turismo",
+            "sector": SectorEstrategico.TURISMO,
             "sector_nombre": "Turismo",
             "aliases": [
                 "gestion-hotelera",
@@ -224,29 +470,69 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "administracion hotelera",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 72.0, 0.35, "Ocupación en corredores"),
-                ("Estabilidad salarial", 68.0, 0.25, "Cadenas consolidadas"),
-                ("Cobertura formativa", 70.0, 0.20, "Carreras técnicas activas"),
-                ("Crecimiento reciente", 73.0, 0.20, "Inversión hotelera"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    72.0,
+                    0.35,
+                    "Ocupación en corredores",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    68.0,
+                    0.25,
+                    "Cadenas consolidadas",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    70.0,
+                    0.20,
+                    "Carreras técnicas activas",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    73.0,
+                    0.20,
+                    "Inversión hotelera",
+                ),
             ],
         },
         "chef-gastronomia": {
             "id": "chef-gastronomia",
             "nombre": "Gastronomía / Chef",
-            "sector": "turismo",
+            "sector": SectorEstrategico.TURISMO,
             "sector_nombre": "Turismo",
             "aliases": ["chef-gastronomia", "chef", "gastronomia", "cocinero"],
             "dimensiones": [
-                ("Demanda de puestos", 80.0, 0.35, "Rotación y demanda urbana"),
-                ("Estabilidad salarial", 58.0, 0.25, "Dispersión salarial"),
-                ("Cobertura formativa", 72.0, 0.20, "Escuelas gastronómicas"),
-                ("Crecimiento reciente", 74.0, 0.20, "Sector dinámico"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    80.0,
+                    0.35,
+                    "Rotación y demanda urbana",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    58.0,
+                    0.25,
+                    "Dispersión salarial",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    72.0,
+                    0.20,
+                    "Escuelas gastronómicas",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    74.0,
+                    0.20,
+                    "Sector dinámico",
+                ),
             ],
         },
         "marketing-turistico": {
             "id": "marketing-turistico",
             "nombre": "Marketing turístico",
-            "sector": "turismo",
+            "sector": SectorEstrategico.TURISMO,
             "sector_nombre": "Turismo",
             "aliases": [
                 "marketing-turistico",
@@ -254,16 +540,36 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "promocion turistica",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 66.0, 0.35, "Perfiles en agencias"),
-                ("Estabilidad salarial", 65.0, 0.25, "Salarios alineados"),
-                ("Cobertura formativa", 76.0, 0.20, "Oferta educativa adecuada"),
-                ("Crecimiento reciente", 70.0, 0.20, "Turismo digital"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    66.0,
+                    0.35,
+                    "Perfiles en agencias",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    65.0,
+                    0.25,
+                    "Salarios alineados",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    76.0,
+                    0.20,
+                    "Oferta educativa adecuada",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    70.0,
+                    0.20,
+                    "Turismo digital",
+                ),
             ],
         },
         "investigador-i+d": {
             "id": "investigador-i+d",
             "nombre": "Investigador/a I+D",
-            "sector": "economia-conocimiento",
+            "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
             "sector_nombre": "Economía del conocimiento",
             "aliases": [
                 "investigador-i+d",
@@ -271,16 +577,36 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "investigador cientifico",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 74.0, 0.35, "Ciencias aplicadas y biotech"),
-                ("Estabilidad salarial", 82.0, 0.25, "Proyectos de largo plazo"),
-                ("Cobertura formativa", 54.0, 0.20, "Exigencia de doctorado"),
-                ("Crecimiento reciente", 75.0, 0.20, "Políticas de innovación"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    74.0,
+                    0.35,
+                    "Ciencias aplicadas y biotech",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    82.0,
+                    0.25,
+                    "Proyectos de largo plazo",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    54.0,
+                    0.20,
+                    "Exigencia de doctorado",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    75.0,
+                    0.20,
+                    "Políticas de innovación",
+                ),
             ],
         },
         "consultor-innovacion": {
             "id": "consultor-innovacion",
             "nombre": "Consultor/a de innovación",
-            "sector": "economia-conocimiento",
+            "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
             "sector_nombre": "Economía del conocimiento",
             "aliases": [
                 "consultor-innovacion",
@@ -288,16 +614,36 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "consultor",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 78.0, 0.35, "Transformación productiva"),
-                ("Estabilidad salarial", 84.0, 0.25, "Tarifas profesionales altas"),
-                ("Cobertura formativa", 65.0, 0.20, "Formación multidisciplinar"),
-                ("Crecimiento reciente", 79.0, 0.20, "Servicios empresariales"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    78.0,
+                    0.35,
+                    "Transformación productiva",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    84.0,
+                    0.25,
+                    "Tarifas profesionales altas",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    65.0,
+                    0.20,
+                    "Formación multidisciplinar",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    79.0,
+                    0.20,
+                    "Servicios empresariales",
+                ),
             ],
         },
         "propiedad-intelectual": {
             "id": "propiedad-intelectual",
             "nombre": "Especialista en propiedad intelectual",
-            "sector": "economia-conocimiento",
+            "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
             "sector_nombre": "Economía del conocimiento",
             "aliases": [
                 "propiedad-intelectual",
@@ -305,29 +651,69 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "patentes",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 68.0, 0.35, "Exportación tecnológica"),
-                ("Estabilidad salarial", 86.0, 0.25, "Alta cotización jurídica"),
-                ("Cobertura formativa", 52.0, 0.20, "Muy escasos especialistas"),
-                ("Crecimiento reciente", 72.0, 0.20, "Registro de intangibles"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    68.0,
+                    0.35,
+                    "Exportación tecnológica",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    86.0,
+                    0.25,
+                    "Alta cotización jurídica",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    52.0,
+                    0.20,
+                    "Muy escasos especialistas",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    72.0,
+                    0.20,
+                    "Registro de intangibles",
+                ),
             ],
         },
         "analista-financiero": {
             "id": "analista-financiero",
             "nombre": "Analista financiero/a",
-            "sector": "economia-conocimiento",
+            "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
             "sector_nombre": "Economía del conocimiento",
             "aliases": ["analista-financiero", "analista financiero", "fintech"],
             "dimensiones": [
-                ("Demanda de puestos", 82.0, 0.35, "Dinamismo bancario y fintech"),
-                ("Estabilidad salarial", 85.0, 0.25, "Paquete salarial superior"),
-                ("Cobertura formativa", 72.0, 0.20, "Graduados suficientes"),
-                ("Crecimiento reciente", 80.0, 0.20, "Modernización financiera"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    82.0,
+                    0.35,
+                    "Dinamismo bancario y fintech",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    85.0,
+                    0.25,
+                    "Paquete salarial superior",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    72.0,
+                    0.20,
+                    "Graduados suficientes",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    80.0,
+                    0.20,
+                    "Modernización financiera",
+                ),
             ],
         },
         "gestion-proyectos": {
             "id": "gestion-proyectos",
             "nombre": "Gestión de proyectos",
-            "sector": "economia-conocimiento",
+            "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
             "sector_nombre": "Economía del conocimiento",
             "aliases": [
                 "gestion-proyectos",
@@ -336,15 +722,35 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "scrum master",
             ],
             "dimensiones": [
-                ("Demanda de puestos", 84.0, 0.35, "Proyectos ágiles y técnicos"),
-                ("Estabilidad salarial", 83.0, 0.25, "Salarios consolidados"),
-                ("Cobertura formativa", 70.0, 0.20, "Certificaciones activas"),
-                ("Crecimiento reciente", 81.0, 0.20, "Expansión en sectores"),
+                (
+                    DimensionIndiceNombre.DEMANDA_PUESTOS,
+                    84.0,
+                    0.35,
+                    "Proyectos ágiles y técnicos",
+                ),
+                (
+                    DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
+                    83.0,
+                    0.25,
+                    "Salarios consolidados",
+                ),
+                (
+                    DimensionIndiceNombre.COBERTURA_FORMATIVA,
+                    70.0,
+                    0.20,
+                    "Certificaciones activas",
+                ),
+                (
+                    DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
+                    81.0,
+                    0.20,
+                    "Expansión en sectores",
+                ),
             ],
         },
     }
 
-    def __init__(self, session: Optional[AsyncSession] = None) -> None:
+    def __init__(self, session: AsyncSession | None = None) -> None:
         """Inicializa el repositorio con la sesión de base de datos opcional.
 
         Args:
@@ -352,7 +758,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         """
         self._session = session
 
-    def _resolve_catalog_entry(self, ocupacion: str) -> Optional[dict]:
+    def _resolve_catalog_entry(self, ocupacion: str) -> dict | None:
         """Localiza la entrada taxonómica de una ocupación por ID o alias.
 
         Args:
@@ -377,7 +783,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
 
         return None
 
-    def _get_fuente_por_pais(self, pais: Optional[str]) -> str:
+    def _get_fuente_por_pais(self, pais: str | None) -> str:
         """Determina la fuente trazable acorde al filtro de país.
 
         Args:
@@ -389,11 +795,11 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         if not pais:
             return "SENCE-SABE / INDEC / INE / OIT (Fuentes Oficiales Armonizadas)"
         p = pais.upper().strip()
-        if p in ("ARG", "AR", "ARGENTINA"):
+        if p in (PaisCodigo.ARG, "AR", "ARGENTINA"):
             return "INDEC — Encuesta Permanente de Hogares / Secretaría de Trabajo"
-        if p in ("CHL", "CL", "CHILE"):
+        if p in (PaisCodigo.CHL, "CL", "CHILE"):
             return "SENCE — SABE / INE Chile — ENE y SIMEL"
-        if p in ("URY", "UY", "URUGUAY"):
+        if p in (PaisCodigo.URY, "UY", "URUGUAY"):
             return "INE Uruguay — ECH / ANEP — DGETP-UTU"
         return f"Observatorio Predictivo ({p}) / Fuentes Armonizadas"
 
@@ -428,10 +834,10 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
     async def get_by_ocupacion(
         self,
         ocupacion: str,
-        pais: Optional[str] = None,
-        sector: Optional[str] = None,
-        periodo: Optional[str] = None,
-    ) -> Optional[IndiceEmpleabilidad]:
+        pais: str | None = None,
+        sector: str | None = None,
+        periodo: str | None = None,
+    ) -> IndiceEmpleabilidad | None:
         """Obtiene el Índice de Empleabilidad para una ocupación.
 
         Args:
@@ -457,7 +863,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                         func.upper(IndicadorModel.pais) == pais.upper().strip()
                     )
                 result = await self._session.execute(stmt)
-                db_records: List[IndicadorModel] = list(result.scalars().all())
+                db_records: list[IndicadorModel] = list(result.scalars().all())
             except Exception as exc:
                 logger.warning(
                     f"Fallo al consultar registros de BD para '{ocupacion}': {exc}"
@@ -474,7 +880,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
             fecha_act = db_records[0].fecha_actualizacion
 
             indice_records = [
-                r for r in db_records if r.indicador == "indice_empleabilidad"
+                r for r in db_records if r.indicador == INDICADOR_INDICE_EMPLEABILIDAD
             ]
             if indice_records:
                 score = round(indice_records[0].valor, 2)
@@ -483,25 +889,25 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
 
             dimensiones = [
                 DimensionIndice(
-                    nombre="Demanda de puestos",
+                    nombre=DimensionIndiceNombre.DEMANDA_PUESTOS,
                     valor=score,
                     peso=0.35,
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
-                    nombre="Estabilidad salarial",
+                    nombre=DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
                     valor=score,
                     peso=0.25,
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
-                    nombre="Cobertura formativa",
+                    nombre=DimensionIndiceNombre.COBERTURA_FORMATIVA,
                     valor=score,
                     peso=0.20,
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
-                    nombre="Crecimiento reciente",
+                    nombre=DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
                     valor=score,
                     peso=0.20,
                     descripcion="Medición agregada desde registros de BD",
@@ -514,7 +920,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 score=score,
                 nivel=IndiceEmpleabilidad.determinar_nivel(score),
                 dimensiones=dimensiones,
-                tipo="calculado",
+                tipo=TipoIndicador.CALCULADO,
                 fuente=fuente,
                 fecha_actualizacion=fecha_act,
                 pais=pais,
@@ -560,7 +966,7 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
             score=score,
             nivel=nivel,
             dimensiones=dimensiones,
-            tipo="calculado",
+            tipo=TipoIndicador.CALCULADO,
             fuente=self._get_fuente_por_pais(pais),
             fecha_actualizacion=date(2026, 9, 30),
             metodologia=(

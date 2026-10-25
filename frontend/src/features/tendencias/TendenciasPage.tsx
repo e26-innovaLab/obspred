@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { FiltrosBar } from '../../components/common/FiltrosBar';
-import { INDICADORES } from '../../services/mock/catalogo';
+import { INDICADORES, PAISES } from '../../services/mock/catalogo';
 import { useTendenciasData } from './hooks/useTendenciasData';
 import { ChartCard } from '../../components/charts/ChartCard';
 import { SerieHistoricaChart } from '../../components/charts/SerieHistoricaChart';
 import { ProyeccionPanel } from './components/ProyeccionPanel';
 import { CambiosSignificativos } from './components/CambiosSignificativos';
+import type { Pais } from '../../types/kpi';
+
+const ORDEN_PAISES = PAISES.map((p) => p.id as Pais);
 
 // Vista 3 — Tendencias.
 // Evolución histórica de un indicador y su proyección (solo con serie
@@ -13,9 +16,16 @@ import { CambiosSignificativos } from './components/CambiosSignificativos';
 // indicador (Figma: "Evolución de indicadores → Seleccionar indicador").
 export function TendenciasPage() {
   const [indicador, setIndicador] = useState(INDICADORES[0].id);
+  const [paises, setPaisesLocal] = useState<Pais[]>(ORDEN_PAISES);
   const { serie, proyeccion, cambios } = useTendenciasData(indicador);
   const marcas = cambios.state.status === 'success' ? cambios.state.data : [];
   const nombre = INDICADORES.find((i) => i.id === indicador)?.nombre ?? '';
+
+  const togglePais = (pais: Pais) =>
+    setPaisesLocal((prev) => {
+      const nuevos = prev.includes(pais) ? prev.filter((p) => p !== pais) : [...prev, pais];
+      return ORDEN_PAISES.filter((p) => nuevos.includes(p));
+    });
 
   const selector = (
     <label className="chart-card__selector">
@@ -34,7 +44,7 @@ export function TendenciasPage() {
     <section className="page">
       <h2>Tendencias</h2>
       <p className="page__descripcion">Analizá la evolución de los principales indicadores del mercado laboral.</p>
-      <FiltrosBar mostrarSector mostrarOcupacion mostrarPeriodo={false} />
+      <FiltrosBar mostrarSector mostrarOcupacion mostrarPeriodo={false} paisesMultiples={{ seleccionados: paises, onToggle: togglePais }} />
 
       <ChartCard
         titulo="Evolución de indicadores"

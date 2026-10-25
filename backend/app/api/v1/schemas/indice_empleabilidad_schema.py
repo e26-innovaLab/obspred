@@ -1,11 +1,12 @@
 """Esquemas Pydantic para la consulta y serialización del Índice de Empleabilidad."""
 
 from datetime import date
-from typing import Any, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.api.v1.schemas.response_schema import ApiResponse
+from app.core.constants import NivelEmpleabilidad, TipoIndicador
 
 
 class IndiceEmpleabilidadFilterSchema(BaseModel):
@@ -26,15 +27,15 @@ class IndiceEmpleabilidadFilterSchema(BaseModel):
         extra="forbid",
     )
 
-    pais: Optional[str] = Field(
+    pais: str | None = Field(
         default=None,
         description="Filtro jerárquico por país (ej. ARG, URY, CHL)",
     )
-    sector: Optional[str] = Field(
+    sector: str | None = Field(
         default=None,
         description="Filtro por sector productivo o estratégico",
     )
-    periodo: Optional[str] = Field(
+    periodo: str | None = Field(
         default=None,
         description="Período temporal analizado (ej. 2026-Q1)",
     )
@@ -79,7 +80,7 @@ class DimensionIndiceSchema(BaseModel):
         description="Ponderación asignada a la dimensión (0.0 a 1.0)",
         examples=[0.35],
     )
-    descripcion: Optional[str] = Field(
+    descripcion: str | None = Field(
         default=None,
         description="Explicación contextual de la dimensión",
     )
@@ -145,18 +146,18 @@ class IndiceEmpleabilidadDataSchema(BaseModel):
         description="Score global agregado del Índice de Empleabilidad (0 a 100)",
         examples=[81.3],
     )
-    nivel: str = Field(
+    nivel: NivelEmpleabilidad = Field(
         ...,
-        description="Nivel cualitativo: Muy Alto, Alto, Medio o Bajo",
-        examples=["Muy Alto"],
+        description="Nivel cualitativo según NivelEmpleabilidad",
+        examples=[NivelEmpleabilidad.MUY_ALTO],
     )
-    dimensiones: List[DimensionIndiceSchema] = Field(
+    dimensiones: list[DimensionIndiceSchema] = Field(
         ...,
         description="Desglose de dimensiones componentes con sus pesos",
     )
-    tipo: str = Field(
-        default="calculado",
-        description="Tipo metodológico del indicador (calculado)",
+    tipo: TipoIndicador = Field(
+        default=TipoIndicador.CALCULADO,
+        description="Tipo metodológico del indicador según TipoIndicador",
     )
     fuente: str = Field(
         ...,
@@ -170,19 +171,19 @@ class IndiceEmpleabilidadDataSchema(BaseModel):
         ...,
         description="Descripción metodológica del algoritmo y ponderaciones",
     )
-    pais: Optional[str] = Field(
+    pais: str | None = Field(
         default=None,
         description="País de análisis si fue filtrado",
     )
-    sector: Optional[str] = Field(
+    sector: str | None = Field(
         default=None,
         description="Sector estratégico asociado",
     )
-    periodo: Optional[str] = Field(
+    periodo: str | None = Field(
         default=None,
         description="Período de referencia temporal",
     )
-    evolucion: List[EvolucionIndicePuntoSchema] = Field(
+    evolucion: list[EvolucionIndicePuntoSchema] = Field(
         default_factory=list,
         description="Serie temporal de evolución histórica del índice",
     )

@@ -9,10 +9,12 @@ from app.application.dtos.indice_empleabilidad_dto import (
     EvolucionIndicePuntoDTO,
     IndiceEmpleabilidadDTO,
 )
+from app.application.dtos.sync_dto import ExternalSyncResultDTO
 
 __all__ = [
     "DimensionIndiceDTO",
     "EvolucionIndicePuntoDTO",
+    "ExternalSyncResultDTO",
     "FileUploadDTO",
     "IndiceEmpleabilidadDTO",
 ]
