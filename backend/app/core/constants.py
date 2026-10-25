@@ -124,11 +124,6 @@ INDICADORES_ROUTE: Final[str] = "/indicadores"
 INDICE_EMPLEABILIDAD_ROUTE: Final[str] = "/indice-empleabilidad"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
-<<<<<<< HEAD
-PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
-TENDENCIAS_ROUTE = "/tendencias"
-FUENTES_ROUTE = "/fuentes"
-=======
 INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 INGESTA_SYNC_WORLD_BANK_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/world-bank"
 TENDENCIAS_ROUTE: Final[str] = "/tendencias"
@@ -144,7 +139,6 @@ OPENAPI_TAG_HEALTH: Final[str] = "Health"
 OPENAPI_TAG_INDICADORES: Final[str] = "Indicadores"
 OPENAPI_TAG_INDICE_EMPLEABILIDAD: Final[str] = "Indice de Empleabilidad"
 OPENAPI_TAG_INGESTA: Final[str] = "Ingesta"
->>>>>>> origin/develop
 
 
 # ==============================================================================
@@ -218,10 +212,6 @@ __all__ = [
     "INDICE_EMPLEABILIDAD_ROUTE",
     "INGESTA_ROUTE",
     "INGESTA_UPLOAD_ROUTE",
-<<<<<<< HEAD
-    "PRUEBA_ENDPOINT_BORRAR_ROUTE",
-    "FUENTES_ROUTE",
-=======
     "INGESTA_SYNC_ROUTE",
     "INGESTA_SYNC_WORLD_BANK_ROUTE",
     "TENDENCIAS_ROUTE",
@@ -234,7 +224,6 @@ __all__ = [
     "OPENAPI_TAG_INDICADORES",
     "OPENAPI_TAG_INDICE_EMPLEABILIDAD",
     "OPENAPI_TAG_INGESTA",
->>>>>>> origin/develop
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
     "CSV_FILE_EXTENSION",
