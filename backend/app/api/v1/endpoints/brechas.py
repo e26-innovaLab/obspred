@@ -1,11 +1,12 @@
-from typing import Optional
-
 from fastapi import APIRouter, Path, Query, status
 
 from app.api.v1.schemas.brechas_schema import (
-    BrechasResponse,
+    BrechasResponseSchema,
     HabilidadBrechaItem,
     MetadatosFuente,
+)
+from app.api.v1.schemas.response_schema import (
+    create_success_response,
 )
 from app.core.constants import BRECHAS_ROUTE
 
@@ -17,7 +18,7 @@ brechas_router = APIRouter(
 
 @brechas_router.get(
     "/{ocupacion}",
-    response_model=BrechasResponse,
+    response_model=BrechasResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Consultar brechas de habilidades por ocupacion",
     description=(
@@ -27,7 +28,7 @@ brechas_router = APIRouter(
 )
 async def get_brechas_por_ocupacion(
     ocupacion: str = Path(
-        default="desarrollador_software",
+        ...,
         description="Identificador o nombre normalizado de la ocupación",
         examples=["desarrollador_software"],
     ),
@@ -36,33 +37,30 @@ async def get_brechas_por_ocupacion(
         description="Código ISO del país (ARG, URY, CHL)",
         examples=["ARG"],
     ),
-    sector: Optional[str] = Query(
+    sector: str | None = Query(
         None,
         description="Sector económico para acotar el análisis",
         examples=["Tecnología"],
     ),
-) -> BrechasResponse:
+) -> BrechasResponseSchema:
     habilidades_mock = [
         HabilidadBrechaItem(
-            nombre="Alfabetización digital",
+            habilidad="Alfabetización digital",
             demanda=95.0,
-            oferta=60.0,
-            brecha=35.0,
-            es_emergente=False,
+            ofertaFormativa=60.0,
+            emergente=False,
         ),
         HabilidadBrechaItem(
-            nombre="Trabajo en equipo remoto",
+            habilidad="Trabajo en equipo remoto",
             demanda=92.0,
-            oferta=28.0,
-            brecha=64.0,
-            es_emergente=True,
+            ofertaFormativa=28.0,
+            emergente=True,
         ),
         HabilidadBrechaItem(
-            nombre="Pensamiento analítico",
+            habilidad="Pensamiento analítico",
             demanda=90.0,
-            oferta=40.0,
-            brecha=50.0,
-            es_emergente=False,
+            ofertaFormativa=40.0,
+            emergente=False,
         ),
     ]
 
@@ -74,10 +72,16 @@ async def get_brechas_por_ocupacion(
         ),
     )
 
-    return BrechasResponse(
+    data = BrechasResponseSchema(
         pais=pais,
         sector=sector if sector else "Tecnología",
         ocupacion=ocupacion,
         habilidades=habilidades_mock,
         metadatos=metadatos,
+    )
+    return create_success_response(
+        data=data,
+        message="Brechas de habilidades obtenidas con éxito.",
+        status_code=status.HTTP_200_OK,
+        meta=metadatos,
     )

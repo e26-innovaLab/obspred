@@ -1,11 +1,10 @@
 """Controladores de endpoints de la versión 1."""
 
+from app.api.v1.endpoints.brechas import brechas_router
 from app.api.v1.endpoints.health import health_router
 from app.api.v1.endpoints.indicadores import indicadores_router
 from app.api.v1.endpoints.indice_empleabilidad import indice_empleabilidad_router
 from app.api.v1.endpoints.ingesta import ingesta_router
-from app.api.v1.endpoints.prueba_endpoint_borrar import prueba_router
-from app.api.v1.endpoints.brechas import brechas_router
 from app.api.v1.endpoints.tendencias import tendencias_router
 
 __all__ = [
@@ -13,7 +12,6 @@ __all__ = [
     "indicadores_router",
     "indice_empleabilidad_router",
     "ingesta_router",
-    "prueba_router",
-    "brechas_router"
+    "brechas_router",
     "tendencias_router",
 ]
