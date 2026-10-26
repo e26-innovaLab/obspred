@@ -168,6 +168,28 @@
   background: var(--bg);
 }
 
+.coverage-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.kpi-card--azul {
+  border-top: 3px solid var(--azul-claro);
+}
+
+.kpi-card--verde {
+  border-top: 3px solid var(--verde);
+}
+
+.kpi-card--amarillo {
+  border-top: 3px solid var(--amarillo);
+}
+
+.kpi-card--gris {
+  border-top: 3px solid var(--gris);
+}
+
 .kpi-card h3 {
   margin: 0 0 8px;
   font-size: 13px;
@@ -187,6 +209,24 @@
   font-weight: 400;
   opacity: 0.7;
   margin-left: 4px;
+}
+
+.kpi-label {
+  text-transform: uppercase;
+  margin: 0;
+  font-size: 10px;
+}
+
+.kpi-value {
+  margin: 6px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1F3042;
+}
+
+.kpi-description {
+  margin: 0;
+  font-size: 11px;
 }
 
 /* Fuente badge */
@@ -335,6 +375,76 @@
   opacity: 0.7;
   margin-top: 2px;
 }
+
+
+.fuentes-section {
+  margin-top: 24px;
+}
+
+.fuentes-section h2 {
+  margin-bottom: 12px;
+}
+
+.fuentes-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.fuentes-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.fuentes-table th,
+.fuentes-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.fuentes-table th {
+  background: var(--bg);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fuentes-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.fuentes-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.estado-validacion {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #F6F8FA;
+  color: #617085 ;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fuentes-table a {
+  color: var(--azul-claro);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.fuentes-table a:hover {
+  text-decoration: underline;
+}
+
 
 /* Proyección */
 .proyeccion-panel {
