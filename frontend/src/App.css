@@ -52,7 +52,7 @@
 
 .app-header nav a.active {
   opacity: 1;
-  color: var(--amarillo);
+  color: var(--blanco);
   background-color: #004661;
 }
 
