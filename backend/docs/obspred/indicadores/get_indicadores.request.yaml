@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{URL_BASE}}/indicadores?pais=&sector=&ocupacion=&desde=&hasta="
+method: GET
+queryParams:
+  pais: ""
+  sector: ""
+  ocupacion: ""
+  desde: ""
+  hasta: ""
+examples: ./.resources/get_indicadores.resources/examples
+order: 1000

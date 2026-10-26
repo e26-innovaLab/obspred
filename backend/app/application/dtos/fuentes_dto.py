@@ -1,6 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass
-from app.domain.enums.fuente_estado import FuenteEstado
+from app.core.constants import FuenteEstado
 
 
 @dataclass(frozen=True)

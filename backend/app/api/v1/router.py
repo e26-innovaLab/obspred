@@ -9,7 +9,7 @@ from app.api.v1.endpoints.indice_empleabilidad import (
 )
 from app.api.v1.endpoints.ingesta import ingesta_router
 from app.api.v1.endpoints.tendencias import tendencias_router
-
+from app.api.v1.endpoints.fuentes import fuentes_router  
 api_v1_router = APIRouter()
 
 # Registro modular de submódulos de la API
@@ -18,3 +18,4 @@ api_v1_router.include_router(indicadores_router)
 api_v1_router.include_router(indice_empleabilidad_router)
 api_v1_router.include_router(ingesta_router)
 api_v1_router.include_router(tendencias_router)
+api_v1_router.include_router(fuentes_router)  

@@ -1,0 +1,50 @@
+$kind: http-example
+request:
+  url: "{{URL_BASE}}/tendencias?pais=Argentina&sector=Todos%20los%20sectores&ocupacion=Todas%20las%20ocupaciones&indicador=puestos_demandados"
+  method: GET
+  queryParams:
+    pais: Argentina
+    sector: Todos los sectores
+    ocupacion: Todas las ocupaciones
+    indicador: puestos_demandados
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    content-type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "pais": "Argentina",
+        "sector": "Todos los sectores",
+        "ocupacion": "Todas las ocupaciones",
+        "indicador": "puestos_demandados",
+        "serie_historica": [
+          {
+            "periodo": "T3 2023",
+            "valor": 1620.0,
+            "es_destacado": false
+          },
+          {
+            "periodo": "T4 2023",
+            "valor": 1750.0,
+            "es_destacado": true
+          }
+        ],
+        "proyeccion": [
+          {
+            "periodo": "T1 2026",
+            "valor_proyectado": 1920.0,
+            "intervalo_superior": 2050.0,
+            "intervalo_inferior": 1810.0
+          }
+        ],
+        "cambios_significativos": [],
+        "metadatos": {
+          "fuente": "Sistemas oficiales integrados",
+          "fecha_actualizacion": "2026-10-11",
+          "metodologia": "Holt-Winters / ARIMA"
+        }
+      }
+order: 1000

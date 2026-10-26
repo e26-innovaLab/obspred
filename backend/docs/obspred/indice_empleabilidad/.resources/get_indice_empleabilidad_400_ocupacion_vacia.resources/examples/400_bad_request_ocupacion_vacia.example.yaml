@@ -1,0 +1,28 @@
+$kind: http-example
+request:
+  url: "{{URL_BASE}}/indice-empleabilidad/%20%20%20"
+  method: GET
+response:
+  statusCode: 400
+  statusText: Bad Request
+  headers:
+    content-type: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "success": false,
+        "status_code": 400,
+        "message": "El identificador o nombre de ocupación no puede estar vacío.",
+        "data": null,
+        "errors": [
+          {
+            "code": "DOMAIN_RULE_VIOLATION",
+            "detail": "El identificador o nombre de ocupación no puede estar vacío.",
+            "field": null
+          }
+        ],
+        "meta": null,
+        "timestamp": "2026-10-08T10:30:00.000000Z"
+      }
+order: 1000

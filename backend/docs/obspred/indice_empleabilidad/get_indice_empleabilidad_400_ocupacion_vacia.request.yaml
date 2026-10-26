@@ -1,0 +1,5 @@
+$kind: http-request
+url: "{{URL_BASE}}/indice-empleabilidad/%20%20%20"
+method: GET
+examples: ./.resources/get_indice_empleabilidad_400_ocupacion_vacia.resources/examples
+order: 3000

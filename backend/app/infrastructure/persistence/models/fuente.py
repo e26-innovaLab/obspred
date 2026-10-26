@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 
 from app.infrastructure.persistence.database import Base
-from app.domain.enums.fuente_estado import FuenteEstado
+from app.core.constants import FuenteEstado
 
 class FuenteModel(Base):
     """Mapeo relacional de la tabla de fuentes de datos del Observatorio.
@@ -25,6 +25,7 @@ class FuenteModel(Base):
     )
     nombre: Mapped[str] = mapped_column(
         String(100),
+        unique=True,
         nullable=False,
         index=True,
         doc="Nombre descriptivo de la fuente de datos",
@@ -40,7 +41,7 @@ class FuenteModel(Base):
         doc="URL o enlace web asociado a la fuente de datos",
     )
     ultima_actualizacion: Mapped[Optional[datetime]] = mapped_column(
-        DateTime,
+        DateTime(timezone=True),
         nullable=True,
         doc="Fecha y hora de la última actualización registrada",
     )

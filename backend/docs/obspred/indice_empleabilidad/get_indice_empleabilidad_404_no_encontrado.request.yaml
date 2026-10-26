@@ -1,0 +1,5 @@
+$kind: http-request
+url: "{{URL_BASE}}/indice-empleabilidad/ocupacion_inexistente"
+method: GET
+examples: ./.resources/get_indice_empleabilidad_404_no_encontrado.resources/examples
+order: 2000
