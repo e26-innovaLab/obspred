@@ -1,5 +1,0 @@
-$kind: http-request
-url: "{{URL_BASE}}/ingesta/upload"
-method: POST
-examples: ./.resources/file_upload.resources/examples
-order: 1000
