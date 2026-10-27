@@ -1,4 +1,4 @@
-"""Controlador y endpoint para la auditoría y estado de fuentes y metodologías."""
+﻿"""Controlador y endpoint para la auditoría y estado de fuentes y metodologías."""
 
 from typing import Annotated
 
@@ -42,12 +42,11 @@ async def get_fuentes(
     Returns:
         FuentesResponseSchema: Envoltorio ApiResponse con la lista de fuentes
             oficiales auditadas y sus fichas metodológicas.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con FuenteService / Auditoría de conectores (SyncLog):
     # 1. Inyectar servicio de auditoría de conectores (SyncLog / Conectores).
     # 2. Computar 'ultima_actualizacion' y 'estado_fuente' según logs de sync.
     # 3. Retornar las fichas metodológicas activas.
-    """
     fuentes_lista = [
         FuenteAuditoriaDto(
             id="ilostat",

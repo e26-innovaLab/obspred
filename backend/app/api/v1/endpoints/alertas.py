@@ -1,4 +1,4 @@
-"""Controlador y endpoint para el reporte de alertas y variaciones."""
+﻿"""Controlador y endpoint para el reporte de alertas y variaciones."""
 
 from typing import Annotated
 
@@ -50,12 +50,11 @@ async def get_alertas(
     Returns:
         AlertasResponseSchema: Envoltorio ApiResponse con la lista de eventos
             de alerta detectados.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con AlertService / Repositorio de variaciones:
     # 1. Inyectar servicio de alertas o cálculo de variaciones interperíodo.
     # 2. Aplicar umbrales fijados (ej. >5% variación = medio, >8% = alto).
     # 3. Filtrar por tipo de alerta solicitado y país.
-    """
     alertas_mock = [
         AlertaItemDto(
             id="puestos_demandados-ARG-2023-Q4",

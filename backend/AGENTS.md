@@ -118,7 +118,17 @@ Todo error de negocio debe heredar de `DomainException` o `EntityNotFoundExcepti
 
 ---
 
-## 6. Guía para Resolver comentarios `# TODO (Backend):`
+## 6. Convención y Guía para Resolver `# TODO(backend):`
+
+Para facilitar la detección por herramientas de análisis, extensiones IDE (*Todo Tree*) y agentes de IA, todos los pendientes técnicos se registran bajo el formato unificado:
+```python
+# TODO(backend): Conectar con <Service/Repository>:
+# 1. <Paso 1: Interfaz / Repositorio>
+# 2. <Paso 2: Lógica de negocio / Consulta>
+# 3. <Paso 3: Validación o filtrado>
+```
+
+> **Regla de ubicación:** Los `TODO` deben situarse siempre **en el cuerpo de la función** (inmediatamente después del cierre del docstring `"""`), nunca dentro del docstring, evitando que notas internas se filtren a la documentación pública de OpenAPI/Swagger.
 
 Cuando un agente o desarrollador deba conectar un endpoint mockeado con datos reales:
 

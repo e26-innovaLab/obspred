@@ -1,4 +1,4 @@
-"""Controlador y endpoint para el catálogo maestro de filtros y taxonomías."""
+﻿"""Controlador y endpoint para el catálogo maestro de filtros y taxonomías."""
 
 from fastapi import APIRouter, status
 
@@ -36,12 +36,11 @@ async def get_catalogo() -> CatalogoResponseSchema:
     Returns:
         CatalogoResponseSchema: Envoltorio ApiResponse con taxonomías completas
             (países, sectores, ocupaciones, indicadores y rango de períodos).
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con CatalogoService / Tablas maestras de taxonomías:
     # 1. Conectar con tablas maestras o servicio de taxonomías.
     # 2. Consultar rango real de períodos con observaciones en DB (MIN/MAX).
     # 3. Retornar desagregaciones disponibles por indicador.
-    """
     paises = [
         PaisCatalogoDto(id="ARG", nombre="Argentina"),
         PaisCatalogoDto(id="URY", nombre="Uruguay"),

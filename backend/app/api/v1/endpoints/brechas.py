@@ -1,4 +1,4 @@
-"""Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
+﻿"""Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
 
 from fastapi import APIRouter, Path, Query, status
 
@@ -44,12 +44,11 @@ async def get_brechas_generales(
 
     Returns:
         BrechasResponseSchema: Envoltorio ApiResponse con las habilidades comparadas.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con BrechasService / Repositorio de educación y vacantes:
     # 1. Inyectar servicio de brechas formativas.
     # 2. Integrar vacantes con matrículas y egresados educativos.
     # 3. Retornar cálculo de demanda vs oferta por competencia.
-    """
     return await get_brechas_por_ocupacion(
         ocupacion="general",
         pais=pais,
@@ -94,11 +93,10 @@ async def get_brechas_por_ocupacion(
     Returns:
         BrechasResponseSchema: Envoltorio ApiResponse con el detalle de brechas
             y metadatos de fuentes.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con BrechasService / Repositorio de habilidades:
     # 1. Inyectar servicio de brechas formativas.
     # 2. Filtrar habilidades asociadas a la ocupación dada.
-    """
     habilidades_mock = [
         HabilidadBrechaItem(
             habilidad="Alfabetización digital",

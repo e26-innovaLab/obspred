@@ -1,4 +1,4 @@
-"""Controlador y endpoints asociados al Índice de Empleabilidad por ocupación."""
+﻿"""Controlador y endpoints asociados al Índice de Empleabilidad por ocupación."""
 
 from typing import Annotated
 
@@ -63,12 +63,11 @@ async def get_ranking_ocupaciones(
     Returns:
         IndiceRankingResponseSchema: Envoltorio ApiResponse con la lista clasificada
             de ocupaciones con puestos demandados y score de empleabilidad.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con IndiceEmpleabilidadService:
     # 1. Inyectar IndiceEmpleabilidadService.get_ranking_multi_pais().
     # 2. Computar puestos demandados y score para ocupaciones por país.
     # 3. Ordenar descendentemente por puestos o score.
-    """
     paises_lista = (
         [p.strip().upper() for p in pais.split(",") if p.strip()]
         if pais

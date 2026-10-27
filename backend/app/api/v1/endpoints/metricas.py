@@ -1,4 +1,4 @@
-"""Controlador y endpoints asociados al módulo de métricas y gráficos."""
+﻿"""Controlador y endpoints asociados al módulo de métricas y gráficos."""
 
 from typing import Annotated
 
@@ -77,12 +77,11 @@ async def get_series(
     Returns:
         MetricasSeriesResponseSchema: Envoltorio ApiResponse con la lista de series
             temporales y metadatos de trazabilidad.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con SeriesHistoricasService / IndicadorRepository:
     # 1. Inyectar SeriesHistoricasService / Repositorio de indicadores.
     # 2. Reemplazar la generación de datos simulados por consulta SQL agrupada por país.
     # 3. Considerar frecuencia y filtro desde/hasta.
-    """
     paises_lista = [p.strip().upper() for p in pais.split(",") if p.strip()]
     if not paises_lista:
         paises_lista = ["ARG"]
@@ -181,12 +180,11 @@ async def get_proyecciones(
     Returns:
         MetricasProyeccionesResponseSchema: Envoltorio ApiResponse con la serie
             histórica, puntos proyectados e intervalos de confianza.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con ProyeccionesService / Modelos Estadísticos:
     # 1. Inyectar servicio de modelado predictivo (regresión lineal o ARIMA).
     # 2. Aplicar validación de al menos 3 períodos históricos (Principio 5).
     # 3. Retornar límites superior e inferior calculados sobre la varianza muestral.
-    """
     historico = [
         PuntoSerieDto(periodo="2025-Q1", valor=1868.0, tipo="observado"),
         PuntoSerieDto(periodo="2025-Q2", valor=1852.0, tipo="observado"),
@@ -268,13 +266,12 @@ async def get_kpis(
     Returns:
         MetricasKpisResponseSchema: Envoltorio ApiResponse con el resumen de KPIs,
             variaciones calculadas y sparklines.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con KpiService / IndicadorRepository:
     # 1. Consultar últimos dos períodos disponibles por indicador en DB.
     # 2. Calcular variación absoluta y porcentual.
     # 3. Determinar tendencia según umbral acordado (±2%).
     # 4. Obtener serie de últimos 6-8 puntos para el sparkline.
-    """
     indicadores_solicitados = [i.strip() for i in indicadores.split(",") if i.strip()]
     kpis_list: list[KpiItemDto] = []
 
@@ -400,12 +397,11 @@ async def get_ranking(
     Returns:
         MetricasRankingResponseSchema: Envoltorio ApiResponse con los ítems ordenados
             y sus fuentes de información.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con RankingService / IndicadorRepository:
     # 1. Ejecutar consulta SQL agregada por la dimensión requerida.
     # 2. Ordenar por valor o variación porcentual descendente según query param.
     # 3. Aplicar límite de registros.
-    """
     items_mock = {
         "sector": [
             RankingItemDto(
@@ -572,11 +568,10 @@ async def get_comparativa(
     Returns:
         MetricasComparativaResponseSchema: Envoltorio ApiResponse con la comparativa
             del último valor de cada país por indicador.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con ComparativaService / IndicadorRepository:
     # 1. Buscar último valor reportado en cada país para cada indicador.
     # 2. Respetar frecuencias y períodos de corte distintos entre países.
-    """
     paises_solicitados = [p.strip().upper() for p in pais.split(",") if p.strip()]
     indicadores_solicitados = [i.strip() for i in indicadores.split(",") if i.strip()]
 
@@ -691,11 +686,10 @@ async def get_mapa_calor(
     Returns:
         MetricasMapaCalorResponseSchema: Envoltorio ApiResponse con la estructura
             matricial de celdas para el mapa de calor.
-
-    # TODO (Backend):
+    """
+    # TODO [backend]: Conectar con MapaCalorService / IndicadorRepository:
     # 1. Cruzar registros de la base agrupando por sector (fila) y país (columna).
     # 2. Retornar celdas completas, incluso las vacías con valor null.
-    """
     paises_col = [p.strip().upper() for p in pais.split(",") if p.strip()]
 
     filas_sectores = [
