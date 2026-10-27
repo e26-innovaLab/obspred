@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: row;
   min-height: 100vh;
+  background: #F6F8FA;
 }
 
 .app-header {
@@ -169,6 +170,7 @@
 }
 
 .coverage-section {
+  margin-top: 40px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -378,7 +380,7 @@
 
 
 .fuentes-section {
-  margin-top: 24px;
+  margin-top: 40px;
 }
 
 .fuentes-section h2 {
@@ -443,6 +445,172 @@
 
 .fuentes-table a:hover {
   text-decoration: underline;
+}
+
+
+/* Grilla de metodología */
+
+.metodologia-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 80px;
+}
+
+.metodologia-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.metodologia-card--full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 768px) {
+  .metodologia-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metodologia-card--full {
+    grid-column: auto;
+  }
+}
+
+.metodologia-card h2 {
+  margin: 0 0 20px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+
+.metodologia-paso:last-child {
+  border-bottom: none;
+}
+
+.metodologia-paso__titulo,
+.metodologia-item__titulo {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.metodologia-paso__descripcion,
+.metodologia-item__descripcion {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--gris);
+}
+
+.metodologia-item {
+   padding: 12px 0;
+}
+
+.metodologia-item:last-child {
+  border-bottom: none;
+}
+
+.metodologia-item__titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.metodologia-item__titulo::before {
+  content: "";
+  display: inline-block;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--azul-claro);
+}
+
+/* Colores de las pelotitas */
+.metodologia-item:nth-of-type(1) .metodologia-item__titulo::before {
+  background: #BF8A26;
+}
+
+.metodologia-item:nth-of-type(2) .metodologia-item__titulo::before {
+  background: #B8524A;
+}
+
+.metodologia-item:nth-of-type(4) .metodologia-item__titulo::before {
+  background: #055985;
+}
+
+.metodologia-item__descripcion {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--gris);
+}
+
+.metodologia-card--full {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  align-items: center;
+  gap: 24px;
+}
+
+.metodologia-card--full h2 {
+  margin: 0;
+}
+
+.metodologia-card--full p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gris);
+}
+
+
+@media (max-width: 768px) {
+  .metodologia-card--full {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.metodologia-card:first-child {
+  counter-reset: paso;
+}
+
+.metodologia-paso {
+  counter-increment: paso;
+  position: relative;
+  padding: 8px 14px 14px 48px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.metodologia-paso__titulo {
+  margin-top: 0;
+}
+
+.metodologia-paso:last-child {
+  margin-bottom: 0;
+  border: 1px solid var(--border);
+}
+
+.metodologia-paso__titulo::before {
+  content: counter(paso, decimal-leading-zero);
+  position: absolute;
+  top: -4px;
+  left: 0;
+  padding: 6px 8px;
+  border-radius: 7px 0 6px 0;
+  background: #f0f2f5;
+  color: var(--azul-claro);
+  font-size: 12px;
+  font-weight: 700;
 }
 
 
