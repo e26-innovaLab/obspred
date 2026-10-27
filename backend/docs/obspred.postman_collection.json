@@ -1671,68 +1671,6 @@
           ]
         }
       ]
-    },
-    {
-      "name": "fuentes",
-      "item": [
-        {
-          "name": "get_fuentes",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{URL_BASE}}/fuentes?pais=ARG",
-              "host": [
-                "{{URL_BASE}}"
-              ],
-              "path": [
-                "fuentes"
-              ],
-              "query": [
-                {
-                  "key": "pais",
-                  "value": "ARG"
-                }
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200_ok_fuentes",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{URL_BASE}}/fuentes?pais=ARG",
-                  "host": [
-                    "{{URL_BASE}}"
-                  ],
-                  "path": [
-                    "fuentes"
-                  ],
-                  "query": [
-                    {
-                      "key": "pais",
-                      "value": "ARG"
-                    }
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "content-type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Información de trazabilidad y fuentes recuperada con éxito.\",\n  \"data\": {\n    \"fuentes\": [\n      {\n        \"id\": \"ilostat\",\n        \"nombre\": \"ILOSTAT — Organización Internacional del Trabajo (OIT)\",\n        \"descripcion\": \"Series armonizadas de indicadores de empleo, desempleo y subutilización de la fuerza de trabajo.\",\n        \"paises\": [\n          \"ARG\",\n          \"URY\",\n          \"CHL\"\n        ],\n        \"tipo_acceso\": \"api\",\n        \"frecuencia\": \"anual / trimestral\",\n        \"ultima_actualizacion\": \"2026-09-30\",\n        \"proxima_actualizacion\": \"2026-12-31\",\n        \"estado_fuente\": \"activa\",\n        \"url\": \"https://ilostat.ilo.org\",\n        \"indicadores_alimentados\": [\n          \"Tasa de desempleo\",\n          \"Tasa de empleo\",\n          \"Participación laboral\"\n        ]\n      },\n      {\n        \"id\": \"world-bank\",\n        \"nombre\": \"World Bank Open Data — Banco Mundial\",\n        \"descripcion\": \"Indicadores macroeconómicos y de desarrollo social comparables internacionalmente.\",\n        \"paises\": [\n          \"ARG\",\n          \"URY\",\n          \"CHL\"\n        ],\n        \"tipo_acceso\": \"api\",\n        \"frecuencia\": \"anual\",\n        \"ultima_actualizacion\": \"2026-08-15\",\n        \"proxima_actualizacion\": \"2026-11-30\",\n        \"estado_fuente\": \"activa\",\n        \"url\": \"https://data.worldbank.org\",\n        \"indicadores_alimentados\": [\n          \"PIB per cápita\",\n          \"Tasa de desempleo nacional\"\n        ]\n      },\n      {\n        \"id\": \"indec-eph\",\n        \"nombre\": \"INDEC — Encuesta Permanente de Hogares (Argentina)\",\n        \"descripcion\": \"Relevamiento continuo sobre mercado laboral, ingresos y condiciones socioeconómicas en Argentina.\",\n        \"paises\": [\n          \"ARG\"\n        ],\n        \"tipo_acceso\": \"dataset\",\n        \"frecuencia\": \"trimestral\",\n        \"ultima_actualizacion\": \"2026-09-24\",\n        \"proxima_actualizacion\": \"2026-12-20\",\n        \"estado_fuente\": \"activa\",\n        \"url\": \"https://www.indec.gob.ar\",\n        \"indicadores_alimentados\": [\n          \"Tasa de desempleo\",\n          \"Empleo registrado\",\n          \"Distribución de ingresos\"\n        ]\n      }\n    ],\n    \"metodologias\": [\n      {\n        \"id\": \"indice-empleabilidad\",\n        \"titulo\": \"Índice Multidimensional de Empleabilidad (v1.0)\",\n        \"resumen\": \"Score ponderado (0-100) compuesto por: Demanda de puestos (35%), Estabilidad salarial (25%), Cobertura formativa (20%) y Crecimiento reciente (20%).\",\n        \"url\": \"/docs/metodologia-indice-empleabilidad.md\"\n      },\n      {\n        \"id\": \"proyecciones-series\",\n        \"titulo\": \"Proyecciones y Modelado Predictivo de Tendencias\",\n        \"resumen\": \"Cálculo predictivo mediante regresiones sobre series temporales con exigencia de al menos 3 períodos históricos comparables y bandas de confianza al 80%.\",\n        \"url\": \"/docs/metodologia-proyecciones.md\"\n      },\n      {\n        \"id\": \"analisis-brechas\",\n        \"titulo\": \"Matriz de Brechas Formativas y Habilidades Emergentes\",\n        \"resumen\": \"Algoritmo de contraste entre la intensidad de búsqueda en vacantes de empleo y el flujo de egresados/titulaciones del sistema educativo formal.\",\n        \"url\": \"/docs/metodologia-brechas.md\"\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.694683Z\"\n}"
-            }
-          ]
-        }
-      ]
     }
   ],
   "variable": [

@@ -8,7 +8,6 @@ from app.core.constants import (
     ALERTAS_ROUTE,
     BRECHAS_ROUTE,
     CATALOGO_ROUTE,
-    FUENTES_ROUTE,
     INDICE_EMPLEABILIDAD_ROUTE,
     METRICAS_ROUTE,
 )
@@ -153,19 +152,6 @@ async def test_brechas_endpoint(async_client: AsyncClient) -> None:
     payload = response.json()
     assert payload["success"] is True
     assert len(payload["data"]["habilidades"]) > 0
-
-
-@pytest.mark.asyncio
-async def test_fuentes_endpoint(async_client: AsyncClient) -> None:
-    """Verifica la respuesta del inventario de fuentes y metodologías."""
-    url = f"{settings.api_v1_prefix}{FUENTES_ROUTE}"
-    response = await async_client.get(url)
-
-    assert response.status_code == 200
-    payload = response.json()
-    assert payload["success"] is True
-    assert len(payload["data"]["fuentes"]) > 0
-    assert len(payload["data"]["metodologias"]) > 0
 
 
 @pytest.mark.asyncio

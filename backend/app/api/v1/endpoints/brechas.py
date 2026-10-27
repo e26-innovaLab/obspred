@@ -1,4 +1,4 @@
-﻿"""Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
+"""Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
 
 from fastapi import APIRouter, Path, Query, status
 

@@ -1,4 +1,4 @@
-﻿"""Controlador y endpoint para el reporte de alertas y variaciones."""
+"""Controlador y endpoint para el reporte de alertas y variaciones."""
 
 from typing import Annotated
 

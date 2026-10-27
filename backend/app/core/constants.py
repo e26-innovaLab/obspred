@@ -138,7 +138,6 @@ METRICAS_ROUTE: Final[str] = "/metricas"
 CATALOGO_ROUTE: Final[str] = "/catalogo"
 ALERTAS_ROUTE: Final[str] = "/alertas"
 BRECHAS_ROUTE: Final[str] = "/brechas"
-FUENTES_ROUTE: Final[str] = "/fuentes"
 
 
 # Tags para OpenAPI / Swagger
@@ -151,7 +150,6 @@ OPENAPI_TAG_METRICAS: Final[str] = "Métricas"
 OPENAPI_TAG_CATALOGO: Final[str] = "Catálogo"
 OPENAPI_TAG_ALERTAS: Final[str] = "Alertas"
 OPENAPI_TAG_BRECHAS: Final[str] = "Brechas"
-OPENAPI_TAG_FUENTES: Final[str] = "Fuentes"
 
 
 # ==============================================================================
@@ -232,7 +230,6 @@ __all__ = [
     "CATALOGO_ROUTE",
     "ALERTAS_ROUTE",
     "BRECHAS_ROUTE",
-    "FUENTES_ROUTE",
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
@@ -246,7 +243,6 @@ __all__ = [
     "OPENAPI_TAG_CATALOGO",
     "OPENAPI_TAG_ALERTAS",
     "OPENAPI_TAG_BRECHAS",
-    "OPENAPI_TAG_FUENTES",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
     "CSV_FILE_EXTENSION",

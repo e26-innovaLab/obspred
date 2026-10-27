@@ -1,4 +1,4 @@
-﻿"""Controlador y endpoints asociados al módulo de métricas y gráficos."""
+"""Controlador y endpoints asociados al módulo de métricas y gráficos."""
 
 from typing import Annotated
 

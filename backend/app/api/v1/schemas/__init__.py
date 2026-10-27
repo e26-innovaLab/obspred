@@ -20,12 +20,6 @@ from app.api.v1.schemas.catalogo_schema import (
     SectorCatalogoDto,
 )
 from app.api.v1.schemas.fuente_schema import FuenteItemSchema
-from app.api.v1.schemas.fuentes_schema import (
-    FuenteAuditoriaDto,
-    FuentesDataSchema,
-    FuentesResponseSchema,
-    MetodologiaDto,
-)
 from app.api.v1.schemas.health_schema import (
     HealthDataSchema,
     HealthResponseSchema,
@@ -99,10 +93,7 @@ __all__ = [
     "EvolucionIndicePuntoSchema",
     "FileUploadData",
     "FileUploadResponseSchema",
-    "FuenteAuditoriaDto",
     "FuenteItemSchema",
-    "FuentesDataSchema",
-    "FuentesResponseSchema",
     "HabilidadBrechaItem",
     "HealthDataSchema",
     "HealthResponseSchema",
@@ -118,7 +109,6 @@ __all__ = [
     "KpiItemDto",
     "MapaCalorCeldaDto",
     "MapaCalorFilaDto",
-    "MetodologiaDto",
     "MetricasComparativaDataSchema",
     "MetricasComparativaResponseSchema",
     "MetricasKpisDataSchema",

@@ -1,4 +1,4 @@
-﻿"""Controlador y endpoints asociados al Índice de Empleabilidad por ocupación."""
+"""Controlador y endpoints asociados al Índice de Empleabilidad por ocupación."""
 
 from typing import Annotated
 

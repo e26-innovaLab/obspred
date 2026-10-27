@@ -1,4 +1,4 @@
-﻿"""Controlador y endpoint para el catálogo maestro de filtros y taxonomías."""
+"""Controlador y endpoint para el catálogo maestro de filtros y taxonomías."""
 
 from fastapi import APIRouter, status
 
