@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter
 
+from app.api.v1.endpoints.brechas import brechas_router
 from app.api.v1.endpoints.health import health_router
 from app.api.v1.endpoints.indicadores import indicadores_router
 from app.api.v1.endpoints.indice_empleabilidad import (
@@ -17,4 +18,5 @@ api_v1_router.include_router(health_router)
 api_v1_router.include_router(indicadores_router)
 api_v1_router.include_router(indice_empleabilidad_router)
 api_v1_router.include_router(ingesta_router)
+api_v1_router.include_router(brechas_router)
 api_v1_router.include_router(tendencias_router)
