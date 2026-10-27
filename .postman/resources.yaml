@@ -1,7 +1,0 @@
-# Use this workspace to collaborate
-workspace:
-  id: ""
-
-localResources:
-  collections:
-    - ../backend/docs/obspred
