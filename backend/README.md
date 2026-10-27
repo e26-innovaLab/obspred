@@ -385,37 +385,88 @@ Este informe técnico documenta y valida:
 - **Taxonomías y clasificaciones:** Mapeo de sectores a ISIC Rev. 4 y ocupaciones a ISCO-08 / ESCO.
 - **Trazabilidad y contrato de datos:** Todo registro procesado e insertado debe cumplir el esquema estándar que incluye `fuente`, `fecha_actualizacion` y `tipo` (`observado`, `calculado`, `proyeccion`).
 
-## Puesta en Marcha Local
+## 🚀 Puesta en Marcha Rápida (Para Desarrollo, Frontend y QA)
 
-### 1. Crear y activar entorno virtual
+Sigue estos sencillos pasos para levantar el backend en pocos minutos:
+
+---
+
+### Paso 1: Iniciar la Base de Datos con Docker (PostgreSQL)
+
+Desde la **raíz del proyecto (`obspred/`)**, ejecuta:
 ```bash
-python -m venv .venv
-# En Windows (PowerShell):
-.venv\Scripts\Activate.ps1
-# En Linux / macOS:
-source .venv/bin/activate
+docker compose up -d
+```
+> 💡 Esto descargará e iniciará el contenedor de **PostgreSQL 16** en el puerto `5432` en segundo plano con las credenciales por defecto (`postgres`/`postgres` en la base `obspred_db`).  
+> Para verificar que esté corriendo: `docker compose ps`.
+
+---
+
+### Paso 2: Configurar el Entorno del Backend
+
+Ingresa a la carpeta `backend/`:
+```bash
+cd backend
 ```
 
-### 2. Instalar dependencias
-```bash
-pip install -r requirements.txt
-```
+1. **Crear y activar el entorno virtual:**
+   ```bash
+   python -m venv .venv
+   # En Windows (PowerShell):
+   .venv\Scripts\Activate.ps1
+   # En Linux / macOS:
+   source .venv/bin/activate
+   ```
 
-### 3. Configurar variables de entorno
-```bash
-cp .env.example .env
-```
+2. **Instalar dependencias:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 4. Ejecutar migraciones de base de datos
-```bash
-alembic upgrade head
-```
+3. **Crear archivo de configuración `.env`:**
+   ```bash
+   cp .env.example .env
+   ```
+   *(El archivo `.env.example` ya viene preconfigurado para conectar con el PostgreSQL de Docker).*
 
-### 5. Iniciar el servidor de desarrollo
+4. **Aplicar las migraciones de base de datos:**
+   ```bash
+   alembic upgrade head
+   ```
+
+---
+
+### Paso 3: Iniciar el Servidor del Backend
+
+Con el entorno virtual activo:
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
-La documentación interactiva OpenAPI estará disponible en `http://localhost:8000/docs`.
+
+> **Alternativa directa desde la raíz (`obspred/`) sin activar la terminal:**
+> - Windows: `backend\.venv\Scripts\uvicorn app.main:app --app-dir backend --reload --port 8000`
+> - Linux/macOS: `backend/.venv/bin/uvicorn app.main:app --app-dir backend --reload --port 8000`
+
+---
+
+### 🌐 Accesos y Herramientas para Pruebas (Frontend & QA)
+
+Una vez iniciado el servidor:
+- **API Base:** [`http://localhost:8000`](http://localhost:8000)
+- **Documentación Interactiva (Swagger / OpenAPI):** [`http://localhost:8000/docs`](http://localhost:8000/docs)  
+  *(Permite probar todos los endpoints y ver los contratos de respuesta directamente desde el navegador).*
+- **Documentación alternativa (ReDoc):** [`http://localhost:8000/redoc`](http://localhost:8000/redoc)
+- **Chequeo de Salud del Servicio:** [`http://localhost:8000/api/v1/health`](http://localhost:8000/api/v1/health)
+- **Colección de Postman:** Importar el archivo [`backend/docs/obspred.postman_collection.json`](docs/obspred.postman_collection.json) con todas las peticiones y respuestas predefinidas.
+
+---
+
+### Detener los Servicios
+
+- **Detener el Backend:** Presiona `Ctrl + C` en la terminal donde corre Uvicorn.
+- **Detener Docker:** Desde la raíz del repositorio, ejecuta `docker compose down`.
+
+---
 
 ### 6. Ejecutar suite de pruebas y calidad de código
 
