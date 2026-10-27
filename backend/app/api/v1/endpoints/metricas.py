@@ -171,6 +171,17 @@ async def get_proyecciones(
 ) -> MetricasProyeccionesResponseSchema:
     """Procesa el cálculo o consulta de proyecciones estadísticas.
 
+    Args:
+        indicador: Identificador del indicador a proyectar.
+        pais: Código ISO 3166-1 alpha-3 del país.
+        sector: Filtro opcional por sector estratégico.
+        ocupacion: Filtro opcional por ocupación específica.
+        horizonte: Cantidad de trimestres futuros a proyectar.
+
+    Returns:
+        MetricasProyeccionesResponseSchema: Envoltorio ApiResponse con la serie histórica,
+            puntos proyectados e intervalos de confianza.
+
     # TODO (Backend):
     # 1. Inyectar servicio de modelado predictivo (regresión lineal o ARIMA).
     # 2. Aplicar validación de al menos 3 períodos históricos (Principio 5).
@@ -246,6 +257,17 @@ async def get_kpis(
     periodo: Annotated[str | None, Query(description="Período de corte")] = None,
 ) -> MetricasKpisResponseSchema:
     """Procesa la obtención de métricas sintéticas y sparklines.
+
+    Args:
+        indicadores: Slugs de indicadores separados por coma.
+        pais: Código ISO 3166-1 alpha-3 del país.
+        sector: Filtro opcional por sector estratégico.
+        ocupacion: Filtro opcional por ocupación específica.
+        periodo: Período temporal de corte.
+
+    Returns:
+        MetricasKpisResponseSchema: Envoltorio ApiResponse con el resumen de KPIs,
+            variaciones calculadas y sparklines.
 
     # TODO (Backend):
     # 1. Consultar últimos dos períodos disponibles por indicador en DB.
@@ -365,6 +387,19 @@ async def get_ranking(
     limite: Annotated[int, Query(description="Cantidad de registros", ge=1, le=20)] = 5,
 ) -> MetricasRankingResponseSchema:
     """Procesa rankings por dimensión.
+
+    Args:
+        dimension: Dimensión analítica ('sector', 'ocupacion' o 'habilidad').
+        indicador: Indicador utilizado para la clasificación.
+        pais: Código ISO 3166-1 alpha-3 del país.
+        sector: Filtro opcional por sector si la dimensión es ocupación.
+        periodo: Período temporal de referencia.
+        orden: Criterio de ordenamiento ('valor' o 'variacion').
+        limite: Cantidad máxima de registros a retornar.
+
+    Returns:
+        MetricasRankingResponseSchema: Envoltorio ApiResponse con los ítems ordenados
+            y sus fuentes de información.
 
     # TODO (Backend):
     # 1. Ejecutar consulta SQL agregada por la dimensión requerida.
