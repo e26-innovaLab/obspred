@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -7,18 +7,18 @@ from app.api.v1.schemas.response_schema import (
 )
 
 
-class TipoDatoBrecha(str, Enum):
+class TipoDatoBrecha(StrEnum):
     OBSERVADO = "observado"
     CALCULADO = "calculado"
     ESTIMADO = "estimado"
 
 
-class TipoHabilidad(str, Enum):
+class TipoHabilidad(StrEnum):
     TECNICA = "tecnica"
     BLANDA = "blanda"
 
 
-class NivelBrecha(str, Enum):
+class NivelBrecha(StrEnum):
     BAJA = "baja"
     MEDIA = "media"
     ALTA = "alta"
@@ -68,6 +68,11 @@ class HabilidadBrechaItem(BaseModel):
         False,
         alias="emergente",
         description="Indica si destaca en la lista de habilidades emergentes",
+    )
+    brecha: float = Field(
+        ...,
+        description="Diferencia neta calculada entre demanda y oferta formativa",
+        examples=[64.0],
     )
 
 

@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.brecha_service import BrechaService
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.application.services.fuentes_service import FuenteService
@@ -14,6 +15,7 @@ from app.application.services.indice_empleabilidad_service import (
 )
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
+from app.domain.interfaces.brecha_repository import IBrechaRepository
 from app.domain.interfaces.external_connector import IExternalDataConnector
 from app.domain.interfaces.file_storage_service import IFileStorageService
 from app.domain.interfaces.file_validator import IFileValidator
@@ -30,6 +32,9 @@ from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndicadorRepository,
     SqlAlchemyIndiceEmpleabilidadRepository,
+)
+from app.infrastructure.persistence.repositories.brecha_repository import (
+    SQLAlchemyBrechaRepository,
 )
 from app.infrastructure.persistence.repositories.fuente_repository import (
     SqlAlchemyFuenteRepository,
@@ -177,6 +182,7 @@ def provide_world_bank_sync_service(
     return ExternalSyncService(connector=connector, repository=repository)
 
 
+<<<<<<< HEAD
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -249,3 +255,38 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_brecha_repository(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> IBrechaRepository:
+    """Provee el repositorio para la persistencia y consulta de Brechas.
+
+    Args:
+        session: Sesión transaccional inyectada por FastAPI.
+
+    Returns:
+        IBrechaRepository: Instancia concreta de SQLAlchemyBrechaRepository.
+    """
+    return SQLAlchemyBrechaRepository(db=session)
+
+
+def provide_brecha_service(
+    repository: Annotated[
+        IBrechaRepository,
+        Depends(provide_brecha_repository),
+    ],
+) -> BrechaService:
+    """Provee el servicio de aplicación para las Brechas de Habilidades.
+
+    Args:
+        repository: Repositorio inyectado por FastAPI.
+
+    Returns:
+        BrechaService: Servicio listo para su uso en controladores.
+    """
+    return BrechaService(repository=repository)
+
