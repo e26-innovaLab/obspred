@@ -109,6 +109,27 @@
   }
 }
 
+#menu-principal a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#menu-principal a img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+
+.logo {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+}
+
+
 /* Filtros */
 .filtros-bar {
   display: flex;
