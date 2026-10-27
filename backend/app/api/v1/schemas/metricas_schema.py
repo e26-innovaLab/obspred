@@ -4,8 +4,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from app.api.v1.schemas.fuente_schema import FuenteItemSchema
 from app.api.v1.schemas.response_schema import ApiResponse
+from app.api.v1.schemas.trazabilidad_schema import TrazabilidadFuenteSchema
 
 # ==============================================================================
 # 1. Series Temporales (/metricas/series)
@@ -37,7 +37,7 @@ class SerieItemDto(BaseModel):
     puntos: list[PuntoSerieDto] = Field(
         default_factory=list, description="Lista ordenada de puntos."
     )
-    fuentes: list[FuenteItemSchema] = Field(
+    fuentes: list[TrazabilidadFuenteSchema] = Field(
         default_factory=list, description="Fuentes asociadas."
     )
 
@@ -96,7 +96,7 @@ class MetricasProyeccionesDataSchema(BaseModel):
     periodos_historicos: int = Field(
         default=0, description="Cantidad de observaciones históricas comparables."
     )
-    fuentes: list[FuenteItemSchema] = Field(
+    fuentes: list[TrazabilidadFuenteSchema] = Field(
         default_factory=list, description="Trazabilidad de la serie."
     )
 
@@ -140,7 +140,7 @@ class KpiItemDto(BaseModel):
     sparkline: list[float | None] = Field(
         default_factory=list, description="Últimos puntos para mini gráfico."
     )
-    fuente: FuenteItemSchema = Field(
+    fuente: TrazabilidadFuenteSchema = Field(
         ..., description="Trazabilidad de la fuente del dato."
     )
 
@@ -185,7 +185,7 @@ class MetricasRankingDataSchema(BaseModel):
     items: list[RankingItemDto] = Field(
         default_factory=list, description="Registros ordenados."
     )
-    fuentes: list[FuenteItemSchema] = Field(
+    fuentes: list[TrazabilidadFuenteSchema] = Field(
         default_factory=list, description="Fuentes de los datos."
     )
 
@@ -206,7 +206,7 @@ class ComparativaValorPaisDto(BaseModel):
     periodo: str | None = Field(
         None, description="Período específico del dato reportado."
     )
-    fuente: FuenteItemSchema | None = Field(
+    fuente: TrazabilidadFuenteSchema | None = Field(
         None, description="Fuente del dato del país."
     )
 
@@ -262,7 +262,7 @@ class MetricasMapaCalorDataSchema(BaseModel):
         default_factory=list, description="Lista de países ISO-3."
     )
     celdas: list[MapaCalorCeldaDto] = Field(default_factory=list)
-    fuentes: list[FuenteItemSchema] = Field(default_factory=list)
+    fuentes: list[TrazabilidadFuenteSchema] = Field(default_factory=list)
 
 
 MetricasMapaCalorResponseSchema = ApiResponse[MetricasMapaCalorDataSchema]

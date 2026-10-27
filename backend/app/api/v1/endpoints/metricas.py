@@ -4,7 +4,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
-from app.api.v1.schemas.fuente_schema import FuenteItemSchema
 from app.api.v1.schemas.metricas_schema import (
     ComparativaIndicadorDto,
     ComparativaValorPaisDto,
@@ -29,6 +28,7 @@ from app.api.v1.schemas.metricas_schema import (
     SerieItemDto,
 )
 from app.api.v1.schemas.response_schema import create_success_response
+from app.api.v1.schemas.trazabilidad_schema import TrazabilidadFuenteSchema
 from app.core.constants import METRICAS_ROUTE, OPENAPI_TAG_METRICAS
 
 metricas_router = APIRouter(
@@ -87,7 +87,7 @@ async def get_series(
         paises_lista = ["ARG"]
 
     series_data: list[SerieItemDto] = []
-    fuente_base = FuenteItemSchema(
+    fuente_base = TrazabilidadFuenteSchema(
         fuente="Datos Oficiales Armonizados (INDEC / INE / SENCE)",
         fecha_actualizacion="2026-09-30",
         estado_fuente="activa",
@@ -221,7 +221,7 @@ async def get_proyecciones(
         nivel_confianza=0.8,
         periodos_historicos=len(historico),
         fuentes=[
-            FuenteItemSchema(
+            TrazabilidadFuenteSchema(
                 fuente="innova.lab / Proyecciones estadísticas",
                 fecha_actualizacion="2026-10-01",
                 estado_fuente="activa",
@@ -322,7 +322,7 @@ async def get_kpis(
         ),
     }
 
-    fuente_kpi = FuenteItemSchema(
+    fuente_kpi = TrazabilidadFuenteSchema(
         fuente="INDEC / Encuesta Permanente de Hogares",
         fecha_actualizacion="2026-09-24",
         estado_fuente="activa",
@@ -518,7 +518,7 @@ async def get_ranking(
 
     seleccionados = items_mock.get(dimension, items_mock["sector"])[:limite]
 
-    fuente_ranking = FuenteItemSchema(
+    fuente_ranking = TrazabilidadFuenteSchema(
         fuente="SENCE / SABE / Portales de empleo oficiales",
         fecha_actualizacion="2026-09-01",
         estado_fuente="activa",
@@ -626,7 +626,7 @@ async def get_comparativa(
                         pais=p,
                         valor=val,
                         periodo=per,
-                        fuente=FuenteItemSchema(
+                        fuente=TrazabilidadFuenteSchema(
                             fuente=fuente_nombre,
                             fecha_actualizacion="2026-09-30",
                             estado_fuente="activa",
@@ -737,7 +737,7 @@ async def get_mapa_calor(
         columnas=paises_col,
         celdas=celdas,
         fuentes=[
-            FuenteItemSchema(
+            TrazabilidadFuenteSchema(
                 fuente="ILOSTAT / CEPALSTAT Armonizado",
                 fecha_actualizacion="2026-09-30",
                 estado_fuente="activa",

@@ -19,7 +19,6 @@ from app.api.v1.schemas.catalogo_schema import (
     PeriodosRangoDto,
     SectorCatalogoDto,
 )
-from app.api.v1.schemas.fuente_schema import FuenteItemSchema
 from app.api.v1.schemas.health_schema import (
     HealthDataSchema,
     HealthResponseSchema,
@@ -76,6 +75,7 @@ from app.api.v1.schemas.response_schema import (
     create_error_response,
     create_success_response,
 )
+from app.api.v1.schemas.trazabilidad_schema import TrazabilidadFuenteSchema
 
 __all__ = [
     "AlertaItemDto",
@@ -93,7 +93,7 @@ __all__ = [
     "EvolucionIndicePuntoSchema",
     "FileUploadData",
     "FileUploadResponseSchema",
-    "FuenteItemSchema",
+    "TrazabilidadFuenteSchema",
     "HabilidadBrechaItem",
     "HealthDataSchema",
     "HealthResponseSchema",

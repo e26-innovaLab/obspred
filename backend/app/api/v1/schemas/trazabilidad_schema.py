@@ -1,12 +1,15 @@
-"""Esquema de datos canónico para trazabilidad de fuentes según Principio 3."""
+"""Esquema de datos canónico para trazabilidad de indicadores y fuentes.
+
+Cumple con el Principio 3 de trazabilidad total y procedencia metodológica.
+"""
 
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 
-class FuenteItemSchema(BaseModel):
-    """Esquema para representar la trazabilidad y procedencia de un dato.
+class TrazabilidadFuenteSchema(BaseModel):
+    """Representa la trazabilidad y procedencia de una métrica o indicador.
 
     Attributes:
         fuente: Nombre de la entidad, organismo o cálculo de origen.
