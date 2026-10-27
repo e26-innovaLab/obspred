@@ -55,6 +55,15 @@ async def get_ranking_ocupaciones(
 ) -> IndiceRankingResponseSchema:
     """Procesa el ranking de ocupaciones para la tabla de la vista Ocupaciones.
 
+    Args:
+        pais: Códigos ISO 3166-1 alpha-3 separados por coma.
+        sector: Filtro opcional por sector estratégico.
+        periodo: Período temporal de corte.
+
+    Returns:
+        IndiceRankingResponseSchema: Envoltorio ApiResponse con la lista clasificada
+            de ocupaciones con puestos demandados y score de empleabilidad.
+
     # TODO (Backend):
     # 1. Inyectar IndiceEmpleabilidadService.get_ranking_multi_pais().
     # 2. Computar puestos demandados y score para ocupaciones por país.

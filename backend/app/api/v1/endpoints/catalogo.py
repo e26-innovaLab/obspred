@@ -33,6 +33,10 @@ catalogo_router = APIRouter(
 async def get_catalogo() -> CatalogoResponseSchema:
     """Procesa la obtención del catálogo unificado para los filtros del frontend.
 
+    Returns:
+        CatalogoResponseSchema: Envoltorio ApiResponse con taxonomías completas
+            (países, sectores, ocupaciones, indicadores y rango de períodos).
+
     # TODO (Backend):
     # 1. Conectar con tablas maestras o servicio de taxonomías.
     # 2. Consultar rango real de períodos con observaciones en DB (MIN/MAX).

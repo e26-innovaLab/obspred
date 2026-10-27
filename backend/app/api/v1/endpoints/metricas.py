@@ -179,8 +179,8 @@ async def get_proyecciones(
         horizonte: Cantidad de trimestres futuros a proyectar.
 
     Returns:
-        MetricasProyeccionesResponseSchema: Envoltorio ApiResponse con la serie histórica,
-            puntos proyectados e intervalos de confianza.
+        MetricasProyeccionesResponseSchema: Envoltorio ApiResponse con la serie
+            histórica, puntos proyectados e intervalos de confianza.
 
     # TODO (Backend):
     # 1. Inyectar servicio de modelado predictivo (regresión lineal o ARIMA).
@@ -564,6 +564,15 @@ async def get_comparativa(
 ) -> MetricasComparativaResponseSchema:
     """Procesa tarjetas comparativas multi-país.
 
+    Args:
+        indicadores: Slugs de indicadores separados por coma.
+        pais: Códigos ISO 3166-1 alpha-3 separados por coma.
+        sector: Filtro opcional por sector estratégico.
+
+    Returns:
+        MetricasComparativaResponseSchema: Envoltorio ApiResponse con la comparativa
+            del último valor de cada país por indicador.
+
     # TODO (Backend):
     # 1. Buscar último valor reportado en cada país para cada indicador.
     # 2. Respetar frecuencias y períodos de corte distintos entre países.
@@ -672,6 +681,16 @@ async def get_mapa_calor(
     periodo: Annotated[str | None, Query(description="Período de análisis")] = None,
 ) -> MetricasMapaCalorResponseSchema:
     """Procesa la grilla para el mapa de calor.
+
+    Args:
+        indicador: Identificador del indicador a evaluar en la matriz.
+        pais: Códigos ISO 3166-1 alpha-3 separados por coma (columnas).
+        filas: Dimensión de las filas (def: 'sector').
+        periodo: Período temporal de análisis.
+
+    Returns:
+        MetricasMapaCalorResponseSchema: Envoltorio ApiResponse con la estructura
+            matricial de celdas para el mapa de calor.
 
     # TODO (Backend):
     # 1. Cruzar registros de la base agrupando por sector (fila) y país (columna).

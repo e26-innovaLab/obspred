@@ -38,6 +38,13 @@ async def get_brechas_generales(
 ) -> BrechasResponseSchema:
     """Procesa la consulta general de brechas de habilidades.
 
+    Args:
+        pais: Código ISO 3166-1 alpha-3 del país.
+        sector: Filtro opcional por sector económico.
+
+    Returns:
+        BrechasResponseSchema: Envoltorio ApiResponse con las habilidades comparadas.
+
     # TODO (Backend):
     # 1. Inyectar servicio de brechas formativas.
     # 2. Integrar vacantes con matrículas y egresados educativos.
@@ -78,6 +85,15 @@ async def get_brechas_por_ocupacion(
     ),
 ) -> BrechasResponseSchema:
     """Procesa la consulta de brechas para una ocupación específica.
+
+    Args:
+        ocupacion: Identificador o denominación de la ocupación analizada.
+        pais: Código ISO 3166-1 alpha-3 del país.
+        sector: Filtro opcional por sector económico.
+
+    Returns:
+        BrechasResponseSchema: Envoltorio ApiResponse con el detalle de brechas
+            y metadatos de fuentes.
 
     # TODO (Backend):
     # 1. Inyectar servicio de brechas formativas.

@@ -36,6 +36,13 @@ async def get_fuentes(
 ) -> FuentesResponseSchema:
     """Procesa la consulta de fuentes y metodologías según Principio 3.
 
+    Args:
+        pais: Filtro opcional por código ISO 3166-1 alpha-3.
+
+    Returns:
+        FuentesResponseSchema: Envoltorio ApiResponse con la lista de fuentes
+            oficiales auditadas y sus fichas metodológicas.
+
     # TODO (Backend):
     # 1. Inyectar servicio de auditoría de conectores (SyncLog / Conectores).
     # 2. Computar 'ultima_actualizacion' y 'estado_fuente' según logs de sync.

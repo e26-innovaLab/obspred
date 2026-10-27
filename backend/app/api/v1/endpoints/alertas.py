@@ -41,6 +41,16 @@ async def get_alertas(
 ) -> AlertasResponseSchema:
     """Procesa la consulta de alertas estadísticas.
 
+    Args:
+        tipo: Clasificación de la alerta solicitada.
+        indicador: Filtro opcional por slug de indicador.
+        pais: Filtro opcional por código ISO 3166-1 alpha-3.
+        sector: Filtro opcional por sector estratégico.
+
+    Returns:
+        AlertasResponseSchema: Envoltorio ApiResponse con la lista de eventos
+            de alerta detectados.
+
     # TODO (Backend):
     # 1. Inyectar servicio de alertas o cálculo de variaciones interperíodo.
     # 2. Aplicar umbrales fijados (ej. >5% variación = medio, >8% = alto).
