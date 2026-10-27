@@ -1,14 +1,17 @@
-from fastapi import APIRouter, Path, Query, status
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+
+from app.api.dependencies import provide_brecha_service
 from app.api.v1.schemas.brechas_schema import (
+    BrechasDataSchema,
     BrechasResponseSchema,
-    HabilidadBrechaItem,
     MetadatosFuente,
 )
-from app.api.v1.schemas.response_schema import (
-    create_success_response,
-)
+from app.api.v1.schemas.response_schema import create_success_response
+from app.application.services.brecha_service import BrechaService
 from app.core.constants import BRECHAS_ROUTE
+from app.domain.exceptions.brecha_exceptions import OcupacionNoEncontradaError
 
 brechas_router = APIRouter(
     prefix=BRECHAS_ROUTE,
@@ -27,61 +30,65 @@ brechas_router = APIRouter(
     ),
 )
 async def get_brechas_por_ocupacion(
-    ocupacion: str = Path(
-        ...,
-        description="Identificador o nombre normalizado de la ocupación",
-        examples=["desarrollador_software"],
-    ),
-    pais: str = Query(
-        "ARG",
-        description="Código ISO del país (ARG, URY, CHL)",
-        examples=["ARG"],
-    ),
-    sector: str | None = Query(
-        None,
-        description="Sector económico para acotar el análisis",
-        examples=["Tecnología"],
-    ),
+    ocupacion: Annotated[
+        str,
+        Path(
+            ...,
+            description="Identificador o nombre normalizado de la ocupación",
+            examples=["desarrollador_software"],
+        ),
+    ],
+    service: Annotated[
+        BrechaService,
+        Depends(provide_brecha_service),
+    ],
+    pais: Annotated[
+        str,
+        Query(
+            description="Código ISO del país (ARG, URY, CHL)",
+            examples=["ARG"],
+        ),
+    ] = "ARG",
+    sector: Annotated[
+        str | None,
+        Query(
+            description="Sector económico para acotar el análisis",
+            examples=["Tecnología"],
+        ),
+    ] = None,
 ) -> BrechasResponseSchema:
-    habilidades_mock = [
-        HabilidadBrechaItem(
-            habilidad="Alfabetización digital",
-            demanda=95.0,
-            ofertaFormativa=60.0,
-            emergente=False,
-        ),
-        HabilidadBrechaItem(
-            habilidad="Trabajo en equipo remoto",
-            demanda=92.0,
-            ofertaFormativa=28.0,
-            emergente=True,
-        ),
-        HabilidadBrechaItem(
-            habilidad="Pensamiento analítico",
-            demanda=90.0,
-            ofertaFormativa=40.0,
-            emergente=False,
-        ),
-    ]
+    try:
+        # 1. Obtenemos las brechas desde el servicio de aplicación
+        habilidades_dtos = await service.get_by_ocupation(ocupacion)
 
-    metadatos = MetadatosFuente(
-        fuente="SENCE SABE / ESCO",
-        fecha_actualizacion="2026-09-30",
-        metodologia=(
-            "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
-        ),
-    )
+        # 2. Armamos los metadatos de la fuente
+        metadatos = MetadatosFuente(
+            fuente="SENCE SABE / ESCO",
+            fecha_actualizacion="2026-09-30",
+            metodologia=(
+                "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+            ),
+        )
 
-    data = BrechasResponseSchema(
-        pais=pais,
-        sector=sector if sector else "Tecnología",
-        ocupacion=ocupacion,
-        habilidades=habilidades_mock,
-        metadatos=metadatos,
-    )
-    return create_success_response(
-        data=data,
-        message="Brechas de habilidades obtenidas con éxito.",
-        status_code=status.HTTP_200_OK,
-        meta=metadatos,
-    )
+        # 3. Construimos el esquema con los datos reales devueltos por el servicio
+        data = BrechasDataSchema(
+            pais=pais,
+            sector=sector if sector else "Tecnología",
+            ocupacion=ocupacion,
+            habilidades=habilidades_dtos,
+            metadatos=metadatos,
+        )
+
+        # 4. Retornamos la respuesta estandarizada
+        return create_success_response(
+            data=data,
+            message="Brechas de habilidades obtenidas con éxito.",
+            status_code=status.HTTP_200_OK,
+            meta=metadatos,
+        )
+
+    except OcupacionNoEncontradaError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        ) from e
