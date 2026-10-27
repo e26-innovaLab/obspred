@@ -11,6 +11,9 @@ from app.api.v1.schemas.indice_empleabilidad_schema import (
     IndiceEmpleabilidadDataSchema,
     IndiceEmpleabilidadFilterSchema,
     IndiceEmpleabilidadResponseSchema,
+    IndiceRankingDataSchema,
+    IndiceRankingResponseSchema,
+    OcupacionRankingItemDto,
 )
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
@@ -29,6 +32,74 @@ indice_empleabilidad_router = APIRouter(
     prefix=INDICE_EMPLEABILIDAD_ROUTE,
     tags=[OPENAPI_TAG_INDICE_EMPLEABILIDAD],
 )
+
+
+@indice_empleabilidad_router.get(
+    "/ranking",
+    response_model=IndiceRankingResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Ranking tabular de ocupaciones por Índice de Empleabilidad",
+    description=(
+        "Retorna el listado de ocupaciones con puestos disponibles y score de "
+        "empleabilidad para comparativas multi-país."
+    ),
+)
+async def get_ranking_ocupaciones(
+    pais: Annotated[
+        str | None, Query(description="Códigos ISO-3 en CSV (ej. 'ARG,URY,CHL')")
+    ] = None,
+    sector: Annotated[
+        str | None, Query(description="Filtro opcional de sector")
+    ] = None,
+    periodo: Annotated[str | None, Query(description="Período temporal")] = None,
+) -> IndiceRankingResponseSchema:
+    """Procesa el ranking de ocupaciones para la tabla de la vista Ocupaciones.
+
+    # TODO (Backend):
+    # 1. Inyectar IndiceEmpleabilidadService.get_ranking_multi_pais().
+    # 2. Computar puestos demandados y score para ocupaciones por país.
+    # 3. Ordenar descendentemente por puestos o score.
+    """
+    paises_lista = (
+        [p.strip().upper() for p in pais.split(",") if p.strip()]
+        if pais
+        else ["ARG", "URY", "CHL"]
+    )
+
+    mock_ocupaciones_base = [
+        ("dev-software", "Desarrollador/a de software", 1820, 84.5),
+        ("enfermeria", "Enfermero/a profesional", 1450, 78.0),
+        ("analista-datos", "Analista de datos", 1210, 82.0),
+        ("ing-renovables", "Ingeniero/a en energías renovables", 980, 75.5),
+        ("especialista-ciberseguridad", "Especialista en ciberseguridad", 850, 86.0),
+        ("product-manager", "Gerente de producto digital", 740, 79.5),
+        ("tecnico-solar", "Técnico/a en instalaciones solares", 690, 71.0),
+        ("kinesiologia", "Kinesiólogo/a y fisioterapeuta", 580, 68.5),
+    ]
+
+    items: list[OcupacionRankingItemDto] = []
+    factor_pais = {"ARG": 1.0, "URY": 0.35, "CHL": 1.15}
+
+    for p in paises_lista:
+        factor = factor_pais.get(p, 1.0)
+        for slug, nombre, vacantes, score in mock_ocupaciones_base:
+            items.append(
+                OcupacionRankingItemDto(
+                    ocupacion_id=slug,
+                    nombre=nombre,
+                    puestos_disponibles=int(vacantes * factor),
+                    indice_empleabilidad=min(
+                        100.0, round(score * (0.95 if p == "URY" else 1.0), 1)
+                    ),
+                    pais=p,
+                    fuente="innova.lab / Índices Armonizados",
+                )
+            )
+
+    return create_success_response(
+        data=IndiceRankingDataSchema(ocupaciones=items),
+        message="Ranking de ocupaciones obtenido exitosamente.",
+    )
 
 
 @indice_empleabilidad_router.get(
