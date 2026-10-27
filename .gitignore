@@ -49,4 +49,4 @@ yarn-error.log*
 postman/
 
 # ingore archivos obspred
-docs/obspred/
+docs/obspred/*
