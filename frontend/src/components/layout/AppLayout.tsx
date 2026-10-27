@@ -1,16 +1,20 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import logo from '../../assets/icons/logo2.png'
+import inicioIcon from '../../assets/icons/inicio.png'
 import tendenciasIcon from '../../assets/icons/tendencias.png'
 import fuentesIcon from '../../assets/icons/fuentes.png'
+import breachasIcon from '../../assets/icons/brechas.png'
+import compararIcon from '../../assets/icons/comparar.png'
+import ocupacionesIcon from '../../assets/icons/ocupaciones.png'
 
 // Las etiquetas siguen el Figma ("Inicio") y van con inicial mayúscula.
 const NAV_ITEMS = [
-  { to: '/', label: 'Inicio', end: true},
-  { to: '/ocupaciones', label: 'Ocupaciones' },
+  { to: '/', label: 'Inicio', end: true, icon: inicioIcon},
+  { to: '/ocupaciones', label: 'Ocupaciones', icon: ocupacionesIcon },
   { to: '/tendencias', label: 'Tendencias', icon: tendenciasIcon},
-  { to: '/comparar', label: 'Comparar países' },
-  { to: '/brechas', label: 'Brechas de habilidades' },
+  { to: '/comparar', label: 'Comparar países', icon: compararIcon },
+  { to: '/brechas', label: 'Brechas de habilidades', icon: breachasIcon },
   { to: '/trazabilidad', label: 'Trazabilidad y fuentes', icon: fuentesIcon },
 ];
 
