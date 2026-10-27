@@ -8,7 +8,7 @@ from app.api.v1.schemas.alertas_schema import (
 from app.api.v1.schemas.brechas_schema import (
     BrechasDataSchema,
     BrechasResponseSchema,
-    HabilidadBrechaDto,
+    HabilidadBrechaItem,
 )
 from app.api.v1.schemas.catalogo_schema import (
     CatalogoDataSchema,
@@ -103,7 +103,7 @@ __all__ = [
     "FuenteItemSchema",
     "FuentesDataSchema",
     "FuentesResponseSchema",
-    "HabilidadBrechaDto",
+    "HabilidadBrechaItem",
     "HealthDataSchema",
     "HealthResponseSchema",
     "IndicadorCatalogoDto",
