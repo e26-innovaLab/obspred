@@ -47,3 +47,6 @@ yarn-error.log*
 # Archivos de  postman
 .postman/
 postman/
+
+# ingore archivos obspred
+docs/obspred/
