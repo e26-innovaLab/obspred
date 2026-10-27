@@ -1,17 +1,18 @@
-from datetime import datetime
-from typing import Optional
 from dataclasses import dataclass
+from datetime import datetime
+
 from app.core.constants import FuenteEstado
+
 
 @dataclass(frozen=True)
 class Fuente:
     nombre: str
-    descripcion: Optional[str] = None
+    descripcion: str | None = None
     estado: FuenteEstado = FuenteEstado.NO_DISPONIBLE
-    id: Optional[int] = None
-    descripcion: Optional[str] = None
-    url: Optional[str] = None
-    ulima_actualizacion: Optional[datetime] = None
+    id: int | None = None
+    descripcion: str | None = None
+    url: str | None = None
+    ulima_actualizacion: datetime | None = None
 
     def __post_init__(self) -> None:
         """Valida invariantes de la fuente tras inicializarse.

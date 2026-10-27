@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 
 from app.core.constants import FuenteEstado
 from app.domain.entities.fuente import Fuente
-from typing import Optional
 
 
 class IFuenteRepository(ABC):
-    """Puerto abstracto para operaciones de persistencia y consulta de fuentes de datos."""
+    """
+      Puerto abstracto para operaciones de persistencia y consulta de fuentes de datos.
+
+    """
 
     @abstractmethod
     async def get_by_estado(self, estado: FuenteEstado) -> list[Fuente]:
@@ -31,7 +33,7 @@ class IFuenteRepository(ABC):
             fuente: Modelo ORM de la fuente si existe, None si no.
         """
         pass
-    
+
     @abstractmethod
     async def save(self, fuente: Fuente) -> None:
         """Guarda una nueva fuente de datos en la base de datos.

@@ -1,5 +1,5 @@
-from app.core.constants import FuenteEstado
 from app.application.dtos.fuentes_dto import FuenteDTO
+from app.core.constants import FuenteEstado
 from app.domain.entities.fuente import Fuente
 from app.domain.interfaces.fuente_repository import IFuenteRepository
 
@@ -11,7 +11,9 @@ class FuenteService:
         """Inicializa el servicio con un repositorio de fuentes.
 
         Args:
-            fuente_repository (IFuenteRepository): Repositorio para la persistencia y consulta de fuentes.
+            fuente_repository (IFuenteRepository): Repositorio para la persistencia
+            y para consultar  fuentes.
+
         """
         self.fuente_repository = fuente_repository
 
@@ -31,7 +33,7 @@ class FuenteService:
             descripcion=fuente.descripcion,
             estado=fuente.estado,
             url=fuente.url,
-            ultima_actualizacion=fuente.ulima_actualizacion
+            ultima_actualizacion=fuente.ulima_actualizacion,
         )
 
     async def get_fuentes_by_estado(self, estado: FuenteEstado) -> list[FuenteDTO]:
@@ -44,7 +46,7 @@ class FuenteService:
             List[Fuente]: Lista de entidades Fuente coincidentes con el estado.
         """
         fuentes = await self.fuente_repository.get_by_estado(estado)
-        return [self._map_entity_to_dto(fuente) for fuente in fuentes] 
+        return [self._map_entity_to_dto(fuente) for fuente in fuentes]
 
     async def get_fuente_by_id(self, fuente_id: int) -> FuenteDTO | None:
         """Obtiene una fuente de datos por su ID.
@@ -59,7 +61,6 @@ class FuenteService:
         if fuente is None:
             return None
         return self._map_entity_to_dto(fuente)
-    
 
     async def create_fuente(self, fuente_dto: FuenteDTO) -> None:
         """Guarda una nueva fuente de datos en la base de datos.
@@ -71,7 +72,7 @@ class FuenteService:
             nombre=fuente_dto.nombre,
             descripcion=fuente_dto.descripcion,
             url=fuente_dto.url,
-            ulima_actualizacion=fuente_dto.ultima_actualizacion
+            ulima_actualizacion=fuente_dto.ultima_actualizacion,
         )
         await self.fuente_repository.save(fuente)
 

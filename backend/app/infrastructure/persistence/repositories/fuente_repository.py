@@ -1,17 +1,16 @@
-from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.infrastructure.persistence.models.fuente import FuenteModel
 from app.core.constants import FuenteEstado
-from app.domain.entities.fuente import Fuente
 from app.core.logging import logger
+from app.domain.entities.fuente import Fuente
 from app.domain.interfaces.fuente_repository import IFuenteRepository
+from app.infrastructure.persistence.models.fuente import FuenteModel
 
 
 class SqlAlchemyFuenteRepository(IFuenteRepository):
     """Repositorio para la gestión de fuentes de datos en la base de datos."""
-    
+
     def __init__(self, session: AsyncSession):
         """Inicializa el repositorio con una sesión de base de datos asincrónica.
 
@@ -36,7 +35,7 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
             descripcion=fuente_model.descripcion,
             estado=fuente_model.estado,
             url=fuente_model.url,
-            ulima_actualizacion=fuente_model.ultima_actualizacion
+            ulima_actualizacion=fuente_model.ultima_actualizacion,
         )
 
     async def get_by_estado(self, estado: FuenteEstado) -> list[Fuente]:
@@ -52,8 +51,8 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         result = await self.session.execute(query)
         fuentes_model = result.scalars().all()
         return [self._map_model_to_entity(fuente) for fuente in fuentes_model]
-        
-    async def get_by_id(self, fuente_id: int) -> Optional[Fuente]:
+
+    async def get_by_id(self, fuente_id: int) -> Fuente | None:
         """Consulta una fuente de datos por su ID.
 
         Args:
@@ -68,7 +67,7 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         if fuente_model:
             return self._map_model_to_entity(fuente_model)
         return None
-    
+
     async def save(self, fuente: Fuente) -> None:
         """Guarda una nueva fuente de datos en la base de datos.
 
@@ -80,7 +79,7 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
             descripcion=fuente.descripcion,
             estado=fuente.estado,
             url=fuente.url,
-            ultima_actualizacion=fuente.ulima_actualizacion
+            ultima_actualizacion=fuente.ulima_actualizacion,
         )
         self.session.add(fuente_model)
         await self.session.commit()

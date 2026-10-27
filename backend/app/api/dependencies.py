@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
+from app.application.services.fuentes_service import FuenteService
 from app.application.services.indice_empleabilidad_service import (
     IndiceEmpleabilidadService,
 )
@@ -30,12 +31,13 @@ from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndicadorRepository,
     SqlAlchemyIndiceEmpleabilidadRepository,
 )
+from app.infrastructure.persistence.repositories.fuente_repository import (
+    SqlAlchemyFuenteRepository,
+)
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
 
-from app.infrastructure.persistence.repositories.fuente_repository import SqlAlchemyFuenteRepository
-from app.application.services.fuentes_service import FuenteService
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provee una sesión de base de datos asíncrona por cada petición.
@@ -240,11 +242,10 @@ def provide_bcentral_chile_sync_service(
 
 
 def provide_fuente_service(
-        session: Annotated[
-            AsyncSession,
-            Depends(provide_db_session),
-        ],
-) -> FuenteService :
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
-    

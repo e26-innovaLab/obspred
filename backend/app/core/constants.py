@@ -184,12 +184,12 @@ DEFAULT_ERROR_MESSAGE: Final[str] = "Ocurrió un error al procesar la solicitud.
 INTERNAL_SERVER_ERROR_MESSAGE: Final[str] = "Error interno del servidor no controlado."
 
 
-
 # ==============================================================================
-# 8.Constantes de Estado de los fuentes de datos externas 
+# 8.Constantes de Estado de los fuentes de datos externas
 # ==============================================================================
 class FuenteEstado(StrEnum):
     """Enum que representa los posibles estados de una fuente de datos."""
+
     ACTIVA = "activa"
     DESACTUALIZADA = "desactualizada"
     NO_DISPONIBLE = "no_disponible"

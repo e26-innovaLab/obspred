@@ -1,11 +1,12 @@
-""" Esquemas Pydantic para la consulta y serialización de fuentes de datos. """
+"""Esquemas Pydantic para la consulta y serialización de fuentes de datos."""
 
-from typing import List
 from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
+
 from app.api.v1.schemas.response_schema import ApiResponse
 from app.core.constants import FuenteEstado
+
 
 class FuenteCreateSchema(BaseModel):
     """Estructura para crear una fuente de datos."""
@@ -36,8 +37,6 @@ class FuenteCreateSchema(BaseModel):
         description="Fecha y hora de la última actualización",
     )
 
-    
-
 
 class FuenteItemSchema(FuenteCreateSchema):
     """Estructura de respuesta con los datos de una fuente."""
@@ -54,7 +53,5 @@ class FuenteItemSchema(FuenteCreateSchema):
     model_config = ConfigDict(frozen=True)
 
 
-
-
-FuentesResponseSchema = ApiResponse[List[FuenteItemSchema]]
+FuentesResponseSchema = ApiResponse[list[FuenteItemSchema]]
 FuenteResponseSchema = ApiResponse[FuenteItemSchema]
