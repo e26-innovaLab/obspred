@@ -385,37 +385,91 @@ Este informe técnico documenta y valida:
 - **Taxonomías y clasificaciones:** Mapeo de sectores a ISIC Rev. 4 y ocupaciones a ISCO-08 / ESCO.
 - **Trazabilidad y contrato de datos:** Todo registro procesado e insertado debe cumplir el esquema estándar que incluye `fuente`, `fecha_actualizacion` y `tipo` (`observado`, `calculado`, `proyeccion`).
 
-## Puesta en Marcha Local
+## 🚀 Puesta en Marcha Rápida (Para Desarrollo, Frontend y QA)
 
-### 1. Crear y activar entorno virtual
+### 📌 Requisitos Previos
+- **Python:** Versión **3.11+** (recomendado 3.11 o 3.12, arquitectura de 64-bit).  
+  👉 Si aún no tienes Python instalado o tienes dudas sobre PATH, permisos o configuración según tu sistema operativo (Windows, macOS, Linux), consulta la [**Guía Completa de Instalación y Configuración de Python**](docs/guia-instalacion-python.md).
+- **Docker y Docker Compose:** Para ejecutar la base de datos PostgreSQL localmente (opcional si usas SQLite).
+
+---
+
+### Paso 1: Iniciar la Base de Datos con Docker (PostgreSQL)
+
+Desde la **raíz del proyecto (`obspred/`)**, ejecuta:
 ```bash
-python -m venv .venv
-# En Windows (PowerShell):
-.venv\Scripts\Activate.ps1
-# En Linux / macOS:
-source .venv/bin/activate
+docker compose up -d
+```
+> 💡 Esto descargará e iniciará el contenedor de **PostgreSQL 16** en el puerto `5432` en segundo plano con las credenciales por defecto (`postgres`/`postgres` en la base `obspred_db`).  
+> Para verificar que esté corriendo: `docker compose ps`.
+
+---
+
+### Paso 2: Configurar el Entorno del Backend
+
+Ingresa a la carpeta `backend/`:
+```bash
+cd backend
 ```
 
-### 2. Instalar dependencias
-```bash
-pip install -r requirements.txt
-```
+1. **Crear y activar el entorno virtual:**
+   ```bash
+   python -m venv .venv
+   # En Windows (PowerShell):
+   .venv\Scripts\Activate.ps1
+   # En Linux / macOS:
+   source .venv/bin/activate
+   ```
 
-### 3. Configurar variables de entorno
-```bash
-cp .env.example .env
-```
+2. **Instalar dependencias:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 4. Ejecutar migraciones de base de datos
-```bash
-alembic upgrade head
-```
+3. **Crear archivo de configuración `.env`:**
+   ```bash
+   cp .env.example .env
+   ```
+   *(El archivo `.env.example` ya viene preconfigurado para conectar con el PostgreSQL de Docker).*
 
-### 5. Iniciar el servidor de desarrollo
+4. **Aplicar las migraciones de base de datos:**
+   ```bash
+   alembic upgrade head
+   ```
+
+---
+
+### Paso 3: Iniciar el Servidor del Backend
+
+Con el entorno virtual activo:
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
-La documentación interactiva OpenAPI estará disponible en `http://localhost:8000/docs`.
+
+> **Alternativa directa desde la raíz (`obspred/`) sin activar la terminal:**
+> - Windows: `backend\.venv\Scripts\uvicorn app.main:app --app-dir backend --reload --port 8000`
+> - Linux/macOS: `backend/.venv/bin/uvicorn app.main:app --app-dir backend --reload --port 8000`
+
+---
+
+### 🌐 Accesos y Herramientas para Pruebas (Frontend & QA)
+
+Una vez iniciado el servidor:
+- **API Base:** [`http://localhost:8000`](http://localhost:8000)
+- **Documentación Interactiva (Swagger / OpenAPI):** [`http://localhost:8000/docs`](http://localhost:8000/docs)  
+  *(Permite probar todos los endpoints y ver los contratos de respuesta directamente desde el navegador).*
+- **Documentación alternativa (ReDoc):** [`http://localhost:8000/redoc`](http://localhost:8000/redoc)
+- **Chequeo de Salud del Servicio:** [`http://localhost:8000/api/v1/health`](http://localhost:8000/api/v1/health)
+- **Colección de Postman:** Importar el archivo [`backend/docs/obspred.postman_collection.json`](docs/obspred.postman_collection.json) con todas las peticiones y respuestas predefinidas.
+
+---
+
+### Detener los Servicios
+
+- **Detener el Backend:** Presiona `Ctrl + C` en la terminal donde corre Uvicorn.
+- **Detener Docker:** Desde la raíz del repositorio, ejecuta `docker compose down`.
+
+---
 
 ### 6. Ejecutar suite de pruebas y calidad de código
 
@@ -471,4 +525,26 @@ ruff check --fix .
 # Verificar formato de código:
 ruff format --check .
 ```
+
+---
+
+## 📚 Índice de Documentación Técnica
+
+Para profundizar en la arquitectura, contratos, persistencia y despliegue del backend, consulta las siguientes guías especializadas:
+
+| Documento | Descripción |
+|---|---|
+| [**Guía de Instalación de Python**](docs/guia-instalacion-python.md) | Versiones soportadas (3.11+), paso a paso para Windows, macOS y Linux, entornos virtuales y solución de problemas. |
+| [**Arquitectura y Capas**](docs/arquitectura-y-capas.md) | Detalle de Clean Architecture, flujos de datos y responsabilidades de cada capa. |
+| [**Contratos de API y ApiResponse**](docs/api-contracts.md) | Formato estándar de respuestas REST, paginación, metadatos y manejo uniforme de errores. |
+| [**Patrón Repositorio y Persistencia**](docs/patron-repositorio-y-persistencia.md) | Implementación de repositorios desacoplados con SQLAlchemy 2.0 asíncrono. |
+| [**Base de Datos y Migraciones Alembic**](docs/guia-base-datos-y-migraciones.md) | Comandos y flujo para generar y aplicar migraciones de base de datos. |
+| [**Inyección de Dependencias**](docs/inyeccion-de-dependencias.md) | Estándar de inyección mediante `Annotated` y `Depends` en FastAPI. |
+| [**Manejo de Errores y Excepciones**](docs/manejo-de-errores-y-excepciones.md) | Jerarquía de excepciones de dominio y manejadores globales HTTP. |
+| [**Guía de Creación de Conectores**](docs/guia-creacion-conectores.md) | Pautas para crear clientes HTTP para fuentes públicas y APIs externas. |
+| [**Guía de Creación de CRUDs**](docs/guia-creacion-crud.md) | Paso a paso para implementar nuevos módulos y endpoints completos. |
+| [**Guía de Testing y Calidad**](docs/guia-de-testing-y-calidad.md) | Ejecución de pruebas unitarias y de integración con Pytest. |
+| [**Despliegue y Configuración de Entornos**](docs/despliegue-y-entornos.md) | Variables de entorno, Dockerfile y despliegue en plataformas cloud (Render, Railway). |
+| [**Colección Postman**](docs/obspred.postman_collection.json) | Colección completa de peticiones HTTP listas para importar y testear. |
+
 
