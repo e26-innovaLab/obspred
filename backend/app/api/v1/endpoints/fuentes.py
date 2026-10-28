@@ -69,7 +69,7 @@ async def get_fuente_by_id(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener la fuente: {str(e)}",
-        )from e
+        ) from e
 
 
 @fuentes_router.get(
@@ -95,7 +95,7 @@ async def get_fuentes_by_estado(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al obtener las fuentes por estado: {str(e)}",
-        )from e
+        ) from e
 
 
 @fuentes_router.post(
@@ -121,4 +121,4 @@ async def create_fuente(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al crear la fuente: {str(e)}",
-        )from e
+        ) from e

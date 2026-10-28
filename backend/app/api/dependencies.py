@@ -182,7 +182,6 @@ def provide_world_bank_sync_service(
     return ExternalSyncService(connector=connector, repository=repository)
 
 
-<<<<<<< HEAD
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -289,4 +288,3 @@ def provide_brecha_service(
         BrechaService: Servicio listo para su uso en controladores.
     """
     return BrechaService(repository=repository)
-
