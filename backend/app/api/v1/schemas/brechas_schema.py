@@ -48,7 +48,7 @@ class HabilidadBrechaItem(BaseModel):
     """Representa una barra del gráfico Demanda vs Oferta formativa."""
 
     model_config = ConfigDict(
-        opulate_by_name=True,
+        populate_by_name=True,
         frozen=True,
     )
 

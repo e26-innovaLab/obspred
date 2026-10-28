@@ -6,6 +6,7 @@ from app.api.dependencies import provide_brecha_service
 from app.api.v1.schemas.brechas_schema import (
     BrechasDataSchema,
     BrechasResponseSchema,
+    HabilidadBrechaItem,
     MetadatosFuente,
 )
 from app.api.v1.schemas.response_schema import create_success_response
@@ -58,10 +59,22 @@ async def get_brechas_por_ocupacion(
     ] = None,
 ) -> BrechasResponseSchema:
     try:
-        # 1. Obtenemos las brechas desde el servicio de aplicación
+        # 1. Obtenemos las brechas (DTOs) desde el servicio de aplicación
         habilidades_dtos = await service.get_by_ocupation(ocupacion)
 
-        # 2. Armamos los metadatos de la fuente
+        # 2. Mapeamos los DTOs de dominio a los esquemas de Pydantic de la API
+        habilidades_items = [
+            HabilidadBrechaItem(
+                habilidad=dto.habilidad,
+                demanda=dto.demanda,
+                oferta_formativa=dto.oferta_formativa,
+                emergente=dto.emergente,
+                brecha=dto.brecha,
+            )
+            for dto in habilidades_dtos
+        ]
+
+        # 3. Armamos los metadatos de la fuente
         metadatos = MetadatosFuente(
             fuente="SENCE SABE / ESCO",
             fecha_actualizacion="2026-09-30",
@@ -70,21 +83,20 @@ async def get_brechas_por_ocupacion(
             ),
         )
 
-        # 3. Construimos el esquema con los datos reales devueltos por el servicio
+        # 4. Construimos el esquema con los ítems mapeados
         data = BrechasDataSchema(
             pais=pais,
             sector=sector if sector else "Tecnología",
             ocupacion=ocupacion,
-            habilidades=habilidades_dtos,
+            habilidades=habilidades_items,
             metadatos=metadatos,
         )
 
-        # 4. Retornamos la respuesta estandarizada
+        # 5. Retornamos la respuesta estandarizada
         return create_success_response(
             data=data,
             message="Brechas de habilidades obtenidas con éxito.",
-            status_code=status.HTTP_200_OK,
-            meta=metadatos,
+            status_code=status.HTTP_200_OK
         )
 
     except OcupacionNoEncontradaError as e:
