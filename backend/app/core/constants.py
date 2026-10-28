@@ -125,8 +125,7 @@ INDICE_EMPLEABILIDAD_ROUTE: Final[str] = "/indice-empleabilidad"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
 PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
-BRECHAS_ROUTE = "/brechas"
-TENDENCIAS_ROUTE = "/tendencias"
+BRECHAS_ROUTE: Final[str] = "/brechas"
 INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 INGESTA_SYNC_WORLD_BANK_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/world-bank"
 TENDENCIAS_ROUTE: Final[str] = "/tendencias"
@@ -137,7 +136,6 @@ INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-
 METRICAS_ROUTE: Final[str] = "/metricas"
 CATALOGO_ROUTE: Final[str] = "/catalogo"
 ALERTAS_ROUTE: Final[str] = "/alertas"
-BRECHAS_ROUTE: Final[str] = "/brechas"
 FUENTE_ROUTE: Final[str] = "/fuentes"
 
 
@@ -150,8 +148,8 @@ OPENAPI_TAG_INGESTA: Final[str] = "Ingesta"
 OPENAPI_TAG_METRICAS: Final[str] = "Métricas"
 OPENAPI_TAG_CATALOGO: Final[str] = "Catálogo"
 OPENAPI_TAG_ALERTAS: Final[str] = "Alertas"
-OPENAPI_TAG_BRECHAS: Final[str] = "Brechas"
 OPENAPI_TAG_FUENTE: Final[str] = "Fuentes de Datos"
+OPENAPI_TAG_BRECHAS: Final[str] = "Brechas de Habilidades"
 
 
 # ==============================================================================
@@ -184,6 +182,20 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
     "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
+
+# Constantes de configuración para Brechas de Habilidades
+DEFAULT_BRECHAS_SOURCE: Final[str] = "SENCE SABE / ESCO"
+DEFAULT_BRECHAS_METODOLOGIA: Final[str] = (
+    "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+)
+DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA: Final[str] = (
+    "Taxonomía ESCO con demanda y oferta formativa persistida en base de datos."
+)
+BRECHAS_GET_SUCCESS_MESSAGE: Final[str] = "Brechas de habilidades obtenidas con éxito."
+BRECHAS_SAVE_SUCCESS_MESSAGE: Final[str] = (
+    "Brechas de habilidades persistidas con éxito."
+)
 
 
 # ==============================================================================
@@ -238,15 +250,15 @@ __all__ = [
     "INGESTA_UPLOAD_ROUTE",
     "INGESTA_SYNC_ROUTE",
     "INGESTA_SYNC_WORLD_BANK_ROUTE",
+    "BRECHAS_ROUTE",
     "TENDENCIAS_ROUTE",
     "METRICAS_ROUTE",
     "CATALOGO_ROUTE",
     "ALERTAS_ROUTE",
-    "BRECHAS_ROUTE",
-    "FUENTE_ROUTE",
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
+    "FUENTE_ROUTE",
     # OpenAPI Tags
     "OPENAPI_TAG_ROOT",
     "OPENAPI_TAG_HEALTH",
@@ -258,7 +270,6 @@ __all__ = [
     "OPENAPI_TAG_ALERTAS",
     "OPENAPI_TAG_BRECHAS",
     "OPENAPI_TAG_FUENTE",
-    # Fuentes y Estados
     "FuenteEstado",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
@@ -276,6 +287,12 @@ __all__ = [
     "DEFAULT_BCENTRAL_CHILE_SOURCE",
     "DEFAULT_BCENTRAL_CHILE_BASE_URL",
     "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
+    # Brechas
+    "DEFAULT_BRECHAS_SOURCE",
+    "DEFAULT_BRECHAS_METODOLOGIA",
+    "DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA",
+    "BRECHAS_GET_SUCCESS_MESSAGE",
+    "BRECHAS_SAVE_SUCCESS_MESSAGE",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",

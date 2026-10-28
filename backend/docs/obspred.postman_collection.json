@@ -1548,6 +1548,128 @@
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Brechas de habilidades obtenidas con éxito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"sector\": \"tecnologia\",\n    \"ocupacion\": \"dev-software\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Alfabetización digital\",\n        \"demanda\": 95.0,\n        \"ofertaFormativa\": 60.0,\n        \"emergente\": false\n      },\n      {\n        \"habilidad\": \"Trabajo en equipo remoto\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 28.0,\n        \"emergente\": true\n      },\n      {\n        \"habilidad\": \"Pensamiento analítico\",\n        \"demanda\": 90.0,\n        \"ofertaFormativa\": 40.0,\n        \"emergente\": false\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO\",\n      \"fecha_actualizacion\": \"2026-09-30\",\n      \"metodologia\": \"Taxonomía de referencia ESCO con demanda observada en avisos SABE.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.697934Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "guardar_brechas_ocupacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"habilidades\": [\n    {\n      \"habilidad\": \"Cloud computing\",\n      \"demanda\": 94.0,\n      \"ofertaFormativa\": 45.0,\n      \"emergente\": true\n    },\n    {\n      \"habilidad\": \"Ciberseguridad y DevOps\",\n      \"demanda\": 88.0,\n      \"ofertaFormativa\": 35.0,\n      \"emergente\": false\n    }\n  ],\n  \"pais\": \"ARG\",\n  \"sector\": \"tecnologia\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/brechas/desarrollador_software",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas",
+                "desarrollador_software"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201_created_brechas_ocupacion",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"habilidades\": [\n    {\n      \"habilidad\": \"Cloud computing\",\n      \"demanda\": 94.0,\n      \"ofertaFormativa\": 45.0,\n      \"emergente\": true\n    },\n    {\n      \"habilidad\": \"Ciberseguridad y DevOps\",\n      \"demanda\": 88.0,\n      \"ofertaFormativa\": 35.0,\n      \"emergente\": false\n    }\n  ],\n  \"pais\": \"ARG\",\n  \"sector\": \"tecnologia\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/desarrollador_software",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "desarrollador_software"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Brechas de habilidades persistidas con éxito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"sector\": \"tecnologia\",\n    \"ocupacion\": \"desarrollador_software\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Cloud computing\",\n        \"demanda\": 94.0,\n        \"ofertaFormativa\": 45.0,\n        \"emergente\": true,\n        \"brecha\": 49.0\n      },\n      {\n        \"habilidad\": \"Ciberseguridad y DevOps\",\n        \"demanda\": 88.0,\n        \"ofertaFormativa\": 35.0,\n        \"emergente\": false,\n        \"brecha\": 53.0\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO (Persistido)\",\n      \"fecha_actualizacion\": \"2026-10-27\",\n      \"metodologia\": \"Taxonomía ESCO con demanda y oferta formativa persistida en base de datos.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 2,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-10-27T22:30:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_brechas_ocupacion_404_no_encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/brechas/ocupacion_inexistente",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas",
+                "ocupacion_inexistente"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404_not_found_ocupacion",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/ocupacion_inexistente",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "ocupacion_inexistente"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 404,\n  \"message\": \"No se encontraron datos de brecha para la ocupacion: 'ocupacion_inexistente'\",\n  \"data\": null,\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T22:30:00.000000Z\"\n}"
+            }
+          ]
         }
       ]
     },
