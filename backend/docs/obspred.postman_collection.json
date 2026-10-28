@@ -364,6 +364,160 @@
               "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronización de 'World Bank'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"Fallo de timeout en World Bank API\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-11T21:20:00.000000Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "sync_ilostat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"ARG\",\n    \"URY\",\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"tasa_ocupacion\"\n  ],\n  \"periodo_desde\": \"2020\",\n  \"periodo_hasta\": \"2024\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/ilostat",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "ilostat"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_ilostat",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\"ARG\", \"URY\", \"CHL\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/ilostat",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "ilostat"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronizaci\\u00f3n de 'ILOSTAT' exitosa.\",\n  \"data\": {\n    \"source\": \"ILOSTAT\",\n    \"status\": \"success\",\n    \"total_fetched\": 24,\n    \"total_persisted\": 24,\n    \"execution_time_seconds\": 1.85,\n    \"countries_synced\": [\n      \"ARG\",\n      \"CHL\",\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_desempleo\",\n      \"tasa_ocupacion\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "sync_bcentral_chile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"imacec\",\n    \"tasa_desocupacion_nacional\"\n  ],\n  \"periodo_desde\": \"2023\",\n  \"periodo_hasta\": \"2024\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/bcentral-chile",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "bcentral-chile"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_bcentral_chile",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\"CHL\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/bcentral-chile",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "bcentral-chile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronizaci\\u00f3n de 'Banco Central de Chile' exitosa.\",\n  \"data\": {\n    \"source\": \"Banco Central de Chile\",\n    \"status\": \"success\",\n    \"total_fetched\": 12,\n    \"total_persisted\": 12,\n    \"execution_time_seconds\": 1.42,\n    \"countries_synced\": [\n      \"CHL\"\n    ],\n    \"indicators_synced\": [\n      \"imacec\",\n      \"tasa_desocupacion_nacional\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -749,6 +903,419 @@
               ],
               "cookie": [],
               "body": "{\n  \"pais\": \"Argentina\",\n  \"sector\": \"Todos los sectores\",\n  \"ocupacion\": \"Todas las ocupaciones\",\n  \"indicador\": \"puestos_demandados\",\n  \"serie_historica\": [\n    {\n      \"periodo\": \"T3 2023\",\n      \"valor\": 1620.0,\n      \"es_destacado\": false\n    },\n    {\n      \"periodo\": \"T4 2023\",\n      \"valor\": 1750.0,\n      \"es_destacado\": true\n    }\n  ],\n  \"proyeccion\": [\n    {\n      \"periodo\": \"T1 2026\",\n      \"valor_proyectado\": 1920.0,\n      \"intervalo_superior\": 2050.0,\n      \"intervalo_inferior\": 1810.0\n    }\n  ],\n  \"cambios_significativos\": [],\n  \"metadatos\": {\n    \"fuente\": \"Sistemas oficiales integrados\",\n    \"fecha_actualizacion\": \"2026-10-11\",\n    \"metodologia\": \"Holt-Winters / ARIMA\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "brechas",
+      "item": [
+        {
+          "name": "get_brechas_por_ocupacion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/brechas/desarrollador_software?pais=ARG&sector=Tecnolog%C3%ADa",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas",
+                "desarrollador_software"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "sector",
+                  "value": "Tecnología"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_brechas_desarrollador_software",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/desarrollador_software?pais=ARG&sector=Tecnolog%C3%ADa",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "desarrollador_software"
+                  ],
+                  "query": [
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "Tecnología"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Brechas de habilidades obtenidas con \\u00e9xito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"sector\": \"Tecnolog\\u00eda\",\n    \"ocupacion\": \"desarrollador_software\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Alfabetizaci\\u00f3n digital\",\n        \"demanda\": 95.0,\n        \"ofertaFormativa\": 60.0,\n        \"emergente\": false,\n        \"brecha\": 35.0\n      },\n      {\n        \"habilidad\": \"Trabajo en equipo remoto\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 28.0,\n        \"emergente\": true,\n        \"brecha\": 64.0\n      },\n      {\n        \"habilidad\": \"Cloud computing\",\n        \"demanda\": 94.0,\n        \"ofertaFormativa\": 45.0,\n        \"emergente\": true,\n        \"brecha\": 49.0\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO\",\n      \"fecha_actualizacion\": \"2026-09-30\",\n      \"metodologia\": \"Taxonom\\u00eda de referencia ESCO con demanda observada en avisos SABE.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 3,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "guardar_brechas_por_ocupacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"habilidades\": [\n    {\n      \"habilidad\": \"Kubernetes\",\n      \"demanda\": 92.0,\n      \"ofertaFormativa\": 35.0,\n      \"emergente\": true\n    },\n    {\n      \"habilidad\": \"Terraform\",\n      \"demanda\": 88.0,\n      \"ofertaFormativa\": 40.0,\n      \"emergente\": false\n    }\n  ],\n  \"pais\": \"CHL\",\n  \"sector\": \"Tecnolog\\u00eda\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/brechas/arquitecto_cloud",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas",
+                "arquitecto_cloud"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201_created_guardar_brechas",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pais\": \"CHL\",\n  \"sector\": \"Tecnología\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/arquitecto_cloud",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "arquitecto_cloud"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Brechas de habilidades persistidas con \\u00e9xito.\",\n  \"data\": {\n    \"pais\": \"CHL\",\n    \"sector\": \"Tecnolog\\u00eda\",\n    \"ocupacion\": \"arquitecto_cloud\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Kubernetes\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 35.0,\n        \"emergente\": true,\n        \"brecha\": 57.0\n      },\n      {\n        \"habilidad\": \"Terraform\",\n        \"demanda\": 88.0,\n        \"ofertaFormativa\": 40.0,\n        \"emergente\": false,\n        \"brecha\": 48.0\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO (Persistido)\",\n      \"fecha_actualizacion\": \"2026-10-27\",\n      \"metodologia\": \"Taxonom\\u00eda ESCO con demanda y oferta formativa persistida en base de datos.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 2,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_brechas_404_no_encontrado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/brechas/ocupacion_inexistente_123",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas",
+                "ocupacion_inexistente_123"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404_not_found_brechas",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/ocupacion_inexistente_123",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "ocupacion_inexistente_123"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 404,\n  \"message\": \"No se encontraron datos de brecha para la ocupacion: 'ocupacion_inexistente_123'\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"HTTP_EXCEPTION\",\n      \"detail\": \"No se encontraron datos de brecha para la ocupacion: 'ocupacion_inexistente_123'\",\n      \"field\": null\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fuentes",
+      "item": [
+        {
+          "name": "get_all_fuentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_all_fuentes",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con \\u00e9xito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"Banco Mundial\",\n      \"descripcion\": \"Indicadores de desarrollo mundial y empleo.\",\n      \"url\": \"https://data.worldbank.org\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 2,\n      \"nombre\": \"ILOSTAT\",\n      \"descripcion\": \"Base de datos de estad\\u00edsticas laborales de la OIT.\",\n      \"url\": \"https://ilostat.ilo.org\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 200,\n    \"message\": \"Fuentes obtenidas con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_fuente_por_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes/1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes",
+                "1"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_fuente_por_id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/1",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuente obtenida con \\u00e9xito.\",\n  \"data\": {\n    \"id\": 1,\n    \"nombre\": \"Banco Mundial\",\n    \"descripcion\": \"Indicadores de desarrollo mundial y empleo.\",\n    \"url\": \"https://data.worldbank.org\",\n    \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 200,\n    \"message\": \"Fuente obtenida con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_fuentes_por_estado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes/estado/activa",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes",
+                "estado",
+                "activa"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_fuentes_por_estado",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/estado/activa",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "estado",
+                    "activa"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con \\u00e9xito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"Banco Mundial\",\n      \"descripcion\": \"Indicadores de desarrollo mundial y empleo.\",\n      \"url\": \"https://data.worldbank.org\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 200,\n    \"message\": \"Fuentes obtenidas con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "create_fuente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"INDEC \\u2014 Encuesta Permanente de Hogares\",\n  \"descripcion\": \"Indicadores sociolaborales urbanos de Argentina.\",\n  \"url\": \"https://www.indec.gob.ar\",\n  \"estado\": \"activa\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "201_created_fuente",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"nombre\": \"INDEC — Encuesta Permanente de Hogares\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Fuente creada con \\u00e9xito.\",\n  \"data\": {\n    \"id\": 3,\n    \"nombre\": \"INDEC \\u2014 Encuesta Permanente de Hogares\",\n    \"descripcion\": \"Indicadores sociolaborales urbanos de Argentina.\",\n    \"url\": \"https://www.indec.gob.ar\",\n    \"ultima_actualizacion\": \"2026-10-27T20:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 201,\n    \"message\": \"Fuente creada con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
             }
           ]
         }
