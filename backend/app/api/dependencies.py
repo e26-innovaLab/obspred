@@ -34,7 +34,7 @@ from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndiceEmpleabilidadRepository,
 )
 from app.infrastructure.persistence.repositories.brecha_repository import (
-    SQLAlchemyBrechaRepository,
+    SQLAlchemyBrechaRepository,)
 from app.infrastructure.persistence.repositories.fuente_repository import (
     SqlAlchemyFuenteRepository,
 )
