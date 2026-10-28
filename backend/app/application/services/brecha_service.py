@@ -128,12 +128,34 @@ DEFAULT_BRECHAS_CATALOG: dict[str, list[dict]] = {
 }
 
 
+SECTOR_DEFAULT_OCUPACION: dict[str, str] = {
+    "tecnologia": "desarrollador_software",
+    "salud": "enfermero_profesional",
+    "energia": "tecnico_solar_fotovoltaico",
+    "turismo": "soporte_ti",
+    "economia-conocimiento": "analista_datos",
+    "economia_conocimiento": "analista_datos",
+}
+
+
 class BrechaService:
     """Servicio de aplicación que orquesta la consulta y persistencia de brechas."""
 
     def __init__(self, repository: IBrechaRepository) -> None:
         """Inicializa el servicio inyectando el repositorio de brechas."""
         self._repository = repository
+
+    def resolve_ocupacion_for_sector(
+        self, sector: str | None, ocupacion: str | None
+    ) -> str:
+        """Determina la ocupación representativa según el sector o el fallback."""
+        if ocupacion and ocupacion.strip():
+            return ocupacion.strip()
+        if sector and sector.strip():
+            norm_sec = sector.strip().lower().replace(" ", "-").replace("í", "i")
+            if norm_sec in SECTOR_DEFAULT_OCUPACION:
+                return SECTOR_DEFAULT_OCUPACION[norm_sec]
+        return "desarrollador_software"
 
     async def get_by_ocupation(self, ocupacion: str) -> list[HabilidadComparadaDTO]:
         """Consulta las brechas de habilidades para una ocupación dada."""

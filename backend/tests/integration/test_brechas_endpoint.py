@@ -99,3 +99,23 @@ async def test_get_brechas_ocupacion_inexistente(async_client: AsyncClient) -> N
     payload = response.json()
     assert payload["success"] is False
     assert "No se encontraron datos de brecha" in payload["message"]
+
+
+@pytest.mark.asyncio
+async def test_get_brechas_generales_por_sector(async_client: AsyncClient) -> None:
+    """Verifica la consulta al endpoint raíz GET /api/v1/brechas con pais y sector."""
+    url = f"{settings.api_v1_prefix}{BRECHAS_ROUTE}"
+    response = await async_client.get(
+        url, params={"pais": "ARG", "sector": "tecnologia"}
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["status_code"] == 200
+    assert payload["data"] is not None
+
+    data = payload["data"]
+    assert data["pais"] == "ARG"
+    assert data["sector"] == "tecnologia"
+    assert len(data["habilidades"]) > 0

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
 )
+from app.core.constants import PaisCodigo, SectorEstrategico
 
 
 class TipoDatoBrecha(StrEnum):
@@ -120,14 +121,14 @@ class BrechaGuardarPayloadSchema(BaseModel):
         description="Listado de habilidades a persistir para la ocupación",
     )
     pais: str = Field(
-        "ARG",
+        default=PaisCodigo.ARG.value,
         description="Código ISO del país asociado",
-        examples=["ARG"],
+        examples=[PaisCodigo.ARG.value],
     )
     sector: str | None = Field(
-        None,
+        default=SectorEstrategico.TECNOLOGIA.value,
         description="Sector estratégico de la ocupación",
-        examples=["Tecnología"],
+        examples=[SectorEstrategico.TECNOLOGIA.value],
     )
 
 
@@ -137,10 +138,14 @@ class BrechasDataSchema(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     pais: str = Field(
-        ..., description="Código de país consultado (ARG, URY, CHL)", examples=["ARG"]
+        ...,
+        description="Código de país consultado (ARG, URY, CHL)",
+        examples=[PaisCodigo.ARG.value],
     )
     sector: str | None = Field(
-        None, description="Sector económico", examples=["Tecnologias"]
+        None,
+        description="Sector económico",
+        examples=[SectorEstrategico.TECNOLOGIA.value],
     )
     ocupacion: str = Field(
         ..., description="Ocupacion analizada", examples=["desarrollador_software"]
