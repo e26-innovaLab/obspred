@@ -44,6 +44,29 @@ obspred/
 
 ---
 
+## ⚡ Inicio Rápido para Frontend y QA
+
+Para probar la API localmente e integrar las vistas:
+
+```bash
+# 1. Levantar la base de datos PostgreSQL con Docker:
+docker compose up -d
+
+# 2. Configurar y levantar el backend:
+cd backend
+python -m venv .venv
+.venv\Scripts\Activate.ps1    # (En Linux/macOS: source .venv/bin/activate)
+pip install -r requirements.txt
+cp .env.example .env
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+
+- **Swagger interactivo para probar endpoints:** [`http://localhost:8000/docs`](http://localhost:8000/docs)
+- **Colección de Postman lista para importar:** [`backend/docs/obspred.postman_collection.json`](backend/docs/obspred.postman_collection.json)
+
+---
+
 ## 📚 Documentación de Referencia
 
 * [`Observatorio_predictivo.md`](Observatorio_predictivo.md): Brief formal del producto, alcance del MVP y plan de 12 semanas.

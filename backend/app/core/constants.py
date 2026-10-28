@@ -134,6 +134,10 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+METRICAS_ROUTE: Final[str] = "/metricas"
+CATALOGO_ROUTE: Final[str] = "/catalogo"
+ALERTAS_ROUTE: Final[str] = "/alertas"
+BRECHAS_ROUTE: Final[str] = "/brechas"
 FUENTE_ROUTE: Final[str] = "/fuentes"
 
 
@@ -143,6 +147,10 @@ OPENAPI_TAG_HEALTH: Final[str] = "Health"
 OPENAPI_TAG_INDICADORES: Final[str] = "Indicadores"
 OPENAPI_TAG_INDICE_EMPLEABILIDAD: Final[str] = "Indice de Empleabilidad"
 OPENAPI_TAG_INGESTA: Final[str] = "Ingesta"
+OPENAPI_TAG_METRICAS: Final[str] = "Métricas"
+OPENAPI_TAG_CATALOGO: Final[str] = "Catálogo"
+OPENAPI_TAG_ALERTAS: Final[str] = "Alertas"
+OPENAPI_TAG_BRECHAS: Final[str] = "Brechas"
 OPENAPI_TAG_FUENTE: Final[str] = "Fuentes de Datos"
 
 
@@ -231,6 +239,11 @@ __all__ = [
     "INGESTA_SYNC_ROUTE",
     "INGESTA_SYNC_WORLD_BANK_ROUTE",
     "TENDENCIAS_ROUTE",
+    "METRICAS_ROUTE",
+    "CATALOGO_ROUTE",
+    "ALERTAS_ROUTE",
+    "BRECHAS_ROUTE",
+    "FUENTE_ROUTE",
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
@@ -240,6 +253,13 @@ __all__ = [
     "OPENAPI_TAG_INDICADORES",
     "OPENAPI_TAG_INDICE_EMPLEABILIDAD",
     "OPENAPI_TAG_INGESTA",
+    "OPENAPI_TAG_METRICAS",
+    "OPENAPI_TAG_CATALOGO",
+    "OPENAPI_TAG_ALERTAS",
+    "OPENAPI_TAG_BRECHAS",
+    "OPENAPI_TAG_FUENTE",
+    # Fuentes y Estados
+    "FuenteEstado",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
     "CSV_FILE_EXTENSION",
