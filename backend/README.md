@@ -387,7 +387,10 @@ Este informe técnico documenta y valida:
 
 ## 🚀 Puesta en Marcha Rápida (Para Desarrollo, Frontend y QA)
 
-Sigue estos sencillos pasos para levantar el backend en pocos minutos:
+### 📌 Requisitos Previos
+- **Python:** Versión **3.11+** (recomendado 3.11 o 3.12, arquitectura de 64-bit).  
+  👉 Si aún no tienes Python instalado o tienes dudas sobre PATH, permisos o configuración según tu sistema operativo (Windows, macOS, Linux), consulta la [**Guía Completa de Instalación y Configuración de Python**](docs/guia-instalacion-python.md).
+- **Docker y Docker Compose:** Para ejecutar la base de datos PostgreSQL localmente (opcional si usas SQLite).
 
 ---
 
@@ -522,4 +525,26 @@ ruff check --fix .
 # Verificar formato de código:
 ruff format --check .
 ```
+
+---
+
+## 📚 Índice de Documentación Técnica
+
+Para profundizar en la arquitectura, contratos, persistencia y despliegue del backend, consulta las siguientes guías especializadas:
+
+| Documento | Descripción |
+|---|---|
+| [**Guía de Instalación de Python**](docs/guia-instalacion-python.md) | Versiones soportadas (3.11+), paso a paso para Windows, macOS y Linux, entornos virtuales y solución de problemas. |
+| [**Arquitectura y Capas**](docs/arquitectura-y-capas.md) | Detalle de Clean Architecture, flujos de datos y responsabilidades de cada capa. |
+| [**Contratos de API y ApiResponse**](docs/api-contracts.md) | Formato estándar de respuestas REST, paginación, metadatos y manejo uniforme de errores. |
+| [**Patrón Repositorio y Persistencia**](docs/patron-repositorio-y-persistencia.md) | Implementación de repositorios desacoplados con SQLAlchemy 2.0 asíncrono. |
+| [**Base de Datos y Migraciones Alembic**](docs/guia-base-datos-y-migraciones.md) | Comandos y flujo para generar y aplicar migraciones de base de datos. |
+| [**Inyección de Dependencias**](docs/inyeccion-de-dependencias.md) | Estándar de inyección mediante `Annotated` y `Depends` en FastAPI. |
+| [**Manejo de Errores y Excepciones**](docs/manejo-de-errores-y-excepciones.md) | Jerarquía de excepciones de dominio y manejadores globales HTTP. |
+| [**Guía de Creación de Conectores**](docs/guia-creacion-conectores.md) | Pautas para crear clientes HTTP para fuentes públicas y APIs externas. |
+| [**Guía de Creación de CRUDs**](docs/guia-creacion-crud.md) | Paso a paso para implementar nuevos módulos y endpoints completos. |
+| [**Guía de Testing y Calidad**](docs/guia-de-testing-y-calidad.md) | Ejecución de pruebas unitarias y de integración con Pytest. |
+| [**Despliegue y Configuración de Entornos**](docs/despliegue-y-entornos.md) | Variables de entorno, Dockerfile y despliegue en plataformas cloud (Render, Railway). |
+| [**Colección Postman**](docs/obspred.postman_collection.json) | Colección completa de peticiones HTTP listas para importar y testear. |
+
 

@@ -46,6 +46,8 @@ obspred/
 
 ## ⚡ Inicio Rápido para Frontend y QA
 
+> 💡 **Requisito previo:** Requiere **Python 3.11+ (64-bit)**. Si necesitas instalarlo o configurarlo paso a paso en Windows, macOS o Linux, consulta la [**Guía de Instalación y Configuración de Python**](backend/docs/guia-instalacion-python.md).
+
 Para probar la API localmente e integrar las vistas:
 
 ```bash
