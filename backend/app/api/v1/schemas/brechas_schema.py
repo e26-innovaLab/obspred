@@ -48,7 +48,8 @@ class HabilidadBrechaItem(BaseModel):
     """Representa una barra del gráfico Demanda vs Oferta formativa."""
 
     model_config = ConfigDict(
-        opulate_by_name=True,
+        populate_by_name=True,
+        from_attributes=True,
         frozen=True,
     )
 
@@ -73,6 +74,60 @@ class HabilidadBrechaItem(BaseModel):
         ...,
         description="Diferencia neta calculada entre demanda y oferta formativa",
         examples=[64.0],
+    )
+
+
+class HabilidadBrechaCreateItem(BaseModel):
+    """Payload para registrar una habilidad evaluada en una ocupación."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    habilidad: str = Field(
+        ...,
+        min_length=1,
+        max_length=150,
+        description="Nombre de la habilidad requerida",
+        examples=["Cloud computing"],
+    )
+    demanda: float = Field(
+        ...,
+        ge=0.0,
+        le=100.0,
+        description="Puntaje o porcentaje de demanda observada",
+        examples=[94.0],
+    )
+    oferta_formativa: float = Field(
+        ...,
+        ge=0.0,
+        le=100.0,
+        alias="ofertaFormativa",
+        description="Puntaje o porcentaje de cobertura formativa",
+        examples=[45.0],
+    )
+    emergente: bool = Field(
+        False,
+        description="Indica si es una habilidad de reciente emergencia",
+        examples=[True],
+    )
+
+
+class BrechaGuardarPayloadSchema(BaseModel):
+    """Payload para guardar o actualizar las habilidades de una ocupación."""
+
+    habilidades: list[HabilidadBrechaCreateItem] = Field(
+        ...,
+        min_length=1,
+        description="Listado de habilidades a persistir para la ocupación",
+    )
+    pais: str = Field(
+        "ARG",
+        description="Código ISO del país asociado",
+        examples=["ARG"],
+    )
+    sector: str | None = Field(
+        None,
+        description="Sector estratégico de la ocupación",
+        examples=["Tecnología"],
     )
 
 
