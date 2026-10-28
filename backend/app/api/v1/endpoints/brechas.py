@@ -1,3 +1,5 @@
+"""Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
@@ -38,11 +40,8 @@ brechas_router = APIRouter(
     "",
     response_model=BrechasResponseSchema,
     status_code=status.HTTP_200_OK,
-    summary="Consultar brechas de habilidades generales o por sector",
-    description=(
-        "Expone las brechas de habilidades consolidadas o por sector económico "
-        "para alimentar la vista general de brechas requerida por el frontend."
-    ),
+    summary="Consultar brechas de habilidades por sector",
+    description="Expone la demanda y oferta formativa por sector.",
 )
 async def get_brechas_generales(
     service: Annotated[
@@ -71,6 +70,7 @@ async def get_brechas_generales(
         ),
     ] = None,
 ) -> BrechasResponseSchema:
+    """Procesa la consulta general de brechas de habilidades."""
     try:
         target_ocupacion = service.resolve_ocupacion_for_sector(
             sector=sector, ocupacion=ocupacion
@@ -109,7 +109,7 @@ async def get_brechas_generales(
     "/{ocupacion}",
     response_model=BrechasResponseSchema,
     status_code=status.HTTP_200_OK,
-    summary="Consultar brechas de habilidades por ocupacion",
+    summary="Consultar brechas de habilidades por ocupación",
     description=(
         "Expone la comparación entre la demanda del mercado y "
         "la oferta formativa para una ocupación dada."
@@ -143,18 +143,16 @@ async def get_brechas_por_ocupacion(
         ),
     ] = None,
 ) -> BrechasResponseSchema:
+    """Procesa la consulta de brechas para una ocupación específica."""
     try:
-        # 1. Obtenemos las brechas desde el servicio de aplicación
         habilidades_dtos = await service.get_by_ocupation(ocupacion)
 
-        # 2. Armamos los metadatos de la fuente
         metadatos = MetadatosFuente(
             fuente=DEFAULT_BRECHAS_SOURCE,
             fecha_actualizacion="2026-09-30",
             metodologia=DEFAULT_BRECHAS_METODOLOGIA,
         )
 
-        # 3. Construimos el esquema con los datos reales devueltos por el servicio
         data = BrechasDataSchema(
             pais=pais,
             sector=sector if sector else SectorEstrategico.TECNOLOGIA.value,
@@ -163,7 +161,6 @@ async def get_brechas_por_ocupacion(
             metadatos=metadatos,
         )
 
-        # 4. Retornamos la respuesta estandarizada
         return create_success_response(
             data=data,
             message=BRECHAS_GET_SUCCESS_MESSAGE,
@@ -203,6 +200,7 @@ async def guardar_brechas_por_ocupacion(
         Depends(provide_brecha_service),
     ],
 ) -> BrechasResponseSchema:
+    """Persiste habilidades para una ocupación en la base de datos."""
     try:
         dtos_in = [
             HabilidadComparadaCreateDTO(

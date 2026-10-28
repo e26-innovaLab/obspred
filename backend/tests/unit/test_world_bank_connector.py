@@ -135,6 +135,16 @@ async def test_world_bank_resolve_indicator_codes() -> None:
     resolved_by_code = connector._resolve_indicator_codes(["NY.GDP.PCAP.CD"])
     assert resolved_by_code == ["NY.GDP.PCAP.CD"]
 
+    # Debe evitar duplicados cuando se mezclan slugs y códigos equivalentes
+    resolved_with_duplicates = connector._resolve_indicator_codes(
+        [
+            "tasa_desempleo",
+            "SL.UEM.TOTL.ZS",
+            "tasa_desempleo",
+        ]
+    )
+    assert resolved_with_duplicates == ["SL.UEM.TOTL.ZS"]
+
 
 def test_world_bank_build_date_param() -> None:
     """Verifica la construcción del parámetro de rango temporal."""

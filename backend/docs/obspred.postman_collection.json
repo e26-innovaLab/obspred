@@ -366,83 +366,6 @@
           ]
         },
         {
-          "name": "sync_ilostat",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"paises\": [\n    \"ARG\",\n    \"URY\",\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"tasa_ocupacion\"\n  ],\n  \"periodo_desde\": \"2020\",\n  \"periodo_hasta\": \"2024\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{URL_BASE}}/ingesta/sync/ilostat",
-              "host": [
-                "{{URL_BASE}}"
-              ],
-              "path": [
-                "ingesta",
-                "sync",
-                "ilostat"
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200_ok_sync_ilostat",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"paises\": [\"ARG\", \"URY\", \"CHL\"]\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{URL_BASE}}/ingesta/sync/ilostat",
-                  "host": [
-                    "{{URL_BASE}}"
-                  ],
-                  "path": [
-                    "ingesta",
-                    "sync",
-                    "ilostat"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "content-type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronizaci\\u00f3n de 'ILOSTAT' exitosa.\",\n  \"data\": {\n    \"source\": \"ILOSTAT\",\n    \"status\": \"success\",\n    \"total_fetched\": 24,\n    \"total_persisted\": 24,\n    \"execution_time_seconds\": 1.85,\n    \"countries_synced\": [\n      \"ARG\",\n      \"CHL\",\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_desempleo\",\n      \"tasa_ocupacion\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
-            }
-          ]
-        },
-        {
           "name": "sync_bcentral_chile",
           "request": {
             "method": "POST",
@@ -454,7 +377,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"imacec\",\n    \"tasa_desocupacion_nacional\"\n  ],\n  \"periodo_desde\": \"2023\",\n  \"periodo_hasta\": \"2024\"\n}",
+              "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -484,15 +407,6 @@
                     "value": "application/json"
                   }
                 ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"paises\": [\"CHL\"]\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
                 "url": {
                   "raw": "{{URL_BASE}}/ingesta/sync/bcentral-chile",
                   "host": [
@@ -502,7 +416,8 @@
                     "ingesta",
                     "sync",
                     "bcentral-chile"
-                  ]
+                  ],
+                  "query": []
                 }
               },
               "status": "OK",
@@ -515,7 +430,76 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronizaci\\u00f3n de 'Banco Central de Chile' exitosa.\",\n  \"data\": {\n    \"source\": \"Banco Central de Chile\",\n    \"status\": \"success\",\n    \"total_fetched\": 12,\n    \"total_persisted\": 12,\n    \"execution_time_seconds\": 1.42,\n    \"countries_synced\": [\n      \"CHL\"\n    ],\n    \"indicators_synced\": [\n      \"imacec\",\n      \"tasa_desocupacion_nacional\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Banco Central de Chile' exitosa.\",\n  \"data\": {\n    \"source\": \"Banco Central de Chile\",\n    \"status\": \"success\",\n    \"total_fetched\": 24,\n    \"total_persisted\": 24,\n    \"execution_time_seconds\": 1.85,\n    \"countries_synced\": [\n      \"CHL\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_desempleo\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T15:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "sync_ilostat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"ARG\",\n    \"CHL\",\n    \"URY\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"empleo_registrado\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/ilostat",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "ilostat"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_ilostat",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/ilostat",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "ilostat"
+                  ],
+                  "query": []
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'ILOSTAT' exitosa.\",\n  \"data\": {\n    \"source\": \"ILOSTAT\",\n    \"status\": \"success\",\n    \"total_fetched\": 36,\n    \"total_persisted\": 36,\n    \"execution_time_seconds\": 2.3,\n    \"countries_synced\": [\n      \"ARG\",\n      \"CHL\",\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_desempleo\",\n      \"empleo_registrado\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T15:00:00.000000Z\"\n}"
             }
           ]
         }
@@ -606,6 +590,81 @@
     {
       "name": "indice_empleabilidad",
       "item": [
+        {
+          "name": "get_indice_empleabilidad_ranking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/indice-empleabilidad/ranking?pais=ARG&sector=tecnologia&periodo=2026-Q1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "indice-empleabilidad",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "sector",
+                  "value": "tecnologia"
+                },
+                {
+                  "key": "periodo",
+                  "value": "2026-Q1"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_ranking_indice_empleabilidad",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/indice-empleabilidad/ranking?pais=ARG&sector=tecnologia&periodo=2026-Q1",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "indice-empleabilidad",
+                    "ranking"
+                  ],
+                  "query": [
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "tecnologia"
+                    },
+                    {
+                      "key": "periodo",
+                      "value": "2026-Q1"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Ranking de ocupaciones obtenido exitosamente.\",\n  \"data\": {\n    \"ocupaciones\": [\n      {\n        \"ocupacion_id\": \"dev-software\",\n        \"nombre\": \"Desarrollador/a de software\",\n        \"puestos_disponibles\": 1820,\n        \"indice_empleabilidad\": 84.5,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"enfermeria\",\n        \"nombre\": \"Enfermero/a profesional\",\n        \"puestos_disponibles\": 1450,\n        \"indice_empleabilidad\": 78.0,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"analista-datos\",\n        \"nombre\": \"Analista de datos\",\n        \"puestos_disponibles\": 1210,\n        \"indice_empleabilidad\": 82.0,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"ing-renovables\",\n        \"nombre\": \"Ingeniero/a en energías renovables\",\n        \"puestos_disponibles\": 980,\n        \"indice_empleabilidad\": 75.5,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"especialista-ciberseguridad\",\n        \"nombre\": \"Especialista en ciberseguridad\",\n        \"puestos_disponibles\": 850,\n        \"indice_empleabilidad\": 86.0,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"product-manager\",\n        \"nombre\": \"Gerente de producto digital\",\n        \"puestos_disponibles\": 740,\n        \"indice_empleabilidad\": 79.5,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"tecnico-solar\",\n        \"nombre\": \"Técnico/a en instalaciones solares\",\n        \"puestos_disponibles\": 690,\n        \"indice_empleabilidad\": 71.0,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      },\n      {\n        \"ocupacion_id\": \"kinesiologia\",\n        \"nombre\": \"Kinesiólogo/a y fisioterapeuta\",\n        \"puestos_disponibles\": 580,\n        \"indice_empleabilidad\": 68.5,\n        \"pais\": \"ARG\",\n        \"fuente\": \"innova.lab / Índices Armonizados\"\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.665153Z\"\n}"
+            }
+          ]
+        },
         {
           "name": "get_indice_empleabilidad_ocupacion",
           "request": {
@@ -909,21 +968,467 @@
       ]
     },
     {
-      "name": "brechas",
+      "name": "metricas",
       "item": [
         {
-          "name": "get_brechas_por_ocupacion",
+          "name": "get_metricas_series",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL_BASE}}/brechas/desarrollador_software?pais=ARG&sector=Tecnolog%C3%ADa",
+              "raw": "{{URL_BASE}}/metricas/series?indicador=empleo_registrado&pais=ARG&sector=tecnologia&frecuencia=trimestral",
               "host": [
                 "{{URL_BASE}}"
               ],
               "path": [
-                "brechas",
-                "desarrollador_software"
+                "metricas",
+                "series"
+              ],
+              "query": [
+                {
+                  "key": "indicador",
+                  "value": "empleo_registrado"
+                },
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "sector",
+                  "value": "tecnologia"
+                },
+                {
+                  "key": "frecuencia",
+                  "value": "trimestral"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_metricas_series",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/metricas/series?indicador=empleo_registrado&pais=ARG&sector=tecnologia&frecuencia=trimestral",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "metricas",
+                    "series"
+                  ],
+                  "query": [
+                    {
+                      "key": "indicador",
+                      "value": "empleo_registrado"
+                    },
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "tecnologia"
+                    },
+                    {
+                      "key": "frecuencia",
+                      "value": "trimestral"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Series temporales recuperadas con éxito.\",\n  \"data\": {\n    \"series\": [\n      {\n        \"pais\": \"ARG\",\n        \"indicador\": \"empleo_registrado\",\n        \"nombre\": \"Empleo registrado\",\n        \"unidad\": \"%\",\n        \"frecuencia\": \"trimestral\",\n        \"puntos\": [\n          {\n            \"periodo\": \"2025-Q1\",\n            \"valor\": 1768.0,\n            \"tipo\": \"observado\"\n          },\n          {\n            \"periodo\": \"2025-Q2\",\n            \"valor\": 1760.0,\n            \"tipo\": \"observado\"\n          },\n          {\n            \"periodo\": \"2025-Q3\",\n            \"valor\": 1826.0,\n            \"tipo\": \"observado\"\n          },\n          {\n            \"periodo\": \"2025-Q4\",\n            \"valor\": 1860.0,\n            \"tipo\": \"observado\"\n          },\n          {\n            \"periodo\": \"2026-Q1\",\n            \"valor\": 1820.0,\n            \"tipo\": \"observado\"\n          },\n          {\n            \"periodo\": \"2026-Q2\",\n            \"valor\": 1933.0,\n            \"tipo\": \"observado\"\n          }\n        ],\n        \"fuentes\": [\n          {\n            \"fuente\": \"Datos Oficiales Armonizados (INDEC / INE / SENCE)\",\n            \"fecha_actualizacion\": \"2026-09-30\",\n            \"estado_fuente\": \"activa\",\n            \"tipo\": \"observado\",\n            \"metodologia_url\": null\n          }\n        ]\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.677400Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_metricas_proyecciones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/metricas/proyecciones?indicador=tasa_desempleo&pais=ARG&horizonte=6",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "metricas",
+                "proyecciones"
+              ],
+              "query": [
+                {
+                  "key": "indicador",
+                  "value": "tasa_desempleo"
+                },
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "horizonte",
+                  "value": "6"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_metricas_proyecciones",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/metricas/proyecciones?indicador=tasa_desempleo&pais=ARG&horizonte=6",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "metricas",
+                    "proyecciones"
+                  ],
+                  "query": [
+                    {
+                      "key": "indicador",
+                      "value": "tasa_desempleo"
+                    },
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "horizonte",
+                      "value": "6"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Proyección estadística calculada con éxito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"indicador\": \"tasa_desempleo\",\n    \"unidad\": \"%\",\n    \"historico\": [\n      {\n        \"periodo\": \"2025-Q1\",\n        \"valor\": 1868.0,\n        \"tipo\": \"observado\"\n      },\n      {\n        \"periodo\": \"2025-Q2\",\n        \"valor\": 1852.0,\n        \"tipo\": \"observado\"\n      },\n      {\n        \"periodo\": \"2025-Q3\",\n        \"valor\": 1826.0,\n        \"tipo\": \"observado\"\n      },\n      {\n        \"periodo\": \"2025-Q4\",\n        \"valor\": 1860.0,\n        \"tipo\": \"observado\"\n      },\n      {\n        \"periodo\": \"2026-Q1\",\n        \"valor\": 1820.0,\n        \"tipo\": \"observado\"\n      },\n      {\n        \"periodo\": \"2026-Q2\",\n        \"valor\": 1933.0,\n        \"tipo\": \"observado\"\n      }\n    ],\n    \"proyeccion\": [\n      {\n        \"periodo\": \"2026-Q3\",\n        \"valor\": 1924.6,\n        \"limite_inferior\": 1869.3,\n        \"limite_superior\": 1979.9\n      },\n      {\n        \"periodo\": \"2026-Q4\",\n        \"valor\": 1943.1,\n        \"limite_inferior\": 1864.9,\n        \"limite_superior\": 2021.3\n      }\n    ],\n    \"proyectable\": true,\n    \"motivo_no_proyectable\": null,\n    \"metodo\": \"Regresión lineal sobre serie trimestral observada\",\n    \"nivel_confianza\": 0.8,\n    \"periodos_historicos\": 6,\n    \"fuentes\": [\n      {\n        \"fuente\": \"innova.lab / Proyecciones estadísticas\",\n        \"fecha_actualizacion\": \"2026-10-01\",\n        \"estado_fuente\": \"activa\",\n        \"tipo\": \"proyeccion\",\n        \"metodologia_url\": \"/fuentes#proyecciones\"\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.679579Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_metricas_kpis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/metricas/kpis?indicadores=tasa_desempleo,empleo_registrado&pais=ARG",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "metricas",
+                "kpis"
+              ],
+              "query": [
+                {
+                  "key": "indicadores",
+                  "value": "tasa_desempleo,empleo_registrado"
+                },
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_metricas_kpis",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/metricas/kpis?indicadores=tasa_desempleo,empleo_registrado&pais=ARG",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "metricas",
+                    "kpis"
+                  ],
+                  "query": [
+                    {
+                      "key": "indicadores",
+                      "value": "tasa_desempleo,empleo_registrado"
+                    },
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"KPIs recuperados exitosamente.\",\n  \"data\": {\n    \"kpis\": [\n      {\n        \"indicador\": \"tasa_desempleo\",\n        \"nombre\": \"Tasa de desempleo\",\n        \"unidad\": \"%\",\n        \"periodo\": \"2026-Q2\",\n        \"valor\": 7.6,\n        \"periodo_anterior\": \"2026-Q1\",\n        \"valor_anterior\": 7.9,\n        \"variacion_abs\": -0.3,\n        \"variacion_pct\": -3.8,\n        \"tendencia\": \"caida\",\n        \"sentido_positivo\": \"baja\",\n        \"sparkline\": [\n          8.4,\n          8.2,\n          8.0,\n          7.9,\n          7.9,\n          7.6\n        ],\n        \"fuente\": {\n          \"fuente\": \"INDEC / Encuesta Permanente de Hogares\",\n          \"fecha_actualizacion\": \"2026-09-24\",\n          \"estado_fuente\": \"activa\",\n          \"tipo\": \"observado\",\n          \"metodologia_url\": null\n        }\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.681424Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_metricas_ranking",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/metricas/ranking?dimension=demanda&indicador=empleo_registrado&pais=ARG",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "metricas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "dimension",
+                  "value": "demanda"
+                },
+                {
+                  "key": "indicador",
+                  "value": "empleo_registrado"
+                },
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_metricas_ranking",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/metricas/ranking?dimension=demanda&indicador=empleo_registrado&pais=ARG",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "metricas",
+                    "ranking"
+                  ],
+                  "query": [
+                    {
+                      "key": "dimension",
+                      "value": "demanda"
+                    },
+                    {
+                      "key": "indicador",
+                      "value": "empleo_registrado"
+                    },
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Ranking por dimensión 'demanda' obtenido exitosamente.\",\n  \"data\": {\n    \"dimension\": \"demanda\",\n    \"indicador\": \"empleo_registrado\",\n    \"unidad\": \"avisos\",\n    \"periodo\": \"2026-Q2\",\n    \"items\": [\n      {\n        \"id\": \"tecnologia\",\n        \"nombre\": \"Tecnología\",\n        \"valor\": 3120.0,\n        \"variacion_pct\": 8.4,\n        \"tendencia\": \"crecimiento\"\n      },\n      {\n        \"id\": \"salud\",\n        \"nombre\": \"Salud\",\n        \"valor\": 2875.0,\n        \"variacion_pct\": 1.1,\n        \"tendencia\": \"estabilidad\"\n      },\n      {\n        \"id\": \"energia\",\n        \"nombre\": \"Energía\",\n        \"valor\": 1940.0,\n        \"variacion_pct\": 4.2,\n        \"tendencia\": \"crecimiento\"\n      },\n      {\n        \"id\": \"turismo\",\n        \"nombre\": \"Turismo\",\n        \"valor\": 1650.0,\n        \"variacion_pct\": -2.5,\n        \"tendencia\": \"caida\"\n      },\n      {\n        \"id\": \"economia-conocimiento\",\n        \"nombre\": \"Economía del Conocimiento\",\n        \"valor\": 1420.0,\n        \"variacion_pct\": 5.0,\n        \"tendencia\": \"crecimiento\"\n      }\n    ],\n    \"fuentes\": [\n      {\n        \"fuente\": \"SENCE / SABE / Portales de empleo oficiales\",\n        \"fecha_actualizacion\": \"2026-09-01\",\n        \"estado_fuente\": \"activa\",\n        \"tipo\": \"observado\",\n        \"metodologia_url\": null\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.683332Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_metricas_comparativa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/metricas/comparativa?indicadores=tasa_desempleo,empleo_registrado&pais=ARG",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "metricas",
+                "comparativa"
+              ],
+              "query": [
+                {
+                  "key": "indicadores",
+                  "value": "tasa_desempleo,empleo_registrado"
+                },
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_metricas_comparativa",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/metricas/comparativa?indicadores=tasa_desempleo,empleo_registrado&pais=ARG",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "metricas",
+                    "comparativa"
+                  ],
+                  "query": [
+                    {
+                      "key": "indicadores",
+                      "value": "tasa_desempleo,empleo_registrado"
+                    },
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Comparativa entre países recuperada exitosamente.\",\n  \"data\": {\n    \"indicadores\": [\n      {\n        \"indicador\": \"tasa_desempleo\",\n        \"nombre\": \"Tasa de desempleo\",\n        \"unidad\": \"%\",\n        \"valores\": [\n          {\n            \"pais\": \"ARG\",\n            \"valor\": 7.6,\n            \"periodo\": \"2026-Q2\",\n            \"fuente\": {\n              \"fuente\": \"INDEC — EPH\",\n              \"fecha_actualizacion\": \"2026-09-30\",\n              \"estado_fuente\": \"activa\",\n              \"tipo\": \"observado\",\n              \"metodologia_url\": null\n            }\n          }\n        ]\n      },\n      {\n        \"indicador\": \"empleo_registrado\",\n        \"nombre\": \"Empleo registrado\",\n        \"unidad\": \"%\",\n        \"valores\": [\n          {\n            \"pais\": \"ARG\",\n            \"valor\": null,\n            \"periodo\": null,\n            \"fuente\": null\n          }\n        ]\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.685233Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_metricas_mapa_calor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/metricas/mapa-calor?indicador=tasa_desempleo&pais=ARG&filas=sectores",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "metricas",
+                "mapa-calor"
+              ],
+              "query": [
+                {
+                  "key": "indicador",
+                  "value": "tasa_desempleo"
+                },
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "filas",
+                  "value": "sectores"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_metricas_mapa_calor",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/metricas/mapa-calor?indicador=tasa_desempleo&pais=ARG&filas=sectores",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "metricas",
+                    "mapa-calor"
+                  ],
+                  "query": [
+                    {
+                      "key": "indicador",
+                      "value": "tasa_desempleo"
+                    },
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "filas",
+                      "value": "sectores"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Mapa de calor generado exitosamente.\",\n  \"data\": {\n    \"indicador\": \"tasa_desempleo\",\n    \"nombre\": \"Tasa desempleo\",\n    \"unidad\": \"%\",\n    \"periodo\": \"2026-Q2\",\n    \"filas\": [\n      {\n        \"id\": \"tecnologia\",\n        \"nombre\": \"Tecnología\"\n      },\n      {\n        \"id\": \"salud\",\n        \"nombre\": \"Salud\"\n      },\n      {\n        \"id\": \"energia\",\n        \"nombre\": \"Energía\"\n      },\n      {\n        \"id\": \"turismo\",\n        \"nombre\": \"Turismo\"\n      },\n      {\n        \"id\": \"economia-conocimiento\",\n        \"nombre\": \"Economía del Conocimiento\"\n      }\n    ],\n    \"columnas\": [\n      \"ARG\"\n    ],\n    \"celdas\": [\n      {\n        \"fila\": \"tecnologia\",\n        \"columna\": \"ARG\",\n        \"valor\": 6.2,\n        \"variacion_pct\": 5.8\n      },\n      {\n        \"fila\": \"salud\",\n        \"columna\": \"ARG\",\n        \"valor\": 7.1,\n        \"variacion_pct\": 0.5\n      },\n      {\n        \"fila\": \"energia\",\n        \"columna\": \"ARG\",\n        \"valor\": 5.0,\n        \"variacion_pct\": 3.2\n      },\n      {\n        \"fila\": \"turismo\",\n        \"columna\": \"ARG\",\n        \"valor\": 8.9,\n        \"variacion_pct\": -2.0\n      },\n      {\n        \"fila\": \"economia-conocimiento\",\n        \"columna\": \"ARG\",\n        \"valor\": 5.8,\n        \"variacion_pct\": 4.1\n      }\n    ],\n    \"fuentes\": [\n      {\n        \"fuente\": \"ILOSTAT / CEPALSTAT Armonizado\",\n        \"fecha_actualizacion\": \"2026-09-30\",\n        \"estado_fuente\": \"activa\",\n        \"tipo\": \"observado\",\n        \"metodologia_url\": null\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.686987Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "brechas",
+      "item": [
+        {
+          "name": "get_brechas_sector",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/brechas?pais=ARG&sector=tecnologia",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas"
               ],
               "query": [
                 {
@@ -932,25 +1437,24 @@
                 },
                 {
                   "key": "sector",
-                  "value": "Tecnología"
+                  "value": "tecnologia"
                 }
               ]
             }
           },
           "response": [
             {
-              "name": "200_ok_brechas_desarrollador_software",
+              "name": "200_ok_brechas_sector",
               "originalRequest": {
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{URL_BASE}}/brechas/desarrollador_software?pais=ARG&sector=Tecnolog%C3%ADa",
+                  "raw": "{{URL_BASE}}/brechas?pais=ARG&sector=tecnologia",
                   "host": [
                     "{{URL_BASE}}"
                   ],
                   "path": [
-                    "brechas",
-                    "desarrollador_software"
+                    "brechas"
                   ],
                   "query": [
                     {
@@ -959,7 +1463,7 @@
                     },
                     {
                       "key": "sector",
-                      "value": "Tecnología"
+                      "value": "tecnologia"
                     }
                   ]
                 }
@@ -974,120 +1478,65 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Brechas de habilidades obtenidas con \\u00e9xito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"sector\": \"Tecnolog\\u00eda\",\n    \"ocupacion\": \"desarrollador_software\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Alfabetizaci\\u00f3n digital\",\n        \"demanda\": 95.0,\n        \"ofertaFormativa\": 60.0,\n        \"emergente\": false,\n        \"brecha\": 35.0\n      },\n      {\n        \"habilidad\": \"Trabajo en equipo remoto\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 28.0,\n        \"emergente\": true,\n        \"brecha\": 64.0\n      },\n      {\n        \"habilidad\": \"Cloud computing\",\n        \"demanda\": 94.0,\n        \"ofertaFormativa\": 45.0,\n        \"emergente\": true,\n        \"brecha\": 49.0\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO\",\n      \"fecha_actualizacion\": \"2026-09-30\",\n      \"metodologia\": \"Taxonom\\u00eda de referencia ESCO con demanda observada en avisos SABE.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 3,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Brechas de habilidades obtenidas con éxito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"sector\": \"tecnologia\",\n    \"ocupacion\": \"general\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Alfabetización digital\",\n        \"demanda\": 95.0,\n        \"ofertaFormativa\": 60.0,\n        \"emergente\": false\n      },\n      {\n        \"habilidad\": \"Trabajo en equipo remoto\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 28.0,\n        \"emergente\": true\n      },\n      {\n        \"habilidad\": \"Pensamiento analítico\",\n        \"demanda\": 90.0,\n        \"ofertaFormativa\": 40.0,\n        \"emergente\": false\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO\",\n      \"fecha_actualizacion\": \"2026-09-30\",\n      \"metodologia\": \"Taxonomía de referencia ESCO con demanda observada en avisos SABE.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.696392Z\"\n}"
             }
           ]
         },
         {
-          "name": "guardar_brechas_por_ocupacion",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"habilidades\": [\n    {\n      \"habilidad\": \"Kubernetes\",\n      \"demanda\": 92.0,\n      \"ofertaFormativa\": 35.0,\n      \"emergente\": true\n    },\n    {\n      \"habilidad\": \"Terraform\",\n      \"demanda\": 88.0,\n      \"ofertaFormativa\": 40.0,\n      \"emergente\": false\n    }\n  ],\n  \"pais\": \"CHL\",\n  \"sector\": \"Tecnolog\\u00eda\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{URL_BASE}}/brechas/arquitecto_cloud",
-              "host": [
-                "{{URL_BASE}}"
-              ],
-              "path": [
-                "brechas",
-                "arquitecto_cloud"
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "201_created_guardar_brechas",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"pais\": \"CHL\",\n  \"sector\": \"Tecnología\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                },
-                "url": {
-                  "raw": "{{URL_BASE}}/brechas/arquitecto_cloud",
-                  "host": [
-                    "{{URL_BASE}}"
-                  ],
-                  "path": [
-                    "brechas",
-                    "arquitecto_cloud"
-                  ]
-                }
-              },
-              "status": "Created",
-              "code": 201,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "content-type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Brechas de habilidades persistidas con \\u00e9xito.\",\n  \"data\": {\n    \"pais\": \"CHL\",\n    \"sector\": \"Tecnolog\\u00eda\",\n    \"ocupacion\": \"arquitecto_cloud\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Kubernetes\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 35.0,\n        \"emergente\": true,\n        \"brecha\": 57.0\n      },\n      {\n        \"habilidad\": \"Terraform\",\n        \"demanda\": 88.0,\n        \"ofertaFormativa\": 40.0,\n        \"emergente\": false,\n        \"brecha\": 48.0\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO (Persistido)\",\n      \"fecha_actualizacion\": \"2026-10-27\",\n      \"metodologia\": \"Taxonom\\u00eda ESCO con demanda y oferta formativa persistida en base de datos.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 2,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
-            }
-          ]
-        },
-        {
-          "name": "get_brechas_404_no_encontrado",
+          "name": "get_brechas_ocupacion",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL_BASE}}/brechas/ocupacion_inexistente_123",
+              "raw": "{{URL_BASE}}/brechas/dev-software?pais=ARG&sector=tecnologia",
               "host": [
                 "{{URL_BASE}}"
               ],
               "path": [
                 "brechas",
-                "ocupacion_inexistente_123"
+                "dev-software"
+              ],
+              "query": [
+                {
+                  "key": "pais",
+                  "value": "ARG"
+                },
+                {
+                  "key": "sector",
+                  "value": "tecnologia"
+                }
               ]
             }
           },
           "response": [
             {
-              "name": "404_not_found_brechas",
+              "name": "200_ok_brechas_ocupacion",
               "originalRequest": {
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{URL_BASE}}/brechas/ocupacion_inexistente_123",
+                  "raw": "{{URL_BASE}}/brechas/dev-software?pais=ARG&sector=tecnologia",
                   "host": [
                     "{{URL_BASE}}"
                   ],
                   "path": [
                     "brechas",
-                    "ocupacion_inexistente_123"
+                    "dev-software"
+                  ],
+                  "query": [
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "sector",
+                      "value": "tecnologia"
+                    }
                   ]
                 }
               },
-              "status": "Not Found",
-              "code": 404,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -1096,44 +1545,45 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": false,\n  \"status_code\": 404,\n  \"message\": \"No se encontraron datos de brecha para la ocupacion: 'ocupacion_inexistente_123'\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"HTTP_EXCEPTION\",\n      \"detail\": \"No se encontraron datos de brecha para la ocupacion: 'ocupacion_inexistente_123'\",\n      \"field\": null\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Brechas de habilidades obtenidas con éxito.\",\n  \"data\": {\n    \"pais\": \"ARG\",\n    \"sector\": \"tecnologia\",\n    \"ocupacion\": \"dev-software\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Alfabetización digital\",\n        \"demanda\": 95.0,\n        \"ofertaFormativa\": 60.0,\n        \"emergente\": false\n      },\n      {\n        \"habilidad\": \"Trabajo en equipo remoto\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 28.0,\n        \"emergente\": true\n      },\n      {\n        \"habilidad\": \"Pensamiento analítico\",\n        \"demanda\": 90.0,\n        \"ofertaFormativa\": 40.0,\n        \"emergente\": false\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO\",\n      \"fecha_actualizacion\": \"2026-09-30\",\n      \"metodologia\": \"Taxonomía de referencia ESCO con demanda observada en avisos SABE.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.697934Z\"\n}"
             }
           ]
         }
       ]
     },
     {
-      "name": "fuentes",
+      "name": "catalogo",
       "item": [
         {
-          "name": "get_all_fuentes",
+          "name": "get_catalogo",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL_BASE}}/fuentes",
+              "raw": "{{URL_BASE}}/catalogo",
               "host": [
                 "{{URL_BASE}}"
               ],
               "path": [
-                "fuentes"
+                "catalogo"
               ]
             }
           },
           "response": [
             {
-              "name": "200_ok_all_fuentes",
+              "name": "200_ok_catalogo",
               "originalRequest": {
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{URL_BASE}}/fuentes",
+                  "raw": "{{URL_BASE}}/catalogo",
                   "host": [
                     "{{URL_BASE}}"
                   ],
                   "path": [
-                    "fuentes"
-                  ]
+                    "catalogo"
+                  ],
+                  "query": []
                 }
               },
               "status": "OK",
@@ -1146,167 +1596,68 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con \\u00e9xito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"Banco Mundial\",\n      \"descripcion\": \"Indicadores de desarrollo mundial y empleo.\",\n      \"url\": \"https://data.worldbank.org\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 2,\n      \"nombre\": \"ILOSTAT\",\n      \"descripcion\": \"Base de datos de estad\\u00edsticas laborales de la OIT.\",\n      \"url\": \"https://ilostat.ilo.org\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 200,\n    \"message\": \"Fuentes obtenidas con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Catálogo de taxonomías recuperado con éxito.\",\n  \"data\": {\n    \"paises\": [\n      {\n        \"id\": \"ARG\",\n        \"nombre\": \"Argentina\"\n      },\n      {\n        \"id\": \"URY\",\n        \"nombre\": \"Uruguay\"\n      },\n      {\n        \"id\": \"CHL\",\n        \"nombre\": \"Chile\"\n      }\n    ],\n    \"sectores\": [\n      {\n        \"id\": \"tecnologia\",\n        \"nombre\": \"Tecnología\",\n        \"isic\": [\n          \"J\"\n        ]\n      },\n      {\n        \"id\": \"salud\",\n        \"nombre\": \"Salud\",\n        \"isic\": [\n          \"Q\"\n        ]\n      },\n      {\n        \"id\": \"energia\",\n        \"nombre\": \"Energía\",\n        \"isic\": [\n          \"D\"\n        ]\n      },\n      {\n        \"id\": \"turismo\",\n        \"nombre\": \"Turismo\",\n        \"isic\": [\n          \"I\"\n        ]\n      },\n      {\n        \"id\": \"economia-conocimiento\",\n        \"nombre\": \"Economía del Conocimiento\",\n        \"isic\": [\n          \"M\"\n        ]\n      }\n    ],\n    \"ocupaciones\": [\n      {\n        \"id\": \"dev-software\",\n        \"nombre\": \"Desarrollador/a de software\",\n        \"sector\": \"tecnologia\",\n        \"isco\": \"2512\"\n      },\n      {\n        \"id\": \"analista-datos\",\n        \"nombre\": \"Analista de datos\",\n        \"sector\": \"tecnologia\",\n        \"isco\": \"2511\"\n      },\n      {\n        \"id\": \"especialista-ciberseguridad\",\n        \"nombre\": \"Especialista en ciberseguridad\",\n        \"sector\": \"tecnologia\",\n        \"isco\": \"2529\"\n      },\n      {\n        \"id\": \"devops\",\n        \"nombre\": \"Ingeniero/a DevOps / Cloud\",\n        \"sector\": \"tecnologia\",\n        \"isco\": \"2519\"\n      },\n      {\n        \"id\": \"enfermeria\",\n        \"nombre\": \"Enfermero/a profesional\",\n        \"sector\": \"salud\",\n        \"isco\": \"2221\"\n      },\n      {\n        \"id\": \"medico-general\",\n        \"nombre\": \"Médico/a general\",\n        \"sector\": \"salud\",\n        \"isco\": \"2211\"\n      },\n      {\n        \"id\": \"tecnico-laboratorio\",\n        \"nombre\": \"Técnico/a de laboratorio clínico\",\n        \"sector\": \"salud\",\n        \"isco\": \"3212\"\n      },\n      {\n        \"id\": \"kinesiologia\",\n        \"nombre\": \"Kinesiólogo/a y fisioterapeuta\",\n        \"sector\": \"salud\",\n        \"isco\": \"2264\"\n      },\n      {\n        \"id\": \"ing-renovables\",\n        \"nombre\": \"Ingeniero/a en energías renovables\",\n        \"sector\": \"energia\",\n        \"isco\": \"2149\"\n      },\n      {\n        \"id\": \"tecnico-solar\",\n        \"nombre\": \"Técnico/a en instalaciones solares\",\n        \"sector\": \"energia\",\n        \"isco\": \"3113\"\n      },\n      {\n        \"id\": \"operador-redes\",\n        \"nombre\": \"Operador/a de redes eléctricas\",\n        \"sector\": \"energia\",\n        \"isco\": \"3131\"\n      },\n      {\n        \"id\": \"gestor-ambiental\",\n        \"nombre\": \"Especialista en eficiencia energética\",\n        \"sector\": \"energia\",\n        \"isco\": \"2143\"\n      },\n      {\n        \"id\": \"guia-turismo\",\n        \"nombre\": \"Guía de turismo especializado\",\n        \"sector\": \"turismo\",\n        \"isco\": \"5113\"\n      },\n      {\n        \"id\": \"gestor-hotelero\",\n        \"nombre\": \"Gerente de servicios de alojamiento\",\n        \"sector\": \"turismo\",\n        \"isco\": \"1411\"\n      },\n      {\n        \"id\": \"chef-ejecutivo\",\n        \"nombre\": \"Chef / Cocinero/a profesional\",\n        \"sector\": \"turismo\",\n        \"isco\": \"3434\"\n      },\n      {\n        \"id\": \"coordinador-eventos\",\n        \"nombre\": \"Organizador/a de congresos y eventos\",\n        \"sector\": \"turismo\",\n        \"isco\": \"3332\"\n      },\n      {\n        \"id\": \"product-manager\",\n        \"nombre\": \"Gerente de producto digital\",\n        \"sector\": \"economia-conocimiento\",\n        \"isco\": \"1219\"\n      },\n      {\n        \"id\": \"disenador-ux\",\n        \"nombre\": \"Diseñador/a UX / UI\",\n        \"sector\": \"economia-conocimiento\",\n        \"isco\": \"2166\"\n      },\n      {\n        \"id\": \"analista-financiero\",\n        \"nombre\": \"Analista financiero y de inversiones\",\n        \"sector\": \"economia-conocimiento\",\n        \"isco\": \"2412\"\n      },\n      {\n        \"id\": \"consultor-negocios\",\n        \"nombre\": \"Consultor/a de innovación y estrategia\",\n        \"sector\": \"economia-conocimiento\",\n        \"isco\": \"2421\"\n      }\n    ],\n    \"indicadores\": [\n      {\n        \"id\": \"tasa_desempleo\",\n        \"nombre\": \"Tasa de desempleo\",\n        \"unidad\": \"%\",\n        \"frecuencias\": [\n          \"anual\",\n          \"trimestral\"\n        ],\n        \"desagregaciones\": [\n          \"pais\",\n          \"sector\"\n        ],\n        \"descripcion\": \"Porcentaje de la fuerza de trabajo desocupada que busca empleo activamente.\"\n      },\n      {\n        \"id\": \"tasa_empleo\",\n        \"nombre\": \"Tasa de empleo\",\n        \"unidad\": \"%\",\n        \"frecuencias\": [\n          \"anual\",\n          \"trimestral\"\n        ],\n        \"desagregaciones\": [\n          \"pais\",\n          \"sector\"\n        ],\n        \"descripcion\": \"Porcentaje de la población en edad de trabajar que se encuentra ocupada.\"\n      },\n      {\n        \"id\": \"salario_real_indice\",\n        \"nombre\": \"Salario real (Índice)\",\n        \"unidad\": \"pts\",\n        \"frecuencias\": [\n          \"trimestral\",\n          \"mensual\"\n        ],\n        \"desagregaciones\": [\n          \"pais\",\n          \"sector\"\n        ],\n        \"descripcion\": \"Evolución del poder adquisitivo salarial ajustado.\"\n      },\n      {\n        \"id\": \"puestos_demandados\",\n        \"nombre\": \"Puestos demandados\",\n        \"unidad\": \"avisos\",\n        \"frecuencias\": [\n          \"trimestral\",\n          \"mensual\"\n        ],\n        \"desagregaciones\": [\n          \"pais\",\n          \"sector\",\n          \"ocupacion\"\n        ],\n        \"descripcion\": \"Volumen de avisos de empleo y vacantes publicadas en bolsas.\"\n      }\n    ],\n    \"periodos\": {\n      \"min\": \"2018-Q1\",\n      \"max\": \"2026-Q2\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.689659Z\"\n}"
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "alertas",
+      "item": [
         {
-          "name": "get_fuente_por_id",
+          "name": "get_alertas",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL_BASE}}/fuentes/1",
+              "raw": "{{URL_BASE}}/alertas?pais=ARG&tipo=significativo",
               "host": [
                 "{{URL_BASE}}"
               ],
               "path": [
-                "fuentes",
-                "1"
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200_ok_fuente_por_id",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{URL_BASE}}/fuentes/1",
-                  "host": [
-                    "{{URL_BASE}}"
-                  ],
-                  "path": [
-                    "fuentes",
-                    "1"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
+                "alertas"
+              ],
+              "query": [
                 {
-                  "key": "content-type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuente obtenida con \\u00e9xito.\",\n  \"data\": {\n    \"id\": 1,\n    \"nombre\": \"Banco Mundial\",\n    \"descripcion\": \"Indicadores de desarrollo mundial y empleo.\",\n    \"url\": \"https://data.worldbank.org\",\n    \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 200,\n    \"message\": \"Fuente obtenida con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
-            }
-          ]
-        },
-        {
-          "name": "get_fuentes_por_estado",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{URL_BASE}}/fuentes/estado/activa",
-              "host": [
-                "{{URL_BASE}}"
-              ],
-              "path": [
-                "fuentes",
-                "estado",
-                "activa"
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200_ok_fuentes_por_estado",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": {
-                  "raw": "{{URL_BASE}}/fuentes/estado/activa",
-                  "host": [
-                    "{{URL_BASE}}"
-                  ],
-                  "path": [
-                    "fuentes",
-                    "estado",
-                    "activa"
-                  ]
-                }
-              },
-              "status": "OK",
-              "code": 200,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "content-type",
-                  "value": "application/json"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con \\u00e9xito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"Banco Mundial\",\n      \"descripcion\": \"Indicadores de desarrollo mundial y empleo.\",\n      \"url\": \"https://data.worldbank.org\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 200,\n    \"message\": \"Fuentes obtenidas con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
-            }
-          ]
-        },
-        {
-          "name": "create_fuente",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nombre\": \"INDEC \\u2014 Encuesta Permanente de Hogares\",\n  \"descripcion\": \"Indicadores sociolaborales urbanos de Argentina.\",\n  \"url\": \"https://www.indec.gob.ar\",\n  \"estado\": \"activa\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{URL_BASE}}/fuentes",
-              "host": [
-                "{{URL_BASE}}"
-              ],
-              "path": [
-                "fuentes"
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "201_created_fuente",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"nombre\": \"INDEC — Encuesta Permanente de Hogares\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
+                  "key": "pais",
+                  "value": "ARG"
                 },
+                {
+                  "key": "tipo",
+                  "value": "significativo"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_alertas",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
                 "url": {
-                  "raw": "{{URL_BASE}}/fuentes",
+                  "raw": "{{URL_BASE}}/alertas?pais=ARG&tipo=significativo",
                   "host": [
                     "{{URL_BASE}}"
                   ],
                   "path": [
-                    "fuentes"
+                    "alertas"
+                  ],
+                  "query": [
+                    {
+                      "key": "pais",
+                      "value": "ARG"
+                    },
+                    {
+                      "key": "tipo",
+                      "value": "significativo"
+                    }
                   ]
                 }
               },
-              "status": "Created",
-              "code": 201,
+              "status": "OK",
+              "code": 200,
               "_postman_previewlanguage": "json",
               "header": [
                 {
@@ -1315,7 +1666,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Fuente creada con \\u00e9xito.\",\n  \"data\": {\n    \"id\": 3,\n    \"nombre\": \"INDEC \\u2014 Encuesta Permanente de Hogares\",\n    \"descripcion\": \"Indicadores sociolaborales urbanos de Argentina.\",\n    \"url\": \"https://www.indec.gob.ar\",\n    \"ultima_actualizacion\": \"2026-10-27T20:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": {\n    \"status_code\": 201,\n    \"message\": \"Fuente creada con \\u00e9xito.\"\n  },\n  \"timestamp\": \"2026-10-27T20:00:00.000000Z\"\n}"
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Alertas recuperadas con éxito.\",\n  \"data\": {\n    \"alertas\": [\n      {\n        \"id\": \"puestos_demandados-ARG-2023-Q4\",\n        \"pais\": \"ARG\",\n        \"indicador\": \"puestos_demandados\",\n        \"periodo\": \"2023-Q4\",\n        \"variacion_pct\": 8.0,\n        \"nivel\": \"alto\",\n        \"titulo\": \"Puestos demandados: suba de 8 %\",\n        \"descripcion\": \"Variación acelerada respecto del período anterior (T3 2023).\"\n      },\n      {\n        \"id\": \"puestos_demandados-ARG-2026-Q2\",\n        \"pais\": \"ARG\",\n        \"indicador\": \"puestos_demandados\",\n        \"periodo\": \"2026-Q2\",\n        \"variacion_pct\": 6.2,\n        \"nivel\": \"medio\",\n        \"titulo\": \"Puestos demandados: suba de 6,2 %\",\n        \"descripcion\": \"Incremento sostenido impulsado por el sector tecnológico.\"\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.692268Z\"\n}"
             }
           ]
         }

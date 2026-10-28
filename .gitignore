@@ -42,11 +42,13 @@ yarn-error.log*
 *.sqlite
 *.sqlite3
 *.db
+backend/sprint-3-pendientes-y-entregables.md
+backend/docs/endpoints-pendientes-frontend.md
 
-
-# Archivos de  postman
+# Archivos de postman
 .postman/
 postman/
 
-# ingore archivos obspred
+# ignore archivos obspred
 docs/obspred/*
+
