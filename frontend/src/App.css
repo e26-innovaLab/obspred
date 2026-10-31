@@ -175,6 +175,12 @@
   outline-offset: 1px;
 }
 
+.filtros-comparacion__bandera {
+  width: 28px;
+  height: 19px;
+  flex-shrink: 0;
+}
+
 /* KPI cards */
 .kpi-grid {
   display: grid;
@@ -799,7 +805,7 @@
   gap: 4px 16px;
   border: none;
   padding: 0;
-  margin: 0;
+  margin-right: 20px;
 }
 
 .filtros-comparacion__paises legend {
@@ -870,6 +876,46 @@
 .filtros-comparacion__pais:focus-within .filtros-comparacion__muestra {
   box-shadow: 0 0 0 3px var(--amarillo);
   outline: none;
+}
+
+/* Checkbox personalizado */
+.filtros-comparacion__checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-pais);
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+/* Tilde */
+.filtros-comparacion__checkbox::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+}
+
+/* País seleccionado */
+.filtros-comparacion__checkbox[data-checked='true'] {
+  background: var(--color-pais);
+}
+
+.filtros-comparacion__checkbox[data-checked='true']::after {
+  opacity: 1;
+}
+
+/* Foco al navegar con teclado */
+.filtros-comparacion__pais:focus-within
+.filtros-comparacion__checkbox {
+  box-shadow: 0 0 0 3px var(--amarillo);
 }
 
 /* Tarjetas de indicadores comparativos */
