@@ -129,6 +129,68 @@
   object-fit: contain;
 }
 
+.sidebar__toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--blanco);
+  opacity: 0.75;
+
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sidebar__toggle:hover {
+  opacity: 1;
+  color: white;
+}
+
+.sidebar__toggle img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sidebar--collapsed .logo {
+  display: none;
+}
+
+
+
+
+#menu-principal.sidebar--collapsed a span,
+#menu-principal.sidebar--collapsed .sidebar__toggle span {
+  display: none;
+}
+
+#menu-principal.sidebar--collapsed a,
+#menu-principal.sidebar--collapsed .sidebar__toggle {
+  justify-content: center;
+}
+
+.sidebar--collapsed #menu-principal a,
+.sidebar--collapsed #menu-principal .sidebar__toggle {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebar--collapsed #menu-principal a.active,
+.sidebar--collapsed #menu-principal .sidebar__toggle.active {
+  width: 48px;
+  height: 48px;
+  margin-inline: auto;
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+
+
+
 
 /* Filtros */
 .filtros-bar {
