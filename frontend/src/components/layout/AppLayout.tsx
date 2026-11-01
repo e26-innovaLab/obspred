@@ -56,7 +56,7 @@ export function AppLayout() {
         </div>
         <nav id="menu-principal" data-abierto={abierto} className={isCollapsed ? 'sidebar--collapsed' : ''}>
           {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end}>
+            <NavLink key={item.to} to={item.to} end={item.end}  title={isCollapsed ? item.label : undefined}>
               <img src={item.icon} alt="" />
               <span>{item.label}</span>
             </NavLink>
@@ -64,6 +64,7 @@ export function AppLayout() {
 
           <button
           className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
+          title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
            onClick={toggleSidebar}
           >
             <img src={colapsarIcon} alt="Colapsar"/>
