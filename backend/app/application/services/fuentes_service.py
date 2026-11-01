@@ -2,6 +2,11 @@ from app.application.dtos.fuentes_dto import FuenteDTO
 from app.core.constants import FuenteEstado
 from app.domain.entities.fuente import Fuente
 from app.domain.interfaces.fuente_repository import IFuenteRepository
+from app.domain.exceptions.base import (
+    EntityNotFoundException,
+    DomainException,
+   
+)
 
 
 class FuenteService:
@@ -48,7 +53,7 @@ class FuenteService:
         fuentes = await self.fuente_repository.get_by_estado(estado)
         return [self._map_entity_to_dto(fuente) for fuente in fuentes]
 
-    async def get_fuente_by_id(self, fuente_id: int) -> FuenteDTO | None:
+    async def get_fuente_by_id(self, fuente_id: int) -> FuenteDTO:
         """Obtiene una fuente de datos por su ID.
 
         Args:
@@ -59,7 +64,10 @@ class FuenteService:
         """
         fuente = await self.fuente_repository.get_by_id(fuente_id)
         if fuente is None:
-            return None
+            raise EntityNotFoundException(
+                entity_name="Fuente", entity_id=fuente_id
+            )
+        
         return self._map_entity_to_dto(fuente)
 
     async def create_fuente(self, fuente_dto: FuenteDTO) -> None:
@@ -67,13 +75,21 @@ class FuenteService:
 
         Args:
             fuente_dto (FuenteDTO): DTO de la fuente a guardar.
+        
         """
+        if await self.fuente_repository.exists(fuente_dto.nombre):
+            raise DomainException(
+                f"Ya existe una fuente con el nombre '{fuente_dto.nombre}'."
+            )
+
+
         fuente = Fuente(
             nombre=fuente_dto.nombre,
             descripcion=fuente_dto.descripcion,
             url=fuente_dto.url,
             ulima_actualizacion=fuente_dto.ultima_actualizacion,
         )
+
         await self.fuente_repository.save(fuente)
 
     async def get_all_fuentes(self) -> list[FuenteDTO]:
@@ -84,3 +100,41 @@ class FuenteService:
         """
         fuentes = await self.fuente_repository.get_all()
         return [self._map_entity_to_dto(fuente) for fuente in fuentes]
+    
+
+    async def update_fuente(self, fuente_id:id , fuente_dto: FuenteDTO) -> FuenteDTO:
+        """Actualiza una fuente de datos existente en la base de datos.
+
+        Args:
+            fuente_dto (FuenteDTO): DTO de la fuente con los cambios a actualizar.
+        """
+        
+
+        fuente = Fuente(
+            id=fuente_id,
+            nombre=fuente_dto.nombre,
+            descripcion=fuente_dto.descripcion,
+            estado=fuente_dto.estado,
+            url=fuente_dto.url,
+            ulima_actualizacion=fuente_dto.ultima_actualizacion,
+        )
+        fuente_actualizada = await self.fuente_repository.update(fuente)
+        if fuente_actualizada is None:
+           raise EntityNotFoundException(
+                entity_name="Fuente", entity_id=fuente_id
+            )
+        return self._map_entity_to_dto(fuente_actualizada)
+    
+
+    async def delete_fuente(self, fuente_id: int) -> None:
+        """Elimina una fuente de datos de la base de datos por su ID.
+
+        Args:
+            fuente_id (int): ID de la fuente a eliminar.
+        """
+        fuente_eliminada = await self.fuente_repository.delete(fuente_id)
+        if not fuente_eliminada:
+            raise EntityNotFoundException(
+                entity_name="Fuente", entity_id=fuente_id
+            )
+    

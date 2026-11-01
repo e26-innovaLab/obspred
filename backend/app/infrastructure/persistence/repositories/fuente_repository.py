@@ -95,3 +95,64 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         result = await self.session.execute(query)
         fuentes_model = result.scalars().all()
         return [self._map_model_to_entity(fuente) for fuente in fuentes_model]
+
+
+
+    async def update(self, fuente: Fuente) -> Fuente:
+        """Actualiza una fuente de datos existente en la base de datos.
+
+        Args:
+            fuente (Fuente): Instancia de la fuente con los cambios a actualizar.
+
+        Returns:
+            Fuente: Entidad Fuente actualizada.
+        """
+        query = select(FuenteModel).where(FuenteModel.id == fuente.id)
+        result = await self.session.execute(query)
+        fuente_model = result.scalar_one_or_none()
+
+        if fuente_model is None:
+            return None
+        
+        fuente_model.nombre = fuente.nombre
+        fuente_model.descripcion = fuente.descripcion
+        fuente_model.estado = fuente.estado
+        fuente_model.url = fuente.url
+        fuente_model.ultima_actualizacion = fuente.ulima_actualizacion
+
+        await self.session.commit()
+        logger.info(f"Fuente '{fuente.nombre}' actualizada con éxito.")
+        return self._map_model_to_entity(fuente_model)
+    
+    async def delete(self, fuente_id: int) -> None:
+        """Elimina una fuente de datos de la base de datos por su ID.
+
+        Args:
+            fuente_id (int): ID de la fuente a eliminar.
+        """
+        query = select(FuenteModel).where(FuenteModel.id == fuente_id)
+        result = await self.session.execute(query)
+        fuente_model = result.scalar_one_or_none()
+
+        if fuente_model is None:
+            logger.warning(f"No se encontró la fuente con ID {fuente_id} para eliminar.")
+            return
+
+        await self.session.delete(fuente_model)
+        await self.session.commit()
+        logger.info(f"Fuente con ID {fuente_id} eliminada con éxito.")
+
+
+    async def exists(self, fuente_nombre: str) -> bool:
+        """Verifica si una fuente de datos existe en la base de datos por su nombre.
+
+        Args:
+            fuente_nombre (str): Nombre de la fuente a verificar.
+
+        Returns:
+            bool: True si la fuente existe, False si no.
+        """
+        query = select(FuenteModel).where(FuenteModel.nombre == fuente_nombre)
+        result = await self.session.execute(query)
+        fuente_model = result.scalar_one_or_none()
+        return fuente_model is not None
