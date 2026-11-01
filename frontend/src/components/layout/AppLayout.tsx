@@ -1,21 +1,22 @@
-import { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import logo from '../../assets/icons/logo2.png'
-import inicioIcon from '../../assets/icons/inicio.png'
-import tendenciasIcon from '../../assets/icons/tendencias.png'
-import fuentesIcon from '../../assets/icons/fuentes.png'
-import breachasIcon from '../../assets/icons/brechas.png'
-import compararIcon from '../../assets/icons/comparar.png'
-import ocupacionesIcon from '../../assets/icons/ocupaciones.png'
+import { useState } from "react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import logo from "../../assets/icons/logo2.png";
+import inicioIcon from "../../assets/icons/inicio.png";
+import tendenciasIcon from "../../assets/icons/tendencias.png";
+import fuentesIcon from "../../assets/icons/fuentes.png";
+import breachasIcon from "../../assets/icons/brechas.png";
+import compararIcon from "../../assets/icons/comparar.png";
+import ocupacionesIcon from "../../assets/icons/ocupaciones.png";
+import colapsarIcon from "../../assets/icons/colapsar.png";
 
 // Las etiquetas siguen el Figma ("Inicio") y van con inicial mayúscula.
 const NAV_ITEMS = [
-  { to: '/', label: 'Inicio', end: true, icon: inicioIcon},
-  { to: '/ocupaciones', label: 'Ocupaciones', icon: ocupacionesIcon },
-  { to: '/tendencias', label: 'Tendencias', icon: tendenciasIcon},
-  { to: '/comparar', label: 'Comparar países', icon: compararIcon },
-  { to: '/brechas', label: 'Brechas de habilidades', icon: breachasIcon },
-  { to: '/trazabilidad', label: 'Trazabilidad y fuentes', icon: fuentesIcon },
+  { to: "/", label: "Inicio", end: true, icon: inicioIcon },
+  { to: "/ocupaciones", label: "Ocupaciones", icon: ocupacionesIcon },
+  { to: "/tendencias", label: "Tendencias", icon: tendenciasIcon },
+  { to: "/comparar", label: "Comparar países", icon: compararIcon },
+  { to: "/brechas", label: "Brechas de habilidades", icon: breachasIcon },
+  { to: "/trazabilidad", label: "Trazabilidad y fuentes", icon: fuentesIcon },
 ];
 
 // En computadora el menú es una barra lateral fija. En celular y tablet
@@ -27,11 +28,19 @@ export function AppLayout() {
   const [rutaDelMenu, setRutaDelMenu] = useState(pathname);
   const abierto = menuAbierto && rutaDelMenu === pathname;
 
+  // Estado del sidebar
+  const [isCollapsed , setIsCollapsed ] = useState(false);
+
+  const toggleSidebar = () => {
+    console.log("Sidebar cerrado / abierto");
+    setIsCollapsed((prev) => !prev);
+  }
+
   return (
-    <div className="app-layout">
+    <div className={`app-layout ${isCollapsed ? 'sidebar--collapsed' : ''}`}>
       <header className="app-header">
         <div className="app-header__barra">
-          <img className="logo" src={logo} alt="Logo El Faro"/>
+          <img className="logo" src={logo} alt="Logo El Faro" />
           <button
             type="button"
             className="app-header__menu-btn"
@@ -42,17 +51,26 @@ export function AppLayout() {
               setMenuAbierto(!abierto);
             }}
           >
-            <span aria-hidden>{abierto ? '✕' : '☰'}</span> Menú
+            <span aria-hidden>{abierto ? "✕" : "☰"}</span> Menú
           </button>
         </div>
-        <nav id="menu-principal" data-abierto={abierto}>
-  {NAV_ITEMS.map((item) => (
-    <NavLink key={item.to} to={item.to} end={item.end}>
-      <img src={item.icon} alt="" />
-      <span>{item.label}</span>
-    </NavLink>
-  ))}
-</nav>
+        <nav id="menu-principal" data-abierto={abierto} className={isCollapsed ? 'sidebar--collapsed' : ''}>
+          {NAV_ITEMS.map((item) => (
+            <NavLink key={item.to} to={item.to} end={item.end}>
+              <img src={item.icon} alt="" />
+              <span>{item.label}</span>
+            </NavLink>
+          ))}
+
+          <button
+          className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
+           onClick={toggleSidebar}
+          >
+            <img src={colapsarIcon} alt="Colapsar"/>
+            <span>Colapsar</span>
+          </button>
+
+        </nav>
       </header>
       <main className="app-content">
         <Outlet />
