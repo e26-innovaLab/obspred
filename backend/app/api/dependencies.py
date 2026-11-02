@@ -26,6 +26,7 @@ from app.domain.interfaces.indice_empleabilidad_repository import (
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
+from app.infrastructure.connectors.esco_connector import EscoConnector
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
@@ -34,7 +35,8 @@ from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndiceEmpleabilidadRepository,
 )
 from app.infrastructure.persistence.repositories.brecha_repository import (
-    SQLAlchemyBrechaRepository,)
+    SQLAlchemyBrechaRepository,
+)
 from app.infrastructure.persistence.repositories.fuente_repository import (
     SqlAlchemyFuenteRepository,
 )
@@ -213,6 +215,8 @@ def provide_brecha_service(
         BrechaService: Servicio listo para su uso en controladores.
     """
     return BrechaService(repository=repository)
+
+
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -285,3 +289,34 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_esco_connector() -> IExternalDataConnector:
+    """Provee una instancia del conector oficial de ESCO (Taxonomías).
+
+    Returns:
+      IExternalDataConnector: Instancia de EscoConnector configurada.
+    """
+    return EscoConnector(settings.esco_base_url)
+
+
+def provide_esco_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_esco_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con ESCO.
+
+    Args:
+        connector: Conector de ESCO inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)

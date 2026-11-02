@@ -1,7 +1,6 @@
-from typing import Annotated
 """Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
 
-from fastapi import APIRouter, Path, Query, status
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
 
@@ -14,9 +13,8 @@ from app.api.v1.schemas.brechas_schema import (
 )
 from app.api.v1.schemas.response_schema import create_success_response
 from app.application.services.brecha_service import BrechaService
-from app.core.constants import BRECHAS_ROUTE
-from app.domain.exceptions.brecha_exceptions import OcupacionNoEncontradaError
 from app.core.constants import BRECHAS_ROUTE, OPENAPI_TAG_BRECHAS
+from app.domain.exceptions.brecha_exceptions import OcupacionNoEncontradaError
 
 brechas_router = APIRouter(
     prefix=BRECHAS_ROUTE,
@@ -139,7 +137,7 @@ async def get_brechas_por_ocupacion(
         return create_success_response(
             data=data,
             message="Brechas de habilidades obtenidas con éxito.",
-            status_code=status.HTTP_200_OK
+            status_code=status.HTTP_200_OK,
         )
 
     except OcupacionNoEncontradaError as e:

@@ -134,6 +134,7 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+INGESTA_SYNC_ESCO_ROUTE: Final[str] = f"/{INGESTA_SYNC_ROUTE}/esco"
 METRICAS_ROUTE: Final[str] = "/metricas"
 CATALOGO_ROUTE: Final[str] = "/catalogo"
 ALERTAS_ROUTE: Final[str] = "/alertas"
@@ -184,6 +185,11 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
     "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuracion para conector ESCO
+DEFAULT_ESCO_BASE_URL: Final[str] = "https://ec.europa.eu/esco/api/search"
+DEFAULT_ESCO_SOURCE: Final[str] = "ESCO"
+DEFAULT_ESCO_TIMEOUT_SECONDS: Final[float] = 30.0
 
 
 # ==============================================================================
@@ -247,6 +253,7 @@ __all__ = [
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
+    "INGESTA_SYNC_ESCO_ROUTE",
     # OpenAPI Tags
     "OPENAPI_TAG_ROOT",
     "OPENAPI_TAG_HEALTH",

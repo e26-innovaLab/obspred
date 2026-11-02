@@ -21,6 +21,7 @@ class RawIndicatorRecord(BaseModel):
         fuente: Denominación oficial del organismo o servicio proveedor.
         fecha_actualizacion: Fecha de vigencia o publicación reportada por el origen.
         metadatos: Atributos contextuales complementarios reportados por la fuente.
+        detalles: Payload JSON enriquecido y estructurado opcional (para ESCO).
     """
 
     model_config = ConfigDict(frozen=True)
@@ -64,6 +65,10 @@ class RawIndicatorRecord(BaseModel):
     metadatos: dict[str, Any] | None = Field(
         default=None,
         description="Metadatos técnicos y contextuales de trazabilidad",
+    )
+    detalles: dict[str, Any] | None = Field(
+        default=None,
+        description="Payload JSON estructurado complementario de la fuente externa",
     )
 
 
