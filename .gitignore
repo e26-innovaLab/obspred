@@ -55,3 +55,6 @@ docs/obspred/*
 
 # Archivos subidos en desarrollo local
 data/uploads/
+
+# Cargas de archivos temporales
+backend/data/uploads/

@@ -13,6 +13,7 @@ def test_indicador_model_initialization() -> None:
         ocupacion="Desarrollador de software",
         indicador="tasa_desempleo",
         periodo="2024-Q1",
+        trimestre="Q1",
         valor=6.9,
         tipo="observado",
         fuente="ILOSTAT",
@@ -25,6 +26,7 @@ def test_indicador_model_initialization() -> None:
     assert record.ocupacion == "Desarrollador de software"
     assert record.indicador == "tasa_desempleo"
     assert record.periodo == "2024-Q1"
+    assert record.trimestre == "Q1"
     assert record.valor == 6.9
     assert record.tipo == "observado"
     assert record.fuente == "ILOSTAT"
@@ -38,3 +40,4 @@ def test_indicador_model_indices_defined() -> None:
 
     assert "ix_indicadores_pais_sector_ocupacion" in index_names
     assert "ix_indicadores_busqueda_temporal" in index_names
+    assert "ix_indicadores_trimestre" in index_names

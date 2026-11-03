@@ -1,5 +1,6 @@
 """Implementación SQLAlchemy para el repositorio de persistencia de Indicadores."""
 
+import re
 from datetime import UTC, datetime
 
 from sqlalchemy import select
@@ -41,6 +42,13 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         now_utc = datetime.now(UTC)
 
         for record in records:
+            # Inferencia automática de trimestre si no viene explícito
+            trimestre = record.trimestre
+            if not trimestre and record.periodo:
+                match = re.search(r"Q([1-4])", record.periodo, re.IGNORECASE)
+                if match:
+                    trimestre = f"Q{match.group(1)}"
+
             # Búsqueda de registro existente bajo clave lógica
             query = select(IndicadorModel).where(
                 IndicadorModel.pais == record.pais,
@@ -66,6 +74,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             if existing:
                 existing.valor = record.valor
                 existing.tipo = record.tipo
+                existing.trimestre = trimestre or existing.trimestre
                 existing.fecha_actualizacion = record.fecha_actualizacion
                 existing.updated_at = now_utc
             else:
@@ -75,6 +84,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
                     ocupacion=record.ocupacion,
                     indicador=record.indicador,
                     periodo=record.periodo,
+                    trimestre=trimestre,
                     valor=record.valor,
                     tipo=record.tipo,
                     fuente=record.fuente,
@@ -100,6 +110,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         indicador: str | None = None,
         desde: str | None = None,
         hasta: str | None = None,
+        trimestre: str | None = None,
     ) -> list[IndicadorModel]:
         """Consulta indicadores aplicando la jerarquía estricta de filtros.
 
@@ -110,6 +121,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             indicador: Identificador clave del indicador.
             desde: Límite temporal inicial del rango.
             hasta: Límite temporal final del rango.
+            trimestre: Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4).
 
         Returns:
             List[IndicadorModel]: Modelos ORM coincidentes ordenados cronológicamente.
@@ -128,6 +140,8 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             stmt = stmt.where(IndicadorModel.periodo >= desde.strip())
         if hasta:
             stmt = stmt.where(IndicadorModel.periodo <= hasta.strip())
+        if trimestre:
+            stmt = stmt.where(IndicadorModel.trimestre == trimestre.upper().strip())
 
         stmt = stmt.order_by(IndicadorModel.periodo.asc(), IndicadorModel.pais.asc())
 

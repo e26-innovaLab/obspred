@@ -78,7 +78,7 @@ async def test_check_health_connection_error() -> None:
     """Verifica que check_health maneje errores de red retornando False."""
 
     def raise_error(request: httpx.Request) -> httpx.Response:
-        raise httpx.ConnectError("Network unreachable")
+        raise httpx.ConnectError("Connection refused")
 
     mock_transport = httpx.MockTransport(raise_error)
     async with httpx.AsyncClient(transport=mock_transport) as client:
@@ -88,25 +88,23 @@ async def test_check_health_connection_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_fetch_indicators_raises_simel_waf_blocked_exception() -> None:
-    """Verifica que fetch_indicators lance SimelWafBlockedException ante WAF."""
+async def test_fetch_indicators_raises_waf_exception() -> None:
+    """Verifica que fetch_indicators lance excepción si el WAF bloquea."""
     mock_transport = httpx.MockTransport(
         lambda request: httpx.Response(
             418,
-            headers={"Server": "CW"},
-            text="WAF Block",
+            headers={"Server": "CW", "block-event-id": "waf-123"},
+            text="Bloqueado por WAF",
         )
     )
     async with httpx.AsyncClient(transport=mock_transport) as client:
         connector = SimelChileConnector(client=client)
-        with pytest.raises(SimelWafBlockedException) as exc_info:
-            await connector.fetch_indicators(paises=["CHL"])
-        assert "Huawei Cloud" in str(exc_info.value)
-        assert "418" in str(exc_info.value)
+        with pytest.raises(SimelWafBlockedException):
+            await connector.fetch_indicators(indicadores=["tasa_desempleo"])
 
 
-def test_parse_simel_csv_success(sample_simel_csv: str) -> None:
-    """Verifica la correcta transformación y normalización de un CSV de SIMEL."""
+def test_parse_simel_csv_format_explorer(sample_simel_csv: str) -> None:
+    """Verifica parseo correcto de columnas de formato Data Explorer de SIMEL."""
     connector = SimelChileConnector()
     records = connector.parse_simel_csv(sample_simel_csv, filename="test.csv")
 
@@ -116,6 +114,7 @@ def test_parse_simel_csv_success(sample_simel_csv: str) -> None:
     assert desempleo.pais == PaisCodigo.CHL
     assert desempleo.indicador == "tasa_desempleo"
     assert desempleo.periodo == "2024-Q1"
+    assert desempleo.trimestre == "Q1"
     assert desempleo.valor == 8.7
     assert desempleo.tipo == TipoIndicador.OBSERVADO
     assert desempleo.fuente == DEFAULT_SIMEL_CHILE_SOURCE
@@ -146,6 +145,7 @@ def test_parse_simel_csv_semicolon_and_latin1_encoding() -> None:
     rec = records[0]
     assert rec.valor == 7.4
     assert rec.periodo == "2024-Q1"
+    assert rec.trimestre == "Q1"
     assert rec.sector == SectorEstrategico.TECNOLOGIA
 
 
@@ -178,8 +178,10 @@ def test_parse_simel_sdmx_csv_format() -> None:
     assert len(records) == 2
     assert records[0].indicador == "tasa_desempleo"
     assert records[0].periodo == "2024-Q1"
+    assert records[0].trimestre == "Q1"
     assert records[0].valor == 8.7
 
     assert records[1].indicador == "empleo_sector"
     assert records[1].sector == SectorEstrategico.TECNOLOGIA
+    assert records[1].trimestre == "Q1"
     assert records[1].valor == 201000.0

@@ -528,6 +528,7 @@ class SimelChileConnector(IExternalDataConnector):
                     ocupacion=None,
                     indicador=indicador_slug,
                     periodo=periodo,
+                    trimestre=self._extract_trimestre(periodo),
                     valor=parsed_val,
                     tipo=TipoIndicador.OBSERVADO,
                     fuente=self.DEFAULT_SOURCE_NAME,
@@ -537,6 +538,14 @@ class SimelChileConnector(IExternalDataConnector):
             )
 
         return records
+
+    @staticmethod
+    def _extract_trimestre(periodo: str | None) -> str | None:
+        """Extrae la notación de trimestre (ej. 'Q1', 'Q2') si existe en el período."""
+        if not periodo:
+            return None
+        match = re.search(r"Q([1-4])", periodo, re.IGNORECASE)
+        return f"Q{match.group(1)}" if match else None
 
     def _normalize_sdmx_time_period(self, time_str: str) -> str:
         """Traduce formatos temporales SDMX a notación estándar de períodos.
@@ -676,6 +685,7 @@ class SimelChileConnector(IExternalDataConnector):
             ocupacion=raw_ocupacion,
             indicador=indicador_slug,
             periodo=periodo,
+            trimestre=self._extract_trimestre(periodo),
             valor=parsed_val,
             tipo=TipoIndicador.OBSERVADO,
             fuente=self.DEFAULT_SOURCE_NAME,

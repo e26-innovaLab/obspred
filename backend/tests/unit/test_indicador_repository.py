@@ -75,6 +75,7 @@ async def test_indicador_repository_upsert_batch_e_idempotencia(
     assert len(found) == 1
     assert found[0].valor == 6.1
     assert found[0].indicador == "tasa_desempleo"
+    assert found[0].trimestre is None
 
     # Segunda ejecución con valor actualizado (upsert)
     updated_records: list[RawIndicatorRecord] = [
@@ -159,3 +160,70 @@ async def test_indicador_repository_get_by_filters_jerarquia(
     servicios = await repo.get_by_filters(sector="Servicios")
     assert len(servicios) == 1
     assert servicios[0].pais == "URY"
+
+
+@pytest.mark.asyncio
+async def test_indicador_repository_trimestre_inferencia_y_filtro(
+    in_memory_session: AsyncSession,
+) -> None:
+    """Verifica la inferencia automática del trimestre y el filtrado por trimestre."""
+    repo = SqlAlchemyIndicadorRepository(session=in_memory_session)
+
+    records: list[RawIndicatorRecord] = [
+        RawIndicatorRecord(
+            pais="CHL",
+            sector=None,
+            ocupacion=None,
+            indicador="tasa_desempleo",
+            periodo="2024-Q1",
+            trimestre=None,  # Debe inferir Q1 automáticamente
+            valor=8.5,
+            tipo="observado",
+            fuente="SIMEL - INE Chile",
+            fecha_actualizacion=date(2024, 4, 1),
+        ),
+        RawIndicatorRecord(
+            pais="CHL",
+            sector=None,
+            ocupacion=None,
+            indicador="tasa_desempleo",
+            periodo="2024-Q2",
+            trimestre="Q2",  # Trimestre explícito
+            valor=8.9,
+            tipo="observado",
+            fuente="SIMEL - INE Chile",
+            fecha_actualizacion=date(2024, 7, 1),
+        ),
+        RawIndicatorRecord(
+            pais="CHL",
+            sector=None,
+            ocupacion=None,
+            indicador="tasa_desempleo",
+            periodo="2024",
+            trimestre=None,  # Anual, sin trimestre
+            valor=8.7,
+            tipo="observado",
+            fuente="World Bank",
+            fecha_actualizacion=date(2024, 12, 1),
+        ),
+    ]
+
+    await repo.upsert_batch(records)
+
+    # Verificar que el registro Q1 tenga trimestre inferido
+    q1_results = await repo.get_by_filters(pais="CHL", trimestre="Q1")
+    assert len(q1_results) == 1
+    assert q1_results[0].periodo == "2024-Q1"
+    assert q1_results[0].trimestre == "Q1"
+
+    # Verificar filtro por Q2
+    q2_results = await repo.get_by_filters(pais="CHL", trimestre="Q2")
+    assert len(q2_results) == 1
+    assert q2_results[0].periodo == "2024-Q2"
+    assert q2_results[0].trimestre == "Q2"
+
+    # Verificar consulta general y registros sin trimestre
+    todos = await repo.get_by_filters(pais="CHL")
+    assert len(todos) == 3
+    anual = [r for r in todos if r.periodo == "2024"][0]
+    assert anual.trimestre is None
