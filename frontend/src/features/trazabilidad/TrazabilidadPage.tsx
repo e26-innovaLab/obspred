@@ -68,7 +68,7 @@ export function TrazabilidadPage() {
 
       <section className="metodologia-grid">
         <div className="metodologia-card">
-          <h2>Cópmo se construyen los indicadores</h2>
+          <h2>Cómo se construyen los indicadores</h2>
           <div className="metodologia-paso">
             <p className="metodologia-paso__titulo">Definición</p>
             <p className="metodologia-paso__descripcion">Precisar qué mide cada indicador y su unidad.</p>

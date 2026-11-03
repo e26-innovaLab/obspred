@@ -124,6 +124,9 @@ INDICADORES_ROUTE: Final[str] = "/indicadores"
 INDICE_EMPLEABILIDAD_ROUTE: Final[str] = "/indice-empleabilidad"
 INGESTA_ROUTE: Final[str] = "/ingesta"
 INGESTA_UPLOAD_ROUTE: Final[str] = "/upload"
+PRUEBA_ENDPOINT_BORRAR_ROUTE: Final[str] = "/prueba_endpoint_borrar"
+BRECHAS_ROUTE = "/brechas"
+TENDENCIAS_ROUTE = "/tendencias"
 INGESTA_SYNC_ROUTE: Final[str] = "/sync"
 INGESTA_SYNC_WORLD_BANK_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/world-bank"
 TENDENCIAS_ROUTE: Final[str] = "/tendencias"
@@ -131,6 +134,7 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+FUENTE_ROUTE: Final[str] = "/fuentes"
 
 
 # Tags para OpenAPI / Swagger
@@ -139,6 +143,7 @@ OPENAPI_TAG_HEALTH: Final[str] = "Health"
 OPENAPI_TAG_INDICADORES: Final[str] = "Indicadores"
 OPENAPI_TAG_INDICE_EMPLEABILIDAD: Final[str] = "Indice de Empleabilidad"
 OPENAPI_TAG_INGESTA: Final[str] = "Ingesta"
+OPENAPI_TAG_FUENTE: Final[str] = "Fuentes de Datos"
 
 
 # ==============================================================================
@@ -180,6 +185,17 @@ DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 DEFAULT_SUCCESS_MESSAGE: Final[str] = "Operación ejecutada con éxito."
 DEFAULT_ERROR_MESSAGE: Final[str] = "Ocurrió un error al procesar la solicitud."
 INTERNAL_SERVER_ERROR_MESSAGE: Final[str] = "Error interno del servidor no controlado."
+
+
+# ==============================================================================
+# 8.Constantes de Estado de los fuentes de datos externas
+# ==============================================================================
+class FuenteEstado(StrEnum):
+    """Enum que representa los posibles estados de una fuente de datos."""
+
+    ACTIVA = "activa"
+    DESACTUALIZADA = "desactualizada"
+    NO_DISPONIBLE = "no_disponible"
 
 
 # ==============================================================================

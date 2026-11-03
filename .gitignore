@@ -42,3 +42,11 @@ yarn-error.log*
 *.sqlite
 *.sqlite3
 *.db
+
+
+# Archivos de  postman
+.postman/
+postman/
+
+# ingore archivos obspred
+docs/obspred/*
