@@ -181,16 +181,10 @@ class SimelChileConnector(IExternalDataConnector):
     TRIMESTRE_MAPPINGS: Final[dict[str, str]] = {
         "ene - mar": "Q1",
         "ene-mar": "Q1",
-        "feb - abr": "Q1-Q2",
-        "mar - may": "Q2",
         "abr - jun": "Q2",
         "abr-jun": "Q2",
-        "may - jul": "Q2-Q3",
-        "jun - ago": "Q3",
         "jul - sep": "Q3",
         "jul-sep": "Q3",
-        "ago - oct": "Q3-Q4",
-        "sep - nov": "Q4",
         "oct - dic": "Q4",
         "oct-dic": "Q4",
     }
@@ -490,6 +484,8 @@ class SimelChileConnector(IExternalDataConnector):
             if not raw_time:
                 continue
             periodo = self._normalize_sdmx_time_period(raw_time)
+            if not periodo:
+                continue
 
             raw_ind = (row.get("INDICADOR") or "").strip()
             indicador_slug = (
@@ -547,10 +543,15 @@ class SimelChileConnector(IExternalDataConnector):
         match = re.search(r"Q([1-4])", periodo, re.IGNORECASE)
         return f"Q{match.group(1)}" if match else None
 
-    def _normalize_sdmx_time_period(self, time_str: str) -> str:
-        """Traduce formatos temporales SDMX a notación estándar de períodos.
+    def _normalize_sdmx_time_period(self, time_str: str) -> str | None:
+        """Traduce formatos temporales SDMX a notación estándar trimestral.
 
-        Ejemplo: '2024-03-01/P3M' (trimestre móvil terminado en marzo) -> '2024-Q1'.
+        Solo mapea los trimestres cerrados oficiales del calendario:
+        - Mes 03 (Ene-Mar) -> 'YYYY-Q1'
+        - Mes 06 (Abr-Jun) -> 'YYYY-Q2'
+        - Mes 09 (Jul-Sep) -> 'YYYY-Q3'
+        - Mes 12 (Oct-Dic) -> 'YYYY-Q4'
+        Los trimestres móviles intermedios retornan None para evitar solapamientos.
         """
         clean = time_str.strip()
         if "/P3M" in clean or "/P1M" in clean:
@@ -559,9 +560,10 @@ class SimelChileConnector(IExternalDataConnector):
             if len(parts) >= 2:
                 year = parts[0]
                 month = int(parts[1])
-                # Meses 1 a 3 -> Q1, 4 a 6 -> Q2, 7 a 9 -> Q3, 10 a 12 -> Q4
-                quarter = (month - 1) // 3 + 1
-                return f"{year}-Q{quarter}"
+                quarter_map = {3: "Q1", 6: "Q2", 9: "Q3", 12: "Q4"}
+                if month in quarter_map:
+                    return f"{year}-{quarter_map[month]}"
+                return None
         return clean
 
     def _decode_content(self, content: str | bytes, filename: str) -> str:

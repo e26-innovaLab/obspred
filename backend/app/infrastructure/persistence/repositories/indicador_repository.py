@@ -38,10 +38,17 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         if not records:
             return 0
 
+        # Deduplicar en memoria preservando el último registro para cada clave lógica
+        deduped_records: dict[tuple, RawIndicatorRecord] = {}
+        for r in records:
+            key = (r.pais, r.sector, r.ocupacion, r.indicador, r.periodo, r.fuente)
+            deduped_records[key] = r
+
+        unique_records = list(deduped_records.values())
         persisted_count = 0
         now_utc = datetime.now(UTC)
 
-        for record in records:
+        for record in unique_records:
             # Inferencia automática de trimestre si no viene explícito
             trimestre = record.trimestre
             if not trimestre and record.periodo:
