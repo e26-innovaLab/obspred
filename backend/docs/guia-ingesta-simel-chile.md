@@ -1,155 +1,140 @@
-# Guía Técnica: Ingesta y Diagnóstico de SIMEL Chile (`obspred`)
+# Guía Técnica: Ingesta y Conexión Oficial con SIMEL Chile (`obspred`)
 
-> **Propósito:** Esta guía documenta la integración del **Sistema de Información del Mercado Laboral (SIMEL)** de Chile en la plataforma `obspred`, detallando las restricciones del Web Application Firewall (WAF) de Huawei Cloud, el diseño del conector institucional y el flujo de normalización de exportaciones tabulares (CSV).
+> **Propósito:** Esta guía documenta la integración del **Sistema de Información del Mercado Laboral (SIMEL)** de Chile en la plataforma `obspred`, incorporando las especificaciones de la [Guía Oficial de Uso de SIMEL (INE)](https://www.ine.gob.cl/simel/guia-de-uso), la arquitectura de la API SDMX RESTful (.Stat Suite) y el flujo de normalización de exportaciones tabulares (CSV).
 
 ---
 
-## 1. Contexto Institucional y Desafío Técnico
+## 1. Contexto Institucional y Arquitectura de SIMEL
 
 ### 1.1 ¿Qué es SIMEL?
 SIMEL (`https://www.simel.gob.cl`) es la plataforma oficial coordinada por la **Mesa de Estadísticas del Trabajo** de Chile (integrada por el Instituto Nacional de Estadísticas - INE, el Ministerio del Trabajo y Previsión Social y con asistencia técnica de la OIT). Es la fuente primaria más exhaustiva sobre empleo, desocupación, salarios y estructura ocupacional desagregada por ramas de actividad económica (CAENES) y regiones.
 
-### 1.2 La Restricción Perimetral: WAF de Huawei Cloud (HTTP 418)
-A diferencia de APIs abiertas como las del Banco Mundial o el Banco Central de Chile, el portal público de SIMEL está alojado bajo el **Web Application Firewall (WAF) de Huawei Cloud** (`Server: CW`).
+### 1.2 Distinción Crítica: Portal Interactivo vs. API SDMX Oficial
+De acuerdo con la [Guía de uso de SIMEL](https://www.ine.gob.cl/simel/guia-de-uso) publicada por el INE, el sistema opera bajo una arquitectura desacoplada:
 
-- **Comportamiento en vivo:** Cualquier cliente HTTP desatendido automatizado (scripts Python, `curl`, herramientas de scraping o cron jobs) recibe una respuesta de bloqueo inmediata con código **HTTP 418** (*I'm a teapot*) o desafíos anti-bot mediante cookies propietarias (`HWWAFSESID`, `HWWAFSESTIME`) y encabezados de intercepción (`block-event-id`).
-- **Consecuencia de diseño:** No es metodológicamente viable ni confiable mantener un conector de sincronización REST automática en tiempo real sin una sesión interactiva de navegador.
+1. **Portal Web Interactivo (`www.simel.gob.cl`):**
+   - Interfaz gráfica para usuarios humanos construida sobre Data Explorer.
+   - Cuenta con protección perimetral activa por Web Application Firewall (**WAF**) de Huawei Cloud (`Server: CW`).
+   - Las solicitudes HTTP automatizadas desatendidas contra este frontend reciben el código de restricción **HTTP 418** (*I'm a teapot*).
+2. **API RESTful SDMX Oficial (.Stat Suite del INE):**
+   - Motor estadístico subyacente de código abierto (SIS-CC / Dotstatsuite).
+   - **Endpoint oficial sin bloqueo WAF:**  
+     `https://sdmx.ine.gob.cl/rest/data/CL01,<DATAFLOW>,1.0/<DIMENSIONES>?format=csv`
+   - Dispone de más de 200 flujos de datos (`dataflows`) públicos actualizados periódicamente.
 
 ---
 
-## 2. Estrategia Arquitectónica de Ingesta
+## 2. Estrategia de Ingesta en `obspred`
 
-Para garantizar la honestidad de datos (Principio 4) y la trazabilidad (Principio 3), `obspred` adopta una **estrategia dual**:
+Para garantizar la honestidad de datos (Principio 4) y la trazabilidad (Principio 3), `obspred` provee soporte integral para **ambas vías**:
 
 ```mermaid
 flowchart TD
-    subgraph Origen ["Portal Oficial SIMEL (Chile)"]
-        A["simel.gob.cl<br/>(Huawei Cloud WAF)"]
+    subgraph INE ["INE Chile / SIMEL (.Stat Suite)"]
+        SDMX["API SDMX Oficial<br/>sdmx.ine.gob.cl/rest/data/"]
+        PORTAL["Explorador Web SIMEL<br/>simel.gob.cl (Descarga CSV)"]
     end
 
-    subgraph Flujo1 ["Flujo A: Monitoreo & Sincronización REST"]
-        B["POST /api/v1/ingesta/sync/simel-chile"]
-        C["SimelChileConnector.check_health()"]
-        D{"¿WAF Activo / 418?"}
-        E["HTTP 502 Bad Gateway<br/>(Mensaje descriptivo y diagnóstico)"]
-        F["RawIndicatorRecord (si WAF permite)"]
+    subgraph Backend ["Backend obspred (FastAPI)"]
+        CONN["SimelChileConnector"]
+        SYNC_EP["POST /api/v1/ingesta/sync/simel-chile"]
+        UPLOAD_EP["POST /api/v1/ingesta/upload/simel"]
+        REPO["IIndicadorRepository.upsert_batch()"]
+        DB[("Base de Datos<br/>public.indicadores (CHL)")]
     end
 
-    subgraph Flujo2 ["Flujo B: Carga de Exportación Tabular (Oficial)"]
-        G["Explorador Interactivo SIMEL<br/>(Descarga CSV)"]
-        H["POST /api/v1/ingesta/upload/simel"]
-        I["FileUploadService<br/>(Validación y guardado local)"]
-        J["SimelChileConnector.parse_simel_csv()"]
-        K["IIndicadorRepository.upsert_batch()"]
-        L[("Base de Datos<br/>indicadores (CHL)")]
-    end
+    SDMX -->|Sincronización desatendida en vivo| CONN
+    SYNC_EP --> CONN
+    CONN --> REPO
 
-    A -.->|Petición desatendida| C
-    B --> C
-    C --> D
-    D -->|Sí (418 / WAF)| E
-    D -->|No| F
-
-    A -->|Exportación manual/programada| G
-    G --> H
-    H --> I
-    I --> J
-    J --> K
-    K --> L
+    PORTAL -->|Exportación CSV delimitada por ';'| UPLOAD_EP
+    UPLOAD_EP --> CONN
+    REPO --> DB
 ```
 
 ---
 
-## 3. Especificación del Conector: `SimelChileConnector`
+## 3. Especificación de la API SDMX y Flujos Priorizados
 
-El conector reside en [`backend/app/infrastructure/connectors/simel_chile_connector.py`](../app/infrastructure/connectors/simel_chile_connector.py) e implementa la interfaz canónica [`IExternalDataConnector`](../app/domain/interfaces/external_connector.py).
+El conector [`SimelChileConnector`](../app/infrastructure/connectors/simel_chile_connector.py) consulta directamente los siguientes flujos oficiales de la agencia `CL01`:
 
-### 3.1 Monitoreo de Salud (`check_health`)
-Evalúa la respuesta remota de `https://www.simel.gob.cl`. Si detecta el código `418`, la cookie `HWWAFSESID` o el encabezado `block-event-id`, registra un log de advertencia y retorna `False`, informando que la API no admite consultas desatendidas.
+| Dataflow ID | Indicador en `obspred` | Filtro de Dimensión SDMX | Sector Estratégico |
+|---|---|---|---|
+| `DF_TDES_SEXO` | `tasa_desempleo` | `M.TDES._T.AS` | `None` *(Nacional Total)* |
+| `DF_TOCU_SEXO` | `tasa_ocupacion` | `M.TOCU._T.AS` | `None` *(Nacional Total)* |
+| `DF_TP_SEXO` | `tasa_participacion` | `M.TP._T.AS` | `None` *(Nacional Total)* |
+| `DF_OCURAMA_RAMA_SEXO` | `empleo_sector` | `M.OCURAMA._T.AS.J` | `tecnologia` (Sección J) |
+| `DF_OCURAMA_RAMA_SEXO` | `empleo_sector` | `M.OCURAMA._T.AS.Q` | `salud` (Sección Q) |
+| `DF_OCURAMA_RAMA_SEXO` | `empleo_sector` | `M.OCURAMA._T.AS.D` | `energia` (Sección D) |
+| `DF_OCURAMA_RAMA_SEXO` | `empleo_sector` | `M.OCURAMA._T.AS.I` | `turismo` (Sección I) |
+| `DF_OCURAMA_RAMA_SEXO` | `empleo_sector` | `M.OCURAMA._T.AS.M` | `economia-conocimiento` (Sección M) |
 
-### 3.2 Mapeo de Sectores a Sectores Estratégicos
-El motor de normalización traduce las ramas de actividad económica (CAENES) reportadas por SIMEL a los 5 sectores estratégicos del Observatorio:
-
-| Rama SIMEL / CAENES | Sector Estratégico en `obspred` |
-|---|---|
-| Información y comunicaciones | `tecnologia` |
-| Actividades de atención de la salud humana y de asistencia social | `salud` |
-| Suministro de electricidad, gas, vapor / Minería | `energia` |
-| Actividades de alojamiento y de servicio de comidas | `turismo` |
-| Actividades profesionales, científicas y técnicas | `economia-conocimiento` |
-| Total / Nacional | `None` *(macro / nacional general)* |
-
-### 3.3 Normalización de Períodos y Formatos Numéricos
-- **Períodos:** SIMEL expresa trimestres móviles textualmente (ej. `Ene - Mar 2024`, `Abr - Jun 2024`). El conector los traduce a notación ISO canónica (`2024-Q1`, `2024-Q2`, etc.).
-- **Números:** Gestiona comas decimales típicas de las estadísticas oficiales chilenas (ej. `"8,5"` $\to$ `8.5`, `"1.250,5"` $\to$ `1250.5`).
+> **Convención temporal SDMX:** El INE publica trimestres móviles en notación ISO como `2024-03-01/P3M` (trimestre móvil terminado en marzo). El conector lo normaliza automáticamente a `2024-Q1`.
 
 ---
 
-## 4. Endpoints de la API
+## 4. Normalización de Archivos CSV Exportados
 
-### 4.1 Intento de Sincronización REST
+Tal como señala la [Guía de uso de SIMEL](https://www.ine.gob.cl/simel/guia-de-uso):
+- **Formato:** Texto plano con codificación **UTF-8** o **Latin-1/CP1252**.
+- **Delimitador:** Punto y coma (`;`) o coma (`,`).
+- **Columna de valor numérico:** `OBS_VALUE` en exportaciones SDMX o `Valor` / `Cifra` en el Explorador web.
+- **Decimales:** Punto (`.`) o coma (`8,5` $\to$ `8.5`).
+
+El método `parse_simel_csv()` detecta automáticamente la variante del archivo y normaliza todos los registros.
+
+---
+
+## 5. Endpoints de la API
+
+### 5.1 Sincronización en Vivo vía API SDMX
 - **Ruta:** `POST /api/v1/ingesta/sync/simel-chile`
-- **Comportamiento ante WAF activo:** Devuelve `HTTP 502 Bad Gateway` con el error:
+- **Payload (opcional):**
   ```json
   {
-    "success": false,
-    "data": null,
-    "message": "Fallo en la sincronización de 'SIMEL - INE Chile'.",
-    "errors": [
-      {
-        "code": "EXTERNAL_SERVICE_ERROR",
-        "detail": "La plataforma oficial de SIMEL Chile (www.simel.gob.cl) se encuentra protegida por el WAF de Huawei Cloud (HTTP 418 / desafío anti-bot)...",
-        "field": "source"
-      }
-    ]
+    "paises": ["CHL"],
+    "indicadores": ["tasa_desempleo", "empleo_sector"],
+    "periodo_desde": "2024"
   }
   ```
-
-### 4.2 Carga y Procesamiento de Exportación CSV
-- **Ruta:** `POST /api/v1/ingesta/upload/simel`
-- **Content-Type:** `multipart/form-data`
-- **Parámetro:** `file` (archivo `.csv` descargado de SIMEL)
-- **Respuesta exitosa (`HTTP 201 Created`):**
+- **Respuesta exitosa (`HTTP 200 OK`):**
   ```json
   {
     "success": true,
+    "status_code": 200,
+    "message": "Sincronización de 'SIMEL - INE Chile' exitosa.",
     "data": {
       "source": "SIMEL - INE Chile",
       "status": "success",
-      "total_fetched": 27,
-      "total_persisted": 27,
-      "execution_time_seconds": 0.045,
+      "total_fetched": 186,
+      "total_persisted": 186,
+      "execution_time_seconds": 3.42,
       "countries_synced": ["CHL"],
-      "indicators_synced": [
-        "empleo_total",
-        "tasa_desempleo",
-        "tasa_ocupacion",
-        "tasa_participacion"
-      ],
+      "indicators_synced": ["empleo_sector", "tasa_desempleo"],
       "error_message": null
-    },
-    "message": "Exportación de SIMEL Chile procesada con éxito. 27 observaciones persistidas.",
-    "errors": []
+    }
   }
   ```
 
+### 5.2 Carga de Archivo CSV Exportado
+- **Ruta:** `POST /api/v1/ingesta/upload/simel`
+- **Content-Type:** `multipart/form-data`
+- **Parámetro:** `file` (`.csv`)
+- **Respuesta (`HTTP 201 Created`):** Valida, almacena el archivo para trazabilidad y persiste las observaciones normalizadas en la base de datos.
+
 ---
 
-## 5. Pruebas y Recursos de Ejemplo
+## 6. Recursos y Comandos de Prueba
 
-1. **Dataset de prueba:**  
-   [`data/examples/simel_chile_sample.csv`](../../data/examples/simel_chile_sample.csv) con 27 observaciones reales organizadas por sectores, ocupaciones y trimestres móviles.
-2. **Script de diagnóstico interactivo:**  
-   Ejecutar desde la raíz del backend:
+1. **Dataset de prueba local:**  
+   [`data/examples/simel_chile_sample.csv`](../../data/examples/simel_chile_sample.csv)
+2. **Script de verificación y diagnóstico:**  
    ```bash
    .venv/Scripts/python backend/test_conexion_simel.py
    ```
-3. **Pruebas automatizadas:**
-   - Pruebas unitarias del conector y parser:
-     ```bash
-     .venv/Scripts/pytest backend/tests/unit/test_simel_connector.py
-     ```
-   - Pruebas de integración de los endpoints:
-     ```bash
-     .venv/Scripts/pytest backend/tests/integration/test_simel_endpoint.py
-     ```
+   *(Comprueba la conectividad con `sdmx.ine.gob.cl`, extrae indicadores en vivo para Chile y parsea el CSV de muestra).*
+3. **Pruebas automatizadas (Pytest):**  
+   ```bash
+   .venv/Scripts/pytest backend/tests/unit/test_simel_connector.py
+   .venv/Scripts/pytest backend/tests/integration/test_simel_endpoint.py
+   ```

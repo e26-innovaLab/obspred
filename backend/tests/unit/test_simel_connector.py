@@ -42,7 +42,8 @@ def test_connector_initialization_and_properties() -> None:
     """Verifica la inicialización de atributos y denominación de la fuente."""
     connector = SimelChileConnector()
     assert connector.source_name == DEFAULT_SIMEL_CHILE_SOURCE
-    assert "simel.gob.cl" in connector.base_url
+    assert "ine.gob.cl" in connector.base_url
+    assert "simel.gob.cl" in connector.portal_url
     assert connector.timeout > 0
 
 
@@ -163,3 +164,22 @@ def test_parse_simel_csv_missing_columns_raises_exception() -> None:
     with pytest.raises(InvalidSimelCsvException) as exc_info:
         connector.parse_simel_csv(csv_invalido, filename="sin_columnas.csv")
     assert "Faltan columnas" in str(exc_info.value)
+
+
+def test_parse_simel_sdmx_csv_format() -> None:
+    """Verifica que parse_simel_csv detecte y procese formato SDMX del INE."""
+    sdmx_csv = (
+        "DATAFLOW,FREQ,INDICADOR,AREA_REF,SEXO,RAMA,TIME_PERIOD,OBS_VALUE,FUENTE\n"
+        "CL01:DF_TDES_SEXO(1.0),M,TDES,_T,AS,,2024-03-01/P3M,8.7,ENE\n"
+        "CL01:DF_OCURAMA_RAMA_SEXO(1.0),M,OCURAMA,_T,AS,J,2024-03-01/P3M,201000,ENE\n"
+    )
+    connector = SimelChileConnector()
+    records = connector.parse_simel_csv(sdmx_csv, filename="export_sdmx.csv")
+    assert len(records) == 2
+    assert records[0].indicador == "tasa_desempleo"
+    assert records[0].periodo == "2024-Q1"
+    assert records[0].valor == 8.7
+
+    assert records[1].indicador == "empleo_sector"
+    assert records[1].sector == SectorEstrategico.TECNOLOGIA
+    assert records[1].valor == 201000.0

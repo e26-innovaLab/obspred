@@ -190,6 +190,7 @@ DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 # Constantes de configuración para SIMEL (Sistema de Información Laboral - Chile)
 DEFAULT_SIMEL_CHILE_SOURCE: Final[str] = "SIMEL - INE Chile"
 DEFAULT_SIMEL_CHILE_BASE_URL: Final[str] = "https://www.simel.gob.cl"
+DEFAULT_SIMEL_SDMX_BASE_URL: Final[str] = "https://sdmx.ine.gob.cl/rest"
 DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 
 
@@ -287,6 +288,7 @@ __all__ = [
     "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
     "DEFAULT_SIMEL_CHILE_SOURCE",
     "DEFAULT_SIMEL_CHILE_BASE_URL",
+    "DEFAULT_SIMEL_SDMX_BASE_URL",
     "DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",

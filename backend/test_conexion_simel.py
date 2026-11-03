@@ -1,8 +1,9 @@
 """Script de prueba y diagnóstico para el conector de SIMEL Chile.
 
 Verifica:
-1. Conectividad en vivo y diagnóstico del WAF de Huawei Cloud (HTTP 418).
-2. Procesamiento y normalización del archivo CSV de ejemplo a RawIndicatorRecord.
+1. Conectividad en vivo con la API oficial SDMX de SIMEL (.Stat Suite INE).
+2. Extracción de indicadores en tiempo real desde sdmx.ine.gob.cl.
+3. Procesamiento y normalización del archivo CSV de ejemplo a RawIndicatorRecord.
 """
 
 import asyncio
@@ -18,25 +19,39 @@ async def main() -> None:
     connector = SimelChileConnector()
 
     print("==================================================================")
-    print(" 1. DIAGNÓSTICO EN VIVO: check_health() contra www.simel.gob.cl")
+    print(" 1. DIAGNÓSTICO EN VIVO: check_health() contra sdmx.ine.gob.cl")
     print("==================================================================")
     healthy = await connector.check_health()
-    print(f"Resultado de salud reportado: {healthy}")
-    if not healthy:
-        print(
-            "-> Estado esperado: El portal de SIMEL Chile cuenta con protección\n"
-            "   perimetral activa (Huawei Cloud WAF / HTTP 418) que restringe\n"
-            "   solicitudes REST desatendidas."
-        )
-        print(
-            "-> Alternativa operativa oficial: Ingesta de exportaciones CSV vía\n"
-            "   POST /api/v1/ingesta/upload/simel"
-        )
-    else:
-        print("-> El portal de SIMEL respondió exitosamente (HTTP 200).")
+    print(f"Estado de API oficial SDMX (.Stat Suite): {healthy}")
 
     print("\n==================================================================")
-    print(" 2. PARSEO DE DATASET DE EJEMPLO: parse_simel_csv()")
+    print(" 2. EXTRACCIÓN EN VIVO: fetch_indicators() para Chile (2024)")
+    print("==================================================================")
+    # Extrae indicadores oficiales en vivo filtrando desde 2024
+    live_records = await connector.fetch_indicators(
+        paises=["CHL"],
+        indicadores=["tasa_desempleo", "empleo_sector"],
+        periodo_desde="2024",
+    )
+    print(f"Total de registros obtenidos en vivo: {len(live_records)}")
+
+    if live_records:
+        indicadores_vistos: dict[str, int] = {}
+        for r in live_records:
+            indicadores_vistos[r.indicador] = indicadores_vistos.get(r.indicador, 0) + 1
+        for ind, count in indicadores_vistos.items():
+            print(f" - {ind}: {count} observaciones en vivo")
+
+        ejemplo_vivo = live_records[0]
+        print(f"\nEjemplo en vivo (País: {ejemplo_vivo.pais}):")
+        print(f" - Indicador: {ejemplo_vivo.indicador}")
+        print(f" - Sector: {ejemplo_vivo.sector}")
+        print(f" - Período: {ejemplo_vivo.periodo}")
+        print(f" - Valor: {ejemplo_vivo.valor}")
+        print(f" - Fuente: {ejemplo_vivo.fuente}")
+
+    print("\n==================================================================")
+    print(" 3. PARSEO DE DATASET DE EJEMPLO: parse_simel_csv()")
     print("==================================================================")
     sample_path = (
         Path(__file__).resolve().parent.parent
@@ -55,40 +70,16 @@ async def main() -> None:
         filename=sample_path.name,
     )
 
-    print(f"Total de registros normalizados: {len(records)}")
+    print(f"Total de registros normalizados del CSV: {len(records)}")
 
-    indicadores_vistos: dict[str, int] = {}
     sectores_vistos: dict[str, int] = {}
-    periodos_vistos: set[str] = set()
-
     for r in records:
-        indicadores_vistos[r.indicador] = indicadores_vistos.get(r.indicador, 0) + 1
         if r.sector:
             sectores_vistos[r.sector] = sectores_vistos.get(r.sector, 0) + 1
-        periodos_vistos.add(r.periodo)
 
-    print("\nDistribución por indicador:")
-    for ind, count in indicadores_vistos.items():
-        print(f" - {ind}: {count} observaciones")
-
-    print("\nDistribución por sector estratégico:")
+    print("\nDistribución por sector estratégico en CSV:")
     for sec, count in sectores_vistos.items():
         print(f" - {sec}: {count} observaciones")
-
-    print(f"\nPeríodos cubiertos: {sorted(list(periodos_vistos))}")
-
-    if records:
-        print("\n--- Ejemplo de registro transformado (RawIndicatorRecord) ---")
-        ej = records[0]
-        print(f"País: {ej.pais}")
-        print(f"Indicador: {ej.indicador}")
-        print(f"Sector: {ej.sector}")
-        print(f"Ocupación: {ej.ocupacion}")
-        print(f"Período: {ej.periodo}")
-        print(f"Valor: {ej.valor}")
-        print(f"Tipo: {ej.tipo}")
-        print(f"Fuente: {ej.fuente}")
-        print(f"Metadatos: {ej.metadatos}")
 
 
 if __name__ == "__main__":

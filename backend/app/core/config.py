@@ -13,6 +13,7 @@ from app.core.constants import (
     DEFAULT_MAX_UPLOAD_SIZE_BYTES,
     DEFAULT_SIMEL_CHILE_BASE_URL,
     DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_SIMEL_SDMX_BASE_URL,
     DEFAULT_UPLOAD_DIR,
     DEFAULT_WORLD_BANK_BASE_URL,
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
@@ -82,6 +83,7 @@ class Settings(BaseSettings):
 
     # SIMEL (Sistema de Información del Mercado Laboral - Chile)
     simel_chile_base_url: str = DEFAULT_SIMEL_CHILE_BASE_URL
+    simel_chile_sdmx_base_url: str = DEFAULT_SIMEL_SDMX_BASE_URL
     simel_chile_timeout_seconds: float = DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS
 
 

@@ -1,9 +1,11 @@
 """Adaptador de infraestructura para SIMEL Chile (Sistema de Información Laboral).
 
-Provee capacidades de diagnóstico de conectividad ante el WAF de Huawei Cloud
-(HTTP 418) y normalización de archivos de datos exportados desde el portal
-oficial del INE Chile / Mesa de Estadísticas del Trabajo a registros de dominio
-RawIndicatorRecord.
+Provee capacidades de:
+1. Conexión directa a la API oficial SDMX RESTful de SIMEL (.Stat Suite del INE Chile)
+   en https://sdmx.ine.gob.cl/rest/data/ según la Guía Oficial de Uso del INE.
+2. Diagnóstico del portal web interactivo (Huawei Cloud WAF / HTTP 418).
+3. Normalización de exportaciones tabulares (CSV) y respuestas SDMX a registros de
+   dominio RawIndicatorRecord para el Observatorio.
 """
 
 import csv
@@ -19,6 +21,7 @@ from app.core.constants import (
     DEFAULT_SIMEL_CHILE_BASE_URL,
     DEFAULT_SIMEL_CHILE_SOURCE,
     DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_SIMEL_SDMX_BASE_URL,
     PaisCodigo,
     SectorEstrategico,
     TipoIndicador,
@@ -37,18 +40,29 @@ from app.domain.interfaces.external_connector import (
 class SimelChileConnector(IExternalDataConnector):
     """Adaptador para el Sistema de Información del Mercado Laboral (SIMEL Chile).
 
-    Implementa el contrato IExternalDataConnector gestionando las particularidades
-    técnicas del portal de SIMEL (protección activa por Web Application Firewall
-    de Huawei Cloud) y ofreciendo un motor desacoplado de normalización de exportaciones
-    tabulares (CSV) generadas por su explorador interactivo.
+    Implementa el contrato IExternalDataConnector consultando la API SDMX RESTful
+    oficial de .Stat Suite administrada por el Instituto Nacional de Estadísticas
+    (INE Chile) y soportando la ingesta de exportaciones tabulares generadas desde
+    el explorador interactivo.
     """
 
     DEFAULT_BASE_URL: Final[str] = DEFAULT_SIMEL_CHILE_BASE_URL
+    DEFAULT_SDMX_BASE_URL: Final[str] = DEFAULT_SIMEL_SDMX_BASE_URL
     DEFAULT_SOURCE_NAME: Final[str] = DEFAULT_SIMEL_CHILE_SOURCE
     DEFAULT_TIMEOUT_SECONDS: Final[float] = DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS
     DEFAULT_COUNTRIES: Final[list[str]] = [PaisCodigo.CHL]
 
-    # Mapeo de términos de sectores de SIMEL / CAENES a sectores estratégicos
+    # Mapeo de ramas CIIU4 / CAENES a sectores estratégicos del Observatorio
+    RAMA_LETTER_MAPPINGS: Final[dict[str, str]] = {
+        "J": SectorEstrategico.TECNOLOGIA,
+        "Q": SectorEstrategico.SALUD,
+        "D": SectorEstrategico.ENERGIA,
+        "B": SectorEstrategico.ENERGIA,
+        "I": SectorEstrategico.TURISMO,
+        "M": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
+    }
+
+    # Mapeo de términos de sectores de SIMEL a sectores estratégicos
     SECTOR_MAPPINGS: Final[dict[str, str]] = {
         "informacion y comunicaciones": SectorEstrategico.TECNOLOGIA,
         "información y comunicaciones": SectorEstrategico.TECNOLOGIA,
@@ -80,15 +94,78 @@ class SimelChileConnector(IExternalDataConnector):
         "economía del conocimiento": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
     }
 
+    # Flujos de datos (Dataflows) SDMX del INE priorizados para el Observatorio
+    SDMX_DATAFLOW_CONFIG: Final[list[dict[str, Any]]] = [
+        {
+            "dataflow": "DF_TDES_SEXO",
+            "dimension_key": "M.TDES._T.AS",
+            "indicador": "tasa_desempleo",
+            "sector": None,
+            "unidad": "porcentaje",
+        },
+        {
+            "dataflow": "DF_TOCU_SEXO",
+            "dimension_key": "M.TOCU._T.AS",
+            "indicador": "tasa_ocupacion",
+            "sector": None,
+            "unidad": "porcentaje",
+        },
+        {
+            "dataflow": "DF_TP_SEXO",
+            "dimension_key": "M.TP._T.AS",
+            "indicador": "tasa_participacion",
+            "sector": None,
+            "unidad": "porcentaje",
+        },
+        {
+            "dataflow": "DF_OCURAMA_RAMA_SEXO",
+            "dimension_key": "M.OCURAMA._T.AS.J",
+            "indicador": "empleo_sector",
+            "sector": SectorEstrategico.TECNOLOGIA,
+            "unidad": "personas",
+        },
+        {
+            "dataflow": "DF_OCURAMA_RAMA_SEXO",
+            "dimension_key": "M.OCURAMA._T.AS.Q",
+            "indicador": "empleo_sector",
+            "sector": SectorEstrategico.SALUD,
+            "unidad": "personas",
+        },
+        {
+            "dataflow": "DF_OCURAMA_RAMA_SEXO",
+            "dimension_key": "M.OCURAMA._T.AS.D",
+            "indicador": "empleo_sector",
+            "sector": SectorEstrategico.ENERGIA,
+            "unidad": "personas",
+        },
+        {
+            "dataflow": "DF_OCURAMA_RAMA_SEXO",
+            "dimension_key": "M.OCURAMA._T.AS.I",
+            "indicador": "empleo_sector",
+            "sector": SectorEstrategico.TURISMO,
+            "unidad": "personas",
+        },
+        {
+            "dataflow": "DF_OCURAMA_RAMA_SEXO",
+            "dimension_key": "M.OCURAMA._T.AS.M",
+            "indicador": "empleo_sector",
+            "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
+            "unidad": "personas",
+        },
+    ]
+
     # Mapeo de términos de indicadores de SIMEL a slugs canónicos
     INDICATOR_SLUG_MAPPINGS: Final[dict[str, str]] = {
         "tasa de desocupacion": "tasa_desempleo",
         "tasa de desocupación": "tasa_desempleo",
+        "tdes": "tasa_desempleo",
         "desocupacion": "tasa_desempleo",
         "desempleo": "tasa_desempleo",
         "tasa de ocupacion": "tasa_ocupacion",
         "tasa de ocupación": "tasa_ocupacion",
+        "tocu": "tasa_ocupacion",
         "ocupados": "empleo_total",
+        "ocurama": "empleo_sector",
         "ocupados por rama": "empleo_sector",
         "ocupados segun rama": "empleo_sector",
         "ocupados según rama": "empleo_sector",
@@ -121,32 +198,33 @@ class SimelChileConnector(IExternalDataConnector):
     def __init__(
         self,
         base_url: str | None = None,
+        sdmx_base_url: str | None = None,
         client: httpx.AsyncClient | None = None,
         timeout: float = DEFAULT_TIMEOUT_SECONDS,
     ) -> None:
         """Inicializa el conector de SIMEL Chile.
 
         Args:
-            base_url: URL base opcional del portal de SIMEL.
-            client: Cliente HTTP asíncrono preconfigurado opcional (para testing).
-            timeout: Límite de tiempo en segundos para las solicitudes.
+            base_url: URL base opcional del portal interactivo de SIMEL.
+            sdmx_base_url: URL base opcional de la API SDMX del INE (.Stat Suite).
+            client: Cliente HTTP asíncrono opcional (para testing o aislamiento).
+            timeout: Tiempo máximo de espera en segundos por llamada.
         """
-        self._base_url = (
+        self._portal_base_url = (
             base_url
             or getattr(settings, "simel_chile_base_url", None)
             or self.DEFAULT_BASE_URL
         ).rstrip("/")
+        self._sdmx_base_url = (
+            sdmx_base_url
+            or getattr(settings, "simel_chile_sdmx_base_url", None)
+            or self.DEFAULT_SDMX_BASE_URL
+        ).rstrip("/")
         self._custom_client = client
         self._timeout = timeout
         self._headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
-            "Accept": (
-                "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
-            ),
+            "User-Agent": "ObsPred-Backend/1.0 (SIMEL INE Chile Connector)",
+            "Accept": "application/vnd.sdmx.data+csv,text/csv,text/plain;q=0.9,*/*",
         }
 
     @property
@@ -156,8 +234,13 @@ class SimelChileConnector(IExternalDataConnector):
 
     @property
     def base_url(self) -> str:
-        """URL base configurada para SIMEL."""
-        return self._base_url
+        """URL base configurada para la API SDMX de SIMEL / INE."""
+        return self._sdmx_base_url
+
+    @property
+    def portal_url(self) -> str:
+        """URL del portal web interactivo de SIMEL."""
+        return self._portal_base_url
 
     @property
     def timeout(self) -> float:
@@ -165,11 +248,7 @@ class SimelChileConnector(IExternalDataConnector):
         return self._timeout
 
     async def _get_client(self) -> httpx.AsyncClient:
-        """Obtiene o crea una instancia de cliente HTTP asíncrono.
-
-        Returns:
-            httpx.AsyncClient: Cliente HTTP preparado para ejecución.
-        """
+        """Obtiene o crea una instancia de cliente HTTP asíncrono."""
         if self._custom_client is not None:
             return self._custom_client
         return httpx.AsyncClient(
@@ -179,52 +258,38 @@ class SimelChileConnector(IExternalDataConnector):
         )
 
     async def check_health(self) -> bool:
-        """Verifica la conectividad y evalúa la presencia del WAF de Huawei Cloud.
+        """Verifica la disponibilidad operativa de la API oficial de SIMEL.
 
-        Detecta si el portal oficial responde con HTTP 418 (código asignado
-        por el WAF ante clientes sin sesión interactiva de navegador) o si
-        se encuentra plenamente accesible.
+        Consulta el catálogo de flujos de datos (dataflow) de la API SDMX oficial
+        del INE Chile (`https://sdmx.ine.gob.cl/rest/dataflow/CL01`).
 
         Returns:
-            bool: True si el portal responde con HTTP 200 sin bloqueos,
-                False si se detecta bloqueo por WAF o fallo de conexión.
+            bool: True si la API oficial SDMX responde satisfactoriamente (HTTP 200),
+                False si ocurre un fallo de conexión o timeout.
         """
         should_close_client = self._custom_client is None
         client = await self._get_client()
 
         try:
-            response = await client.get(self._base_url)
-
-            # Verificación explícita de WAF Huawei Cloud
-            has_waf_cookie = any("hwwaf" in k.lower() for k in response.cookies.keys())
-            has_waf_header = "block-event-id" in response.headers or any(
-                "hwwaf" in k.lower() for k in response.headers.keys()
-            )
-
-            if response.status_code == 418 or has_waf_cookie or has_waf_header:
-                logger.warning(
-                    "SIMEL Chile health check: Bloqueo activo por Huawei Cloud WAF "
-                    "(Status: %d, WAF Cookie: %s, Server: %s). "
-                    "El acceso desatendido REST directo está restringido. "
-                    "Se debe utilizar la ingesta por archivo exportado.",
-                    response.status_code,
-                    has_waf_cookie,
-                    response.headers.get("server", "desconocido"),
-                )
-                return False
-
+            # Consulta al catálogo SDMX oficial del INE
+            catalog_url = f"{self._sdmx_base_url}/dataflow/CL01"
+            response = await client.get(catalog_url)
             if response.is_success:
+                logger.info(
+                    "SIMEL Chile SDMX API (INE) operativa y accesible (Status: %d).",
+                    response.status_code,
+                )
                 return True
 
             logger.warning(
-                "SIMEL Chile health check devolvió código no exitoso: %d",
+                "SIMEL Chile SDMX API devolvió status no exitoso: %d",
                 response.status_code,
             )
             return False
 
         except Exception as exc:
             logger.warning(
-                "SIMEL Chile health check fallido por excepción de red: %s",
+                "SIMEL Chile SDMX health check fallido por excepción de red: %s",
                 str(exc),
             )
             return False
@@ -239,48 +304,82 @@ class SimelChileConnector(IExternalDataConnector):
         periodo_desde: str | None = None,
         periodo_hasta: str | None = None,
     ) -> list[RawIndicatorRecord]:
-        """Intenta extraer indicadores desde el portal remoto de SIMEL Chile.
+        """Extrae indicadores oficiales en vivo desde la API SDMX de SIMEL / INE.
 
-        Dado que SIMEL cuenta con protección perimetral activa por WAF que impide
-        extracciones REST sin sesión interactiva, este método ejecuta la comprobación
-        y eleva SimelWafBlockedException con las instrucciones de mitigación.
+        Consume los flujos de datos oficiales de .Stat Suite para Chile (CL01),
+        extrayendo desempleo, ocupación, participación laboral y empleo por
+        sectores estratégicos.
 
         Args:
-            paises: Lista opcional de códigos de países a consultar.
-            indicadores: Lista opcional de indicadores a sincronizar.
-            periodo_desde: Período inicial opcional.
-            periodo_hasta: Período final opcional.
+            paises: Lista opcional de países (filtra únicamente Chile 'CHL').
+            indicadores: Lista opcional de slugs de indicadores a sincronizar.
+            periodo_desde: Período inicial opcional (ej. '2023').
+            periodo_hasta: Período final opcional (ej. '2024').
 
         Returns:
-            list[RawIndicatorRecord]: Lista de indicadores normalizados si la fuente
-                respondiese exitosamente sin bloqueo.
+            list[RawIndicatorRecord]: Colección inmutable de registros normalizados.
 
         Raises:
-            SimelWafBlockedException: Al detectar el bloqueo por WAF de Huawei Cloud.
+            SimelWafBlockedException: Si el endpoint estuviese temporalmente bloqueado.
         """
+        if paises and PaisCodigo.CHL not in paises:
+            return []
+
         should_close_client = self._custom_client is None
         client = await self._get_client()
+        records: list[RawIndicatorRecord] = []
 
         try:
-            response = await client.get(self._base_url)
-            if response.status_code == 418 or "block-event-id" in response.headers:
-                logger.error(
-                    "Fallo de sincronización automática con SIMEL Chile: "
-                    "Huawei Cloud WAF denegó la solicitud HTTP con código 418."
-                )
-                raise SimelWafBlockedException()
+            for conf in self.SDMX_DATAFLOW_CONFIG:
+                target_slug = conf["indicador"]
+                if indicadores and target_slug not in indicadores:
+                    continue
 
-            response.raise_for_status()
-            # Si el WAF permitiera el paso en algún entorno, retornamos lista vacía
-            # para no romper el flujo del orquestador genérico.
-            return []
-        except httpx.HTTPStatusError as exc:
-            if exc.response.status_code == 418:
-                raise SimelWafBlockedException() from exc
-            raise
-        except httpx.RequestError as exc:
-            logger.error("Error de comunicación de red con SIMEL Chile: %s", str(exc))
-            raise
+                dataflow = conf["dataflow"]
+                dimension_key = conf["dimension_key"]
+                query_url = (
+                    f"{self._sdmx_base_url}/data/CL01,{dataflow},1.0/"
+                    f"{dimension_key}?format=csv"
+                )
+                if periodo_desde:
+                    query_url += f"&startPeriod={periodo_desde}"
+                if periodo_hasta:
+                    query_url += f"&endPeriod={periodo_hasta}"
+
+                try:
+                    resp = await client.get(query_url)
+                    if resp.status_code == 418:
+                        raise SimelWafBlockedException()
+
+                    resp.raise_for_status()
+                    series_records = self._parse_sdmx_csv(
+                        csv_text=resp.text,
+                        indicador_default=target_slug,
+                        sector_default=conf["sector"],
+                    )
+                    records.extend(series_records)
+                except SimelWafBlockedException:
+                    raise
+                except httpx.HTTPStatusError as exc:
+                    if exc.response.status_code == 418:
+                        raise SimelWafBlockedException() from exc
+                    logger.warning(
+                        "Error al consultar dataflow '%s' en SIMEL SDMX: %s",
+                        dataflow,
+                        str(exc),
+                    )
+                except Exception as exc:
+                    logger.warning(
+                        "Fallo al procesar serie SDMX '%s': %s",
+                        dataflow,
+                        str(exc),
+                    )
+
+            logger.info(
+                "Extracción SDMX de SIMEL Chile completada: %d registros.",
+                len(records),
+            )
+            return records
         finally:
             if should_close_client:
                 await client.aclose()
@@ -290,22 +389,20 @@ class SimelChileConnector(IExternalDataConnector):
         content: str | bytes,
         filename: str = "simel_export.csv",
     ) -> list[RawIndicatorRecord]:
-        """Parsea y normaliza un archivo CSV exportado desde el portal de SIMEL Chile.
+        """Parsea y normaliza un archivo CSV exportado desde SIMEL o de su API SDMX.
 
-        Lee datos estructurados de indicadores laborales generados por SIMEL / INE,
-        limpia formatos numéricos (comas y puntos decimales), asocia sectores
-        económicos estratégicos y períodos, generando registros RawIndicatorRecord.
+        Admite tanto la estructura tabular generada por el Explorador de Datos
+        de SIMEL como el formato exportado por la API REST SDMX de .Stat Suite.
 
         Args:
-            content: Contenido binario o cadena del archivo CSV exportado.
-            filename: Nombre original del archivo para propósitos de trazabilidad.
+            content: Contenido binario o cadena del archivo CSV.
+            filename: Nombre original del archivo para fines de trazabilidad.
 
         Returns:
             list[RawIndicatorRecord]: Colección de indicadores de dominio normalizados.
 
         Raises:
-            InvalidSimelCsvException: Si el archivo está vacío, no se puede decodificar
-                o no contiene columnas mínimas reconocibles.
+            InvalidSimelCsvException: Si el archivo está vacío o sin columnas válidas.
         """
         text_content = self._decode_content(content=content, filename=filename)
         if not text_content.strip():
@@ -314,6 +411,11 @@ class SimelChileConnector(IExternalDataConnector):
                 reason="El contenido del archivo está vacío.",
             )
 
+        # Si el CSV proviene de la API SDMX (.Stat Suite), usamos el parser específico
+        if "OBS_VALUE" in text_content and "TIME_PERIOD" in text_content:
+            return self._parse_sdmx_csv(csv_text=text_content)
+
+        # De lo contrario, usamos el parser del explorador interactivo
         delimiter = self._detect_delimiter(text_content)
         reader = csv.reader(io.StringIO(text_content), delimiter=delimiter)
 
@@ -321,7 +423,6 @@ class SimelChileConnector(IExternalDataConnector):
         for row in reader:
             if not row or not any(field.strip() for field in row):
                 continue
-            # Detectamos primera fila con múltiples columnas como encabezado
             cleaned_row = [c.strip().lower() for c in row]
             if len(cleaned_row) >= 2:
                 headers = cleaned_row
@@ -345,7 +446,6 @@ class SimelChileConnector(IExternalDataConnector):
 
         for row_num, row in enumerate(dict_reader, start=1):
             if is_first:
-                # Omitir la fila de encabezados
                 is_first = False
                 continue
 
@@ -370,6 +470,91 @@ class SimelChileConnector(IExternalDataConnector):
         )
         return records
 
+    def _parse_sdmx_csv(
+        self,
+        csv_text: str,
+        indicador_default: str = "indicador_laboral",
+        sector_default: str | None = None,
+    ) -> list[RawIndicatorRecord]:
+        """Parsea el formato CSV devuelto por la API SDMX de .Stat Suite."""
+        reader = csv.DictReader(io.StringIO(csv_text))
+        records: list[RawIndicatorRecord] = []
+
+        for _row_num, row in enumerate(reader, start=1):
+            raw_val = (row.get("OBS_VALUE") or "").strip()
+            parsed_val = self._parse_numeric_value(raw_val)
+            if parsed_val is None:
+                continue
+
+            raw_time = (row.get("TIME_PERIOD") or "").strip()
+            if not raw_time:
+                continue
+            periodo = self._normalize_sdmx_time_period(raw_time)
+
+            raw_ind = (row.get("INDICADOR") or "").strip()
+            indicador_slug = (
+                self._normalize_indicator_slug(raw_ind)
+                if raw_ind
+                else indicador_default
+            )
+
+            # Mapeo de sector por columna RAMA
+            rama_letter = (row.get("RAMA") or "").strip()
+            sector = (
+                self.RAMA_LETTER_MAPPINGS.get(rama_letter, sector_default)
+                if rama_letter
+                else sector_default
+            )
+
+            sexo = (row.get("SEXO") or "").strip()
+            area = (row.get("AREA_REF") or "").strip()
+            unidad = (row.get("UNIDAD") or "").strip()
+
+            metadata: dict[str, Any] = {
+                "fuente_primaria": (
+                    row.get("FUENTE")
+                    or "Encuesta Nacional de Empleo (ENE) - SIMEL Chile"
+                ),
+                "dataflow": row.get("DATAFLOW", ""),
+                "area_referencia": area,
+                "sexo": sexo,
+                "unidad_medida": unidad,
+            }
+
+            records.append(
+                RawIndicatorRecord(
+                    pais=PaisCodigo.CHL,
+                    sector=sector,
+                    ocupacion=None,
+                    indicador=indicador_slug,
+                    periodo=periodo,
+                    valor=parsed_val,
+                    tipo=TipoIndicador.OBSERVADO,
+                    fuente=self.DEFAULT_SOURCE_NAME,
+                    fecha_actualizacion=date.today(),
+                    metadatos=metadata,
+                )
+            )
+
+        return records
+
+    def _normalize_sdmx_time_period(self, time_str: str) -> str:
+        """Traduce formatos temporales SDMX a notación estándar de períodos.
+
+        Ejemplo: '2024-03-01/P3M' (trimestre móvil terminado en marzo) -> '2024-Q1'.
+        """
+        clean = time_str.strip()
+        if "/P3M" in clean or "/P1M" in clean:
+            date_part = clean.split("/")[0]
+            parts = date_part.split("-")
+            if len(parts) >= 2:
+                year = parts[0]
+                month = int(parts[1])
+                # Meses 1 a 3 -> Q1, 4 a 6 -> Q2, 7 a 9 -> Q3, 10 a 12 -> Q4
+                quarter = (month - 1) // 3 + 1
+                return f"{year}-Q{quarter}"
+        return clean
+
     def _decode_content(self, content: str | bytes, filename: str) -> str:
         """Decodifica el contenido binario probando codificaciones comunes."""
         if isinstance(content, str):
@@ -383,7 +568,7 @@ class SimelChileConnector(IExternalDataConnector):
 
         raise InvalidSimelCsvException(
             filename=filename,
-            reason="Codificación de texto no compatible (se intentó UTF-8 y Latin-1).",
+            reason="Codificación no compatible (se intentó UTF-8 y Latin-1).",
         )
 
     def _detect_delimiter(self, text: str) -> str:
@@ -504,7 +689,6 @@ class SimelChileConnector(IExternalDataConnector):
             return None
 
         cleaned = val_str.replace("%", "").strip()
-        # Manejo de coma decimal estándar hispano (ej: 8,5 -> 8.5, 1.250,5 -> 1250.5)
         if "," in cleaned and "." in cleaned:
             cleaned = cleaned.replace(".", "").replace(",", ".")
         elif "," in cleaned:
@@ -520,7 +704,6 @@ class SimelChileConnector(IExternalDataConnector):
         clean = period_str.strip()
         lower = clean.lower()
 
-        # Búsqueda de año (4 dígitos)
         match_year = re.search(r"\b(20\d\d)\b", clean)
         year = match_year.group(1) if match_year else ""
 
@@ -528,7 +711,6 @@ class SimelChileConnector(IExternalDataConnector):
             if key in lower:
                 return f"{year}-{q}" if year else q
 
-        # Si ya viene en formato 2024-Q1 o 2024-01 o simplemente el año
         return clean
 
     def _normalize_indicator_slug(self, raw_indicador: str) -> str:
@@ -538,7 +720,6 @@ class SimelChileConnector(IExternalDataConnector):
             if pattern in clean:
                 return slug
 
-        # Generación de slug seguro por defecto
         slug = re.sub(r"[^\w\s-]", "", clean).strip()
         return re.sub(r"[-\s]+", "_", slug)[:100]
 
