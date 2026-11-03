@@ -33,8 +33,9 @@ async def main() -> None:
         rows = result.fetchall()
         print("\n--- DISTRIBUCIÓN POR TRIMESTRE EN 'indicadores' ---")
         for r in rows:
+            trim_display = r.trimestre if r.trimestre is not None else "NULL"
             print(
-                f"Trimestre: {str(r.trimestre):<8} | "
+                f"Trimestre: {trim_display:<8} | "
                 f"Total: {r.cantidad:<5} | "
                 f"Rango período: {r.ej_min} a {r.ej_max}"
             )
