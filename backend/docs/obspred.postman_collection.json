@@ -578,6 +578,237 @@
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'ILOSTAT (OIT)' exitosa.\",\n  \"data\": {\n    \"source\": \"ILOSTAT (OIT)\",\n    \"status\": \"success\",\n    \"total_fetched\": 24,\n    \"total_persisted\": 24,\n    \"execution_time_seconds\": 1.23,\n    \"countries_synced\": [\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_desempleo\",\n      \"empleo_sector\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T20:49:31.681424Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "upload_simel_csv",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "data/examples/simel_chile_sample.csv"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/upload/simel",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "upload",
+                "simel"
+              ]
+            },
+            "description": "Carga, valida y procesa una exportación CSV de SIMEL Chile (INE), persistiendo los indicadores."
+          },
+          "response": [
+            {
+              "name": "201_created_upload_simel_csv",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "data/examples/simel_chile_sample.csv"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/upload/simel",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "upload",
+                    "simel"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Exportaci\\u00f3n de SIMEL Chile procesada con \\u00e9xito. 27 observaciones persistidas.\",\n  \"data\": {\n    \"source\": \"SIMEL - INE Chile\",\n    \"status\": \"success\",\n    \"total_fetched\": 27,\n    \"total_persisted\": 27,\n    \"execution_time_seconds\": 0.045,\n    \"countries_synced\": [\n      \"CHL\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_total\",\n      \"tasa_desempleo\",\n      \"tasa_ocupacion\",\n      \"tasa_participacion\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T15:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "sync_simel_chile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"empleo_sector\"\n  ],\n  \"periodo_desde\": \"2024\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/simel-chile",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "simel-chile"
+              ]
+            },
+            "description": "Ejecuta sincronización en vivo consumiendo la API oficial SDMX de SIMEL (.Stat Suite del INE Chile) en https://sdmx.ine.gob.cl/rest/data/ y persiste las observaciones normalizadas en la base de datos."
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_simel_chile_sdmx",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"empleo_sector\"\n  ],\n  \"periodo_desde\": \"2024\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/simel-chile",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "simel-chile"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronizaci\\u00f3n de 'SIMEL - INE Chile' exitosa.\",\n  \"data\": {\n    \"source\": \"SIMEL - INE Chile\",\n    \"status\": \"success\",\n    \"total_fetched\": 186,\n    \"total_persisted\": 186,\n    \"execution_time_seconds\": 3.42,\n    \"countries_synced\": [\n      \"CHL\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_sector\",\n      \"tasa_desempleo\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T15:30:00.000000Z\"\n}"
+            },
+            {
+              "name": "502_error_sync_simel_waf_blocked",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/simel-chile",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "simel-chile"
+                  ]
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronizaci\\u00f3n de 'SIMEL - INE Chile'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"La plataforma oficial de SIMEL Chile (www.simel.gob.cl) se encuentra protegida por el WAF de Huawei Cloud (HTTP 418 / desaf\\u00edo anti-bot)...\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T15:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "api_oficial_sdmx_ine_chile_directo",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/vnd.sdmx.data+csv"
+              }
+            ],
+            "url": {
+              "raw": "https://sdmx.ine.gob.cl/rest/data/CL01,DF_TDES_SEXO,1.0/M.TDES._T.AS?startPeriod=2024&format=csv",
+              "protocol": "https",
+              "host": [
+                "sdmx",
+                "ine",
+                "gob",
+                "cl"
+              ],
+              "path": [
+                "rest",
+                "data",
+                "CL01,DF_TDES_SEXO,1.0",
+                "M.TDES._T.AS"
+              ],
+              "query": [
+                {
+                  "key": "startPeriod",
+                  "value": "2024"
+                },
+                {
+                  "key": "format",
+                  "value": "csv"
+                }
+              ]
+            },
+            "description": "Consulta directa en vivo a la API SDMX oficial de .Stat Suite del INE Chile (DF_TDES_SEXO para Tasa de Desocupación nacional Ambos Sexos desde 2024)."
+          },
+          "response": []
         }
       ]
     },
