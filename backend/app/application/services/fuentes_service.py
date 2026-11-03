@@ -1,12 +1,11 @@
 from app.application.dtos.fuentes_dto import FuenteDTO
 from app.core.constants import FuenteEstado
 from app.domain.entities.fuente import Fuente
-from app.domain.interfaces.fuente_repository import IFuenteRepository
 from app.domain.exceptions.base import (
-    EntityNotFoundException,
     DomainException,
-   
+    EntityNotFoundException,
 )
+from app.domain.interfaces.fuente_repository import IFuenteRepository
 
 
 class FuenteService:
@@ -67,7 +66,7 @@ class FuenteService:
             raise EntityNotFoundException(
                 entity_name="Fuente", entity_id=fuente_id
             )
-        
+
         return self._map_entity_to_dto(fuente)
 
     async def create_fuente(self, fuente_dto: FuenteDTO) -> None:
@@ -75,7 +74,7 @@ class FuenteService:
 
         Args:
             fuente_dto (FuenteDTO): DTO de la fuente a guardar.
-        
+
         """
         if await self.fuente_repository.exists(fuente_dto.nombre):
             raise DomainException(
@@ -100,7 +99,7 @@ class FuenteService:
         """
         fuentes = await self.fuente_repository.get_all()
         return [self._map_entity_to_dto(fuente) for fuente in fuentes]
-    
+
 
     async def update_fuente(self, fuente_id:id , fuente_dto: FuenteDTO) -> FuenteDTO:
         """Actualiza una fuente de datos existente en la base de datos.
@@ -108,7 +107,7 @@ class FuenteService:
         Args:
             fuente_dto (FuenteDTO): DTO de la fuente con los cambios a actualizar.
         """
-        
+
 
         fuente = Fuente(
             id=fuente_id,
@@ -124,7 +123,7 @@ class FuenteService:
                 entity_name="Fuente", entity_id=fuente_id
             )
         return self._map_entity_to_dto(fuente_actualizada)
-    
+
 
     async def delete_fuente(self, fuente_id: int) -> None:
         """Elimina una fuente de datos de la base de datos por su ID.
@@ -137,4 +136,3 @@ class FuenteService:
             raise EntityNotFoundException(
                 entity_name="Fuente", entity_id=fuente_id
             )
-    

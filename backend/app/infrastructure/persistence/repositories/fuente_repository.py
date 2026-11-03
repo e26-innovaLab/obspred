@@ -113,7 +113,7 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
 
         if fuente_model is None:
             return None
-        
+
         fuente_model.nombre = fuente.nombre
         fuente_model.descripcion = fuente.descripcion
         fuente_model.estado = fuente.estado
@@ -123,7 +123,7 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         await self.session.commit()
         logger.info(f"Fuente '{fuente.nombre}' actualizada con éxito.")
         return self._map_model_to_entity(fuente_model)
-    
+
     async def delete(self, fuente_id: int) -> None:
         """Elimina una fuente de datos de la base de datos por su ID.
 
@@ -135,8 +135,9 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         fuente_model = result.scalar_one_or_none()
 
         if fuente_model is None:
-            logger.warning(f"No se encontró la fuente con ID {fuente_id} para eliminar.")
-            return
+            logger.warning(f"No se encontró la fuente con ID {fuente_id} para eliminar."
+                           )
+            return None
 
         await self.session.delete(fuente_model)
         await self.session.commit()
