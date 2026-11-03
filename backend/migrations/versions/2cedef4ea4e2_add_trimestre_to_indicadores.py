@@ -30,6 +30,9 @@ def upgrade() -> None:
     op.execute("UPDATE indicadores SET trimestre = 'Q3' WHERE periodo LIKE '%-Q3%' OR periodo LIKE '%Q3%'")
     op.execute("UPDATE indicadores SET trimestre = 'Q4' WHERE periodo LIKE '%-Q4%' OR periodo LIKE '%Q4%'")
 
+    # Limpieza de periodo para remover el sufijo '-QX' y dejar solo el año
+    op.execute("UPDATE indicadores SET periodo = replace(replace(replace(replace(periodo, '-Q1', ''), '-Q2', ''), '-Q3', ''), '-Q4', '') WHERE periodo LIKE '%-Q%'")
+
 
 def downgrade() -> None:
     """Downgrade schema: elimina índice y columna trimestre."""

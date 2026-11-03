@@ -12,7 +12,7 @@ def test_indicador_model_initialization() -> None:
         sector="Tecnología",
         ocupacion="Desarrollador de software",
         indicador="tasa_desempleo",
-        periodo="2024-Q1",
+        periodo="2024",
         trimestre="Q1",
         valor=6.9,
         tipo="observado",
@@ -25,7 +25,7 @@ def test_indicador_model_initialization() -> None:
     assert record.sector == "Tecnología"
     assert record.ocupacion == "Desarrollador de software"
     assert record.indicador == "tasa_desempleo"
-    assert record.periodo == "2024-Q1"
+    assert record.periodo == "2024"
     assert record.trimestre == "Q1"
     assert record.valor == 6.9
     assert record.tipo == "observado"

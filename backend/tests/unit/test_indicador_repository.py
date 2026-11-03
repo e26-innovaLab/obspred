@@ -166,7 +166,7 @@ async def test_indicador_repository_get_by_filters_jerarquia(
 async def test_indicador_repository_trimestre_inferencia_y_filtro(
     in_memory_session: AsyncSession,
 ) -> None:
-    """Verifica la inferencia automática del trimestre y el filtrado por trimestre."""
+    """Verifica el almacenamiento y filtrado por trimestre sin Q en periodo."""
     repo = SqlAlchemyIndicadorRepository(session=in_memory_session)
 
     records: list[RawIndicatorRecord] = [
@@ -175,8 +175,8 @@ async def test_indicador_repository_trimestre_inferencia_y_filtro(
             sector=None,
             ocupacion=None,
             indicador="tasa_desempleo",
-            periodo="2024-Q1",
-            trimestre=None,  # Debe inferir Q1 automáticamente
+            periodo="2024",
+            trimestre="Q1",
             valor=8.5,
             tipo="observado",
             fuente="SIMEL - INE Chile",
@@ -187,8 +187,8 @@ async def test_indicador_repository_trimestre_inferencia_y_filtro(
             sector=None,
             ocupacion=None,
             indicador="tasa_desempleo",
-            periodo="2024-Q2",
-            trimestre="Q2",  # Trimestre explícito
+            periodo="2024",
+            trimestre="Q2",
             valor=8.9,
             tipo="observado",
             fuente="SIMEL - INE Chile",
@@ -210,20 +210,21 @@ async def test_indicador_repository_trimestre_inferencia_y_filtro(
 
     await repo.upsert_batch(records)
 
-    # Verificar que el registro Q1 tenga trimestre inferido
+    # Verificar que el registro Q1 tenga periodo 2024 y trimestre Q1
     q1_results = await repo.get_by_filters(pais="CHL", trimestre="Q1")
     assert len(q1_results) == 1
-    assert q1_results[0].periodo == "2024-Q1"
+    assert q1_results[0].periodo == "2024"
     assert q1_results[0].trimestre == "Q1"
 
     # Verificar filtro por Q2
     q2_results = await repo.get_by_filters(pais="CHL", trimestre="Q2")
     assert len(q2_results) == 1
-    assert q2_results[0].periodo == "2024-Q2"
+    assert q2_results[0].periodo == "2024"
     assert q2_results[0].trimestre == "Q2"
 
     # Verificar consulta general y registros sin trimestre
     todos = await repo.get_by_filters(pais="CHL")
     assert len(todos) == 3
-    anual = [r for r in todos if r.periodo == "2024"][0]
+    anual = [r for r in todos if r.trimestre is None][0]
+    assert anual.periodo == "2024"
     assert anual.trimestre is None

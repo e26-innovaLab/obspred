@@ -1,6 +1,5 @@
 """Implementación SQLAlchemy para el repositorio de persistencia de Indicadores."""
 
-import re
 from datetime import UTC, datetime
 
 from sqlalchemy import select
@@ -27,7 +26,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         """Inserta o actualiza indicadores respetando unicidad de clave lógica.
 
         La clave lógica de unicidad se compone de:
-        (pais, sector, ocupacion, indicador, periodo, fuente).
+        (pais, sector, ocupacion, indicador, periodo, trimestre, fuente).
 
         Args:
             records: Lista de registros inmutables a persistir.
@@ -41,7 +40,15 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         # Deduplicar en memoria preservando el último registro para cada clave lógica
         deduped_records: dict[tuple, RawIndicatorRecord] = {}
         for r in records:
-            key = (r.pais, r.sector, r.ocupacion, r.indicador, r.periodo, r.fuente)
+            key = (
+                r.pais,
+                r.sector,
+                r.ocupacion,
+                r.indicador,
+                r.periodo,
+                r.trimestre,
+                r.fuente,
+            )
             deduped_records[key] = r
 
         unique_records = list(deduped_records.values())
@@ -49,14 +56,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         now_utc = datetime.now(UTC)
 
         for record in unique_records:
-            # Inferencia automática de trimestre si no viene explícito
-            trimestre = record.trimestre
-            if not trimestre and record.periodo:
-                match = re.search(r"Q([1-4])", record.periodo, re.IGNORECASE)
-                if match:
-                    trimestre = f"Q{match.group(1)}"
-
-            # Búsqueda de registro existente bajo clave lógica
+            # Búsqueda de registro existente bajo clave lógica completa
             query = select(IndicadorModel).where(
                 IndicadorModel.pais == record.pais,
                 IndicadorModel.indicador == record.indicador,
@@ -75,13 +75,19 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             else:
                 query = query.where(IndicadorModel.ocupacion.is_(None))
 
+            # Manejo explícito de nulos para trimestre
+            if record.trimestre is not None:
+                query = query.where(IndicadorModel.trimestre == record.trimestre)
+            else:
+                query = query.where(IndicadorModel.trimestre.is_(None))
+
             result = await self._session.execute(query)
             existing = result.scalars().first()
 
             if existing:
                 existing.valor = record.valor
                 existing.tipo = record.tipo
-                existing.trimestre = trimestre or existing.trimestre
+                existing.trimestre = record.trimestre
                 existing.fecha_actualizacion = record.fecha_actualizacion
                 existing.updated_at = now_utc
             else:
@@ -91,7 +97,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
                     ocupacion=record.ocupacion,
                     indicador=record.indicador,
                     periodo=record.periodo,
-                    trimestre=trimestre,
+                    trimestre=record.trimestre,
                     valor=record.valor,
                     tipo=record.tipo,
                     fuente=record.fuente,
@@ -150,7 +156,11 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         if trimestre:
             stmt = stmt.where(IndicadorModel.trimestre == trimestre.upper().strip())
 
-        stmt = stmt.order_by(IndicadorModel.periodo.asc(), IndicadorModel.pais.asc())
+        stmt = stmt.order_by(
+            IndicadorModel.periodo.asc(),
+            IndicadorModel.trimestre.asc().nulls_first(),
+            IndicadorModel.pais.asc(),
+        )
 
         result = await self._session.execute(stmt)
         return list(result.scalars().all())

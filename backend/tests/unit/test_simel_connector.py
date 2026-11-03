@@ -113,7 +113,7 @@ def test_parse_simel_csv_format_explorer(sample_simel_csv: str) -> None:
     desempleo = records[0]
     assert desempleo.pais == PaisCodigo.CHL
     assert desempleo.indicador == "tasa_desempleo"
-    assert desempleo.periodo == "2024-Q1"
+    assert desempleo.periodo == "2024"
     assert desempleo.trimestre == "Q1"
     assert desempleo.valor == 8.7
     assert desempleo.tipo == TipoIndicador.OBSERVADO
@@ -144,7 +144,7 @@ def test_parse_simel_csv_semicolon_and_latin1_encoding() -> None:
     assert len(records) == 1
     rec = records[0]
     assert rec.valor == 7.4
-    assert rec.periodo == "2024-Q1"
+    assert rec.periodo == "2024"
     assert rec.trimestre == "Q1"
     assert rec.sector == SectorEstrategico.TECNOLOGIA
 
@@ -177,7 +177,7 @@ def test_parse_simel_sdmx_csv_format() -> None:
     records = connector.parse_simel_csv(sdmx_csv, filename="export_sdmx.csv")
     assert len(records) == 2
     assert records[0].indicador == "tasa_desempleo"
-    assert records[0].periodo == "2024-Q1"
+    assert records[0].periodo == "2024"
     assert records[0].trimestre == "Q1"
     assert records[0].valor == 8.7
 
