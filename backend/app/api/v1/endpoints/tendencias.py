@@ -15,6 +15,11 @@ tendencias_router = APIRouter(prefix=TENDENCIAS_ROUTE, tags=["Tendencias"])
 
 
 @tendencias_router.get(
+    "",
+    response_model=TendenciasResponse,
+    include_in_schema=False,
+)
+@tendencias_router.get(
     "/",
     response_model=TendenciasResponse,
     summary="Obtener serie temporal, proyecciones y cambios significativos",
