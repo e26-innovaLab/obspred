@@ -25,6 +25,9 @@ from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
+from app.infrastructure.connectors.simel_chile_connector import (
+    SimelChileConnector,
+)
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
@@ -237,6 +240,40 @@ def provide_bcentral_chile_sync_service(
 
     Returns:
         ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_simel_chile_connector() -> SimelChileConnector:
+    """Provee la instancia del conector oficial de SIMEL Chile (INE).
+
+    Returns:
+        SimelChileConnector: Instancia de SimelChileConnector configurada.
+    """
+    return SimelChileConnector(
+        base_url=getattr(settings, "simel_chile_base_url", None),
+        timeout=getattr(settings, "simel_chile_timeout_seconds", 30.0),
+    )
+
+
+def provide_simel_chile_sync_service(
+    connector: Annotated[
+        SimelChileConnector,
+        Depends(provide_simel_chile_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de sincronización de SIMEL Chile.
+
+    Args:
+        connector: Conector de SIMEL Chile inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación para ingesta y persistencia.
     """
     return ExternalSyncService(connector=connector, repository=repository)
 

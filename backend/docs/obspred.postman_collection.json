@@ -502,6 +502,154 @@
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'ILOSTAT' exitosa.\",\n  \"data\": {\n    \"source\": \"ILOSTAT\",\n    \"status\": \"success\",\n    \"total_fetched\": 36,\n    \"total_persisted\": 36,\n    \"execution_time_seconds\": 2.3,\n    \"countries_synced\": [\n      \"ARG\",\n      \"CHL\",\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_desempleo\",\n      \"empleo_registrado\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-10-27T15:00:00.000000Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "upload_simel_csv",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "data/examples/simel_chile_sample.csv"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/upload/simel",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "upload",
+                "simel"
+              ]
+            },
+            "description": "Carga, valida y procesa una exportación CSV de SIMEL Chile (INE), persistiendo los indicadores."
+          },
+          "response": [
+            {
+              "name": "201_created_upload_simel_csv",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "src": "data/examples/simel_chile_sample.csv"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/upload/simel",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "upload",
+                    "simel"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Exportaci\\u00f3n de SIMEL Chile procesada con \\u00e9xito. 27 observaciones persistidas.\",\n  \"data\": {\n    \"source\": \"SIMEL - INE Chile\",\n    \"status\": \"success\",\n    \"total_fetched\": 27,\n    \"total_persisted\": 27,\n    \"execution_time_seconds\": 0.045,\n    \"countries_synced\": [\n      \"CHL\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_total\",\n      \"tasa_desempleo\",\n      \"tasa_ocupacion\",\n      \"tasa_participacion\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T15:00:00.000000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "sync_simel_chile",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/simel-chile",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "simel-chile"
+              ]
+            },
+            "description": "Intento de sincronización directa con SIMEL Chile. Informa bloqueo WAF (HTTP 418 / 502) si la protección perimetral está activa."
+          },
+          "response": [
+            {
+              "name": "502_error_sync_simel_waf_blocked",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"CHL\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/simel-chile",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "simel-chile"
+                  ]
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "content-type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronizaci\\u00f3n de 'SIMEL - INE Chile'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"La plataforma oficial de SIMEL Chile (www.simel.gob.cl) se encuentra protegida por el WAF de Huawei Cloud (HTTP 418 / desaf\\u00edo anti-bot)...\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T15:00:00.000000Z\"\n}"
+            }
+          ]
         }
       ]
     },
