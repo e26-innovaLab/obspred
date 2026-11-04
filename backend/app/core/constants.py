@@ -185,6 +185,10 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 
+#Constantes de configuración para conector de datos argentina 
+DEFAULT_DATOS_ARGENTINA_SOURCE_NAME: Final[str] = "Datos Argentina"
+DEFAULT_DATOS_ARGENTINA_BASE_URL: Final[str] = "https://apis.datos.gob.ar/series/api"
+DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS: Final[float] = 30.0
 
 # ==============================================================================
 # 7. Mensajes Estándar para Respuestas REST (ApiResponse)

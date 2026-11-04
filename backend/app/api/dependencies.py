@@ -38,6 +38,10 @@ from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
 
+from app.infrastructure.connectors.datos_argentina_connector import (
+        DatosArgentinaConnector,
+)
+
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provee una sesión de base de datos asíncrona por cada petición.
@@ -249,3 +253,38 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_datos_argentina_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de Datos Argentina API.
+
+    Returns:
+        IExternalDataConnector: Instancia de DatosArgentinaConnector configurada.
+    """
+    
+    return DatosArgentinaConnector(
+        base_url=getattr(settings, "datos_argentina_base_url", None),
+        timeout=getattr(settings, "datos_argentina_timeout_seconds", 30.0),
+    )
+
+def provide_datos_argentina_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_datos_argentina_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización
+    con la API de Datos Argentina.
+
+    Args:
+        connector: Conector de Datos Argentina inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
