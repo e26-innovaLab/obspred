@@ -16,7 +16,6 @@ from app.core.constants import (
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
     DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
     DEFAULT_DATOS_ARGENTINA_BASE_URL,
-    
     AppEnvironment,
 )
 
@@ -81,17 +80,15 @@ class Settings(BaseSettings):
     bcentral_chile_base_url: str = DEFAULT_BCENTRAL_CHILE_BASE_URL
     bcentral_chile_timeout_seconds: float = DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS
 
-
-    # Datos Argentina Api 
+    # Datos Argentina Api
     datos_argentina_base_url: str = Field(
-        default = DEFAULT_DATOS_ARGENTINA_BASE_URL,
-        description = "URL base para la API de Datos Argentina"
-    ) 
+        default=DEFAULT_DATOS_ARGENTINA_BASE_URL,
+        description="URL base para la API de Datos Argentina",
+    )
     datos_argentina_timeout_seconds: float = Field(
-        default = DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
-        description = "Timeout en segundos para solicitudes a Datos Argentina"
-
-    ) 
+        default=DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+        description="Timeout en segundos para solicitudes a Datos Argentina",
+    )
 
 
 # Instancia única reutilizable para inyección o importación directa

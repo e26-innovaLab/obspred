@@ -1,4 +1,3 @@
-
 """Conector de infraestructura para consumir series de tiempo de Datos Argentina."""
 
 from datetime import date
@@ -13,11 +12,11 @@ from app.domain.interfaces.external_connector import (
     RawIndicatorRecord,
 )
 
-from  app.core.constants import (
+from app.core.constants import (
     PaisCodigo,
     DEFAULT_DATOS_ARGENTINA_BASE_URL,
     DEFAULT_DATOS_ARGENTINA_SOURCE_NAME,
-    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS
+    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
 )
 
 
@@ -27,8 +26,6 @@ class DatosArgentinaConnector(IExternalDataConnector):
     DEFAULT_BASE_URL: Final[str] = DEFAULT_DATOS_ARGENTINA_BASE_URL
     DEFAULT_TIMEOUT_SECONDS: Final[float] = DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS
     SOURCE_NAME: Final[str] = DEFAULT_DATOS_ARGENTINA_SOURCE_NAME
-
-
 
     # Los IDs son identificadores reales obtenidos mediante la API /search.
     INDICATOR_MAPPINGS: Final[dict[str, dict[str, Any]]] = {
@@ -51,7 +48,6 @@ class DatosArgentinaConnector(IExternalDataConnector):
             "frecuencia": "trimestral",
             "dimension_geografica": "nacional",
         },
-
         # Encuesta Permanente de Hogares (EPH)
         "tasa_actividad_total": {
             "id": "42.1_EPAT_0_A_27",
@@ -299,20 +295,16 @@ class DatosArgentinaConnector(IExternalDataConnector):
                     valor=valor,
                     tipo=TipoIndicador.OBSERVADO,
                     fuente=self.source_name,
-
                     # Temporalmente este campo representa la extracción.
                     # La fecha real de actualización de la fuente no está
                     # disponible todavía en la normalización actual.
                     fecha_actualizacion=fecha_extraccion,
-
                     metadatos={
                         "series_id": metadata["id"],
                         "indicator_label": metadata.get("nombre"),
                         "unidad": metadata["unidad"],
                         "frecuencia": metadata["frecuencia"],
-                        "dimension_geografica": metadata[
-                            "dimension_geografica"
-                        ],
+                        "dimension_geografica": metadata["dimension_geografica"],
                         "fecha_extraccion": fecha_extraccion.isoformat(),
                         "fecha_actualizacion_fuente": None,
                     },

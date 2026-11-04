@@ -39,7 +39,7 @@ from app.infrastructure.storage.local_file_storage_service import (
 )
 
 from app.infrastructure.connectors.datos_argentina_connector import (
-        DatosArgentinaConnector,
+    DatosArgentinaConnector,
 )
 
 
@@ -261,11 +261,12 @@ def provide_datos_argentina_connector() -> IExternalDataConnector:
     Returns:
         IExternalDataConnector: Instancia de DatosArgentinaConnector configurada.
     """
-    
+
     return DatosArgentinaConnector(
         base_url=getattr(settings, "datos_argentina_base_url", None),
         timeout=getattr(settings, "datos_argentina_timeout_seconds", 30.0),
     )
+
 
 def provide_datos_argentina_sync_service(
     connector: Annotated[
