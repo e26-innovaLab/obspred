@@ -5,18 +5,17 @@ from typing import Any, Final
 
 import httpx
 
-from app.core.constants import PaisCodigo, TipoIndicador
+from app.core.constants import (
+    DEFAULT_DATOS_ARGENTINA_BASE_URL,
+    DEFAULT_DATOS_ARGENTINA_SOURCE_NAME,
+    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+    PaisCodigo,
+    TipoIndicador,
+)
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import (
     IExternalDataConnector,
     RawIndicatorRecord,
-)
-
-from app.core.constants import (
-    PaisCodigo,
-    DEFAULT_DATOS_ARGENTINA_BASE_URL,
-    DEFAULT_DATOS_ARGENTINA_SOURCE_NAME,
-    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
 )
 
 

@@ -24,6 +24,9 @@ from app.domain.interfaces.indice_empleabilidad_repository import (
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
+from app.infrastructure.connectors.datos_argentina_connector import (
+    DatosArgentinaConnector,
+)
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
@@ -36,10 +39,6 @@ from app.infrastructure.persistence.repositories.fuente_repository import (
 )
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
-)
-
-from app.infrastructure.connectors.datos_argentina_connector import (
-    DatosArgentinaConnector,
 )
 
 

@@ -4,18 +4,19 @@ Permite cargar y validar variables de entorno desde archivos .env
 o el entorno del sistema operativo sin acoplar cadenas fijas.
 """
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from app.core.constants import (
     API_V1_PREFIX,
     DEFAULT_BCENTRAL_CHILE_BASE_URL,
     DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_DATOS_ARGENTINA_BASE_URL,
+    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
     DEFAULT_MAX_UPLOAD_SIZE_BYTES,
     DEFAULT_UPLOAD_DIR,
     DEFAULT_WORLD_BANK_BASE_URL,
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
-    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
-    DEFAULT_DATOS_ARGENTINA_BASE_URL,
     AppEnvironment,
 )
 
