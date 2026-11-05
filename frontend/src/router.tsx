@@ -13,6 +13,9 @@ const CompararPage = lazy(() => import('./features/comparar/CompararPage').then(
 const TrazabilidadPage = lazy(() =>
   import('./features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
 );
+const MiDashboardPage = lazy(() =>
+  import('./features/mi-dashboard/MiDashboardPage').then((m) => ({ default: m.MiDashboardPage })),
+);
 
 // Componente helper para envolver las rutas hijas en Suspense y mostrar una pantalla de carga mientras se descargan los módulos.
 function conSuspense(element: React.ReactNode) {
@@ -34,6 +37,7 @@ export const router = createBrowserRouter([
       { path: 'comparar', element: conSuspense(<CompararPage />) },
       { path: 'brechas', element: conSuspense(<BrechasPage />) },
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
+      { path: 'mi-informe', element: conSuspense(<MiDashboardPage />) },
       { path: 'detail', element: conSuspense(<DetailPage />) },
       
       // Ruta de captura (catch-all) para páginas no encontradas (404)

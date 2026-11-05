@@ -2,6 +2,13 @@ import type { Pais } from '../../../types/kpi';
 import { PAISES } from '../../../services/mock/catalogo';
 import { SERIE_PAIS } from '../../../styles/paletaMarca';
 import type { FilaOcupacion } from '../hooks/useOcupacionesData';
+import { AR, UY, CL } from 'country-flag-icons/react/3x2';
+
+const BANDERAS: Record<Pais, React.ComponentType<React.SVGProps<SVGSVGElement> & { title?: string }>> = {
+  AR,
+  UY,
+  CL,
+};
 
 interface Props {
   filas: FilaOcupacion[];
@@ -23,12 +30,20 @@ export function RankingOcupacionesTable({ filas, paises, seleccionadaId, onSelec
             <th rowSpan={2} scope="col">
               Ocupación
             </th>
-            {paises.map((p) => (
-              <th key={p} colSpan={2} scope="colgroup" className="ranking-table__pais">
-                <span className="filtros-comparacion__muestra" style={{ background: SERIE_PAIS[p].color }} aria-hidden />
-                {nombrePais(p)}
-              </th>
-            ))}
+            {paises.map((p) => {
+              const Bandera = BANDERAS[p];
+              return (
+                <th key={p} colSpan={2} scope="colgroup" className="ranking-table__pais">
+                  <Bandera
+                    className="filtros-comparacion__bandera"
+                    title={nombrePais(p)}
+                    aria-hidden={true}
+                    style={{ borderRadius: '2px' }}
+                  />
+                  {nombrePais(p)}
+                </th>
+              );
+            })}
           </tr>
           <tr>
             {paises.map((p) => [

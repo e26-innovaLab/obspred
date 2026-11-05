@@ -8,6 +8,7 @@ import breachasIcon from "../../assets/icons/brechas.png";
 import compararIcon from "../../assets/icons/comparar.png";
 import ocupacionesIcon from "../../assets/icons/ocupaciones.png";
 import colapsarIcon from "../../assets/icons/colapsar.png";
+import miInformeIcon from "../../assets/icons/mi-informe.svg";
 
 // Las etiquetas siguen el Figma ("Inicio") y van con inicial mayúscula.
 const NAV_ITEMS = [
@@ -17,6 +18,7 @@ const NAV_ITEMS = [
   { to: "/comparar", label: "Comparar países", icon: compararIcon },
   { to: "/brechas", label: "Brechas de habilidades", icon: breachasIcon },
   { to: "/trazabilidad", label: "Trazabilidad y fuentes", icon: fuentesIcon },
+  { to: "/mi-informe", label: "Mi informe", icon: miInformeIcon },
 ];
 
 // En computadora el menú es una barra lateral fija. En celular y tablet
