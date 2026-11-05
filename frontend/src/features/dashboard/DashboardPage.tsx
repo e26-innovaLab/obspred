@@ -85,6 +85,7 @@ export function DashboardPage() {
           onRetry={g.demanda.retry}
           altura={240}
           fuentes={(s) => s.flatMap((x) => x.fuentes)}
+          guardar={{ id: 'demanda', buildContenido: (datos) => ({ tipo: 'serie', datos }) }}
         >
           {(s) => <SerieHistoricaChart series={s} altura={240} />}
         </ChartCard>
@@ -96,6 +97,7 @@ export function DashboardPage() {
           onRetry={g.sectores.retry}
           altura={240}
           fuentes={(r) => r.fuentes}
+          guardar={{ id: 'ranking-sector', buildContenido: (datos) => ({ tipo: 'ranking', datos }) }}
         >
           {(r) => <RankingList ranking={r} />}
         </ChartCard>
@@ -107,6 +109,7 @@ export function DashboardPage() {
           onRetry={g.ocupaciones.retry}
           altura={200}
           fuentes={(r) => r.fuentes}
+          guardar={{ id: 'ranking-ocupacion', buildContenido: (datos) => ({ tipo: 'ranking', datos }) }}
         >
           {(r) => <RankingList ranking={r} />}
         </ChartCard>
@@ -119,6 +122,7 @@ export function DashboardPage() {
           altura={200}
           fuentes={(r) => r.fuentes}
           mensajeSinDatos="Por ahora solo hay fuente oficial de habilidades para Chile (SENCE — SABE)."
+          guardar={{ id: 'ranking-habilidad', buildContenido: (datos) => ({ tipo: 'ranking', datos }) }}
         >
           {(r) => <RankingList ranking={r} />}
         </ChartCard>

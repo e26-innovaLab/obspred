@@ -1731,3 +1731,99 @@
     display: block !important;
   }
 }
+
+/* ── Mi informe v2 — store-based ─────────────────────────── */
+.chart-card__header-acciones {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.chart-card__btn-guardar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--color-acento, #0070c0);
+  background: transparent;
+  color: var(--color-acento, #0070c0);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.chart-card__btn-guardar:hover {
+  background: var(--color-acento, #0070c0);
+  color: #fff;
+}
+.chart-card__btn-guardar--activo {
+  background: var(--color-acento, #0070c0);
+  color: #fff;
+}
+.chart-card__btn-guardar--activo:hover {
+  background: transparent;
+  color: var(--color-acento, #0070c0);
+}
+
+.mi-dashboard__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.mi-dashboard__contador {
+  font-size: 0.9rem;
+  color: var(--color-texto-suave, #666);
+}
+.mi-dashboard__acciones-botones {
+  display: flex;
+  gap: 0.75rem;
+}
+.mi-dashboard__btn-limpiar {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1.5px solid var(--color-borde, #ccc);
+  background: transparent;
+  color: var(--color-texto, #333);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.mi-dashboard__btn-limpiar:hover {
+  border-color: #d00;
+  color: #d00;
+}
+.mi-dashboard__snapshot-meta {
+  font-size: 0.75rem;
+  color: var(--color-texto-suave, #888);
+  margin-top: 0.2rem;
+}
+.mi-dashboard__btn-quitar {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--color-texto-suave, #aaa);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.mi-dashboard__btn-quitar:hover {
+  background: #fee;
+  color: #d00;
+}
+
+@media print {
+  .chart-card__btn-guardar,
+  .mi-dashboard__acciones { display: none !important; }
+  .mi-dashboard__btn-quitar { display: none !important; }
+}
