@@ -150,11 +150,13 @@ async def test_upload_simel_csv_file_success_and_query_indicators(
     assert "CHL" in body["data"]["countries_synced"]
 
     # Consultamos el indicador recién persistido en /indicadores
-    query_url = f"{settings.api_v1_prefix}{INDICADORES_ROUTE}?pais=CHL&desde=2024-Q2"
+    query_url = f"{settings.api_v1_prefix}{INDICADORES_ROUTE}?pais=CHL&trimestre=Q2"
     query_resp = await async_client.get(query_url)
     assert query_resp.status_code == 200
     query_body = query_resp.json()
     assert query_body["success"] is True
     assert len(query_body["data"]) >= 1
     assert query_body["data"][0]["fuente"] == DEFAULT_SIMEL_CHILE_SOURCE
+    assert query_body["data"][0]["periodo"] == "2024"
+    assert query_body["data"][0]["trimestre"] == "Q2"
     assert query_body["data"][0]["valor"] == 8.4

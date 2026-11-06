@@ -54,6 +54,12 @@ class IndicadorModel(Base):
         index=True,
         doc="Período temporal del indicador (ej. 2024-Q1, 2024-01, 2024)",
     )
+    trimestre: Mapped[str | None] = mapped_column(
+        String(10),
+        nullable=True,
+        index=True,
+        doc="Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4)",
+    )
     valor: Mapped[float] = mapped_column(
         Float,
         nullable=False,

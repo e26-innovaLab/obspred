@@ -26,7 +26,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         """Inserta o actualiza indicadores respetando unicidad de clave lógica.
 
         La clave lógica de unicidad se compone de:
-        (pais, sector, ocupacion, indicador, periodo, fuente).
+        (pais, sector, ocupacion, indicador, periodo, trimestre, fuente).
 
         Args:
             records: Lista de registros inmutables a persistir.
@@ -37,11 +37,26 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         if not records:
             return 0
 
+        # Deduplicar en memoria preservando el último registro para cada clave lógica
+        deduped_records: dict[tuple, RawIndicatorRecord] = {}
+        for r in records:
+            key = (
+                r.pais,
+                r.sector,
+                r.ocupacion,
+                r.indicador,
+                r.periodo,
+                r.trimestre,
+                r.fuente,
+            )
+            deduped_records[key] = r
+
+        unique_records = list(deduped_records.values())
         persisted_count = 0
         now_utc = datetime.now(UTC)
 
-        for record in records:
-            # Búsqueda de registro existente bajo clave lógica
+        for record in unique_records:
+            # Búsqueda de registro existente bajo clave lógica completa
             query = select(IndicadorModel).where(
                 IndicadorModel.pais == record.pais,
                 IndicadorModel.indicador == record.indicador,
@@ -60,12 +75,19 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             else:
                 query = query.where(IndicadorModel.ocupacion.is_(None))
 
+            # Manejo explícito de nulos para trimestre
+            if record.trimestre is not None:
+                query = query.where(IndicadorModel.trimestre == record.trimestre)
+            else:
+                query = query.where(IndicadorModel.trimestre.is_(None))
+
             result = await self._session.execute(query)
             existing = result.scalars().first()
 
             if existing:
                 existing.valor = record.valor
                 existing.tipo = record.tipo
+                existing.trimestre = record.trimestre
                 existing.fecha_actualizacion = record.fecha_actualizacion
                 existing.updated_at = now_utc
             else:
@@ -75,6 +97,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
                     ocupacion=record.ocupacion,
                     indicador=record.indicador,
                     periodo=record.periodo,
+                    trimestre=record.trimestre,
                     valor=record.valor,
                     tipo=record.tipo,
                     fuente=record.fuente,
@@ -100,6 +123,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
         indicador: str | None = None,
         desde: str | None = None,
         hasta: str | None = None,
+        trimestre: str | None = None,
     ) -> list[IndicadorModel]:
         """Consulta indicadores aplicando la jerarquía estricta de filtros.
 
@@ -110,6 +134,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             indicador: Identificador clave del indicador.
             desde: Límite temporal inicial del rango.
             hasta: Límite temporal final del rango.
+            trimestre: Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4).
 
         Returns:
             List[IndicadorModel]: Modelos ORM coincidentes ordenados cronológicamente.
@@ -128,8 +153,14 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
             stmt = stmt.where(IndicadorModel.periodo >= desde.strip())
         if hasta:
             stmt = stmt.where(IndicadorModel.periodo <= hasta.strip())
+        if trimestre:
+            stmt = stmt.where(IndicadorModel.trimestre == trimestre.upper().strip())
 
-        stmt = stmt.order_by(IndicadorModel.periodo.asc(), IndicadorModel.pais.asc())
+        stmt = stmt.order_by(
+            IndicadorModel.periodo.asc(),
+            IndicadorModel.trimestre.asc().nulls_first(),
+            IndicadorModel.pais.asc(),
+        )
 
         result = await self._session.execute(stmt)
         return list(result.scalars().all())
