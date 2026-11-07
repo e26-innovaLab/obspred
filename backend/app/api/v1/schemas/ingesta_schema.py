@@ -74,6 +74,7 @@ class SyncExternalDataRequestSchema(BaseModel):
         examples=["2024"],
     )
 
+
 class SyncDatosArgentinaRequestSchema(BaseModel):
     """Parámetros de solicitud para la sincronización de Datos Argentina."""
 
@@ -96,10 +97,9 @@ class SyncDatosArgentinaRequestSchema(BaseModel):
                 "tasa_desocupacion_total",
                 "tasa_subocupacion_total",
                 "tasa_subocupacion_demandante",
-                "tasa_subocupacion_no_demandante"
+                "tasa_subocupacion_no_demandante",
             ]
-        ]
-       
+        ],
     )
     periodo_desde: str | None = Field(
         default=None,
@@ -111,6 +111,7 @@ class SyncDatosArgentinaRequestSchema(BaseModel):
         description="Año o período final de extracción.",
         examples=["2024"],
     )
+
 
 class SyncExternalDataResponseData(BaseModel):
     """Resultado detallado de la sincronización externa ejecutada."""

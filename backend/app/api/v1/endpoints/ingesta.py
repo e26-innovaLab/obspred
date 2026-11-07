@@ -18,7 +18,7 @@ from app.api.v1.schemas.ingesta_schema import (
     SyncExternalDataRequestSchema,
     SyncExternalDataResponseData,
     SyncExternalDataResponseSchema,
-    SyncDatosArgentinaRequestSchema
+    SyncDatosArgentinaRequestSchema,
 )
 from app.api.v1.schemas.response_schema import (
     ApiResponse,
@@ -446,6 +446,7 @@ async def sync_bcentral_chile_indicators(
         status_code=status.HTTP_200_OK,
     )
 
+
 @ingesta_router.post(
     INGESTA_SYNC_DATOS_ARGENTINA_ROUTE,
     response_model=SyncExternalDataResponseSchema,
@@ -493,8 +494,7 @@ async def sync_datos_argentina_indicators(
 
     if result_dto.status == SyncStatus.FAILED:
         err_msg = (
-            result_dto.error_message
-            or "Ocurrió un error durante la sincronización."
+            result_dto.error_message or "Ocurrió un error durante la sincronización."
         )
 
         is_db_err = any(
@@ -520,9 +520,7 @@ async def sync_datos_argentina_indicators(
         )
 
         error_response = create_error_response(
-            message=(
-                f"Fallo en la sincronización de '{result_dto.source}'."
-            ),
+            message=(f"Fallo en la sincronización de '{result_dto.source}'."),
             status_code=http_status,
             errors=[
                 ErrorDetail(
@@ -535,9 +533,7 @@ async def sync_datos_argentina_indicators(
 
         return JSONResponse(
             status_code=http_status,
-            content=error_response.model_dump(
-                mode=JSON_SERIALIZATION_MODE
-            ),
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
     response_data = SyncExternalDataResponseData(
@@ -553,8 +549,6 @@ async def sync_datos_argentina_indicators(
 
     return create_success_response(
         data=response_data,
-        message=(
-            f"Sincronización de '{result_dto.source}' exitosa."
-        ),
+        message=(f"Sincronización de '{result_dto.source}' exitosa."),
         status_code=status.HTTP_200_OK,
     )
