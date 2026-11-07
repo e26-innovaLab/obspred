@@ -92,8 +92,16 @@ https://api.worldbank.org/v2/country/ARG;URY;CHL/indicator/SL.UEM.TOTL.ZS?format
 
 ### Chile
 
-- **SIMEL (Sistema de Información del Mercado Laboral - `https://www.simel.gob.cl`):** plataforma oficial (Mesa de Estadísticas del Trabajo, INE y OIT). La consulta se realiza desde su explorador interactivo.  
-  *(Nota técnica para backend: El dominio cuenta con WAF activo de Huawei Cloud que bloquea peticiones HTTP desatendidas estándar con código 418. La ingesta debe realizarse mediante descarga programada de archivos exportados o scripts con sesión de navegador, no mediante endpoints REST simples).*
+- **SIMEL (Sistema de Información del Mercado Laboral - `https://www.simel.gob.cl`):** plataforma oficial (Mesa de Estadísticas del Trabajo, INE y OIT).
+  - **Referencia técnica oficial:** [Guía de uso de SIMEL - INE Chile](https://www.ine.gob.cl/simel/guia-de-uso).
+  - **Arquitectura de la fuente y dos vías de ingesta:**
+    1. **API SDMX Oficial (.Stat Suite del INE Chile):** La guía técnica oficial de uso documenta el acceso vía API RESTful bajo el estándar Dotstatsuite/SDMX en `https://sdmx.ine.gob.cl/rest/data/` (Agencia `CL01`). Este endpoint **no está bloqueado por el WAF**, responde en vivo y permite consultar series oficiales filtrando por dimensiones (`startPeriod`, rama CAENES, sexo y región) para flujos como `DF_TDES_SEXO` (desempleo), `DF_TOCU_SEXO` (ocupación), `DF_TP_SEXO` (participación) y `DF_OCURAMA_RAMA_SEXO` (empleo por actividad económica).
+    2. **Portal Web Interactivo (`www.simel.gob.cl`):** Frontend de consulta gráfica para usuarios finales. Cuenta con WAF de Huawei Cloud (`Server: CW`, `HWWAFSESID`) que restringe clientes automatizados con `HTTP 418`.
+  - **Conector implementado (`SimelChileConnector`):**
+    - Sincroniza indicadores en tiempo real consumiendo los flujos SDMX oficiales de `sdmx.ine.gob.cl`.
+    - Normaliza períodos (trimestres móviles como `2024-03-01/P3M` a `2024-Q1`).
+    - Ofrece soporte dual para subir archivos CSV descargados desde el portal web mediante `POST /api/v1/ingesta/upload/simel`.
+    - Pruebas y diagnóstico interactivo en `backend/test_conexion_simel.py` y dataset en `data/examples/simel_chile_sample.csv`.
 - **Banco Central, Web Services** (requiere registro gratuito):
   `https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx?user=USUARIO&pass=CLAVE&firstdate=2020-01-01&timeseries=<CODIGO_SERIE>&function=GetSeries`
 - **Datos abiertos (CKAN):** `https://datos.gob.cl/api/3/action/package_search?q=empleo`

@@ -135,6 +135,8 @@ REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
 INGESTA_SYNC_DATOS_ARGENTINA_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/datos-argentina"
+INGESTA_SYNC_SIMEL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/simel-chile"
+INGESTA_UPLOAD_SIMEL_ROUTE: Final[str] = f"{INGESTA_UPLOAD_ROUTE}/simel"
 METRICAS_ROUTE: Final[str] = "/metricas"
 CATALOGO_ROUTE: Final[str] = "/catalogo"
 ALERTAS_ROUTE: Final[str] = "/alertas"
@@ -190,6 +192,12 @@ DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 DEFAULT_DATOS_ARGENTINA_SOURCE_NAME: Final[str] = "Datos Argentina"
 DEFAULT_DATOS_ARGENTINA_BASE_URL: Final[str] = "https://apis.datos.gob.ar/series/api"
 DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS: Final[float] = 30.0
+# Constantes de configuración para SIMEL (Sistema de Información Laboral - Chile)
+DEFAULT_SIMEL_CHILE_SOURCE: Final[str] = "SIMEL - INE Chile"
+DEFAULT_SIMEL_CHILE_BASE_URL: Final[str] = "https://www.simel.gob.cl"
+DEFAULT_SIMEL_SDMX_BASE_URL: Final[str] = "https://sdmx.ine.gob.cl/rest"
+DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
 
 # ==============================================================================
 # 7. Mensajes Estándar para Respuestas REST (ApiResponse)
@@ -252,6 +260,8 @@ __all__ = [
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
+    "INGESTA_SYNC_SIMEL_CHILE_ROUTE",
+    "INGESTA_UPLOAD_SIMEL_ROUTE",
     # OpenAPI Tags
     "OPENAPI_TAG_ROOT",
     "OPENAPI_TAG_HEALTH",
@@ -281,6 +291,10 @@ __all__ = [
     "DEFAULT_BCENTRAL_CHILE_SOURCE",
     "DEFAULT_BCENTRAL_CHILE_BASE_URL",
     "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
+    "DEFAULT_SIMEL_CHILE_SOURCE",
+    "DEFAULT_SIMEL_CHILE_BASE_URL",
+    "DEFAULT_SIMEL_SDMX_BASE_URL",
+    "DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",

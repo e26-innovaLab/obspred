@@ -10,6 +10,9 @@ from app.api.dependencies import (
     provide_datos_argentina_sync_service,
     provide_file_upload_service,
     provide_ilostat_sync_service,
+    provide_indicador_repository,
+    provide_simel_chile_connector,
+    provide_simel_chile_sync_service,
     provide_world_bank_sync_service,
 )
 from app.api.v1.schemas.ingesta_schema import (
@@ -29,17 +32,22 @@ from app.api.v1.schemas.response_schema import (
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.core.constants import (
+    DEFAULT_SIMEL_CHILE_SOURCE,
     INGESTA_ROUTE,
     INGESTA_SYNC_BCENTRAL_CHILE_ROUTE,
     INGESTA_SYNC_DATOS_ARGENTINA_ROUTE,
     INGESTA_SYNC_ILOSTAT_ROUTE,
+    INGESTA_SYNC_SIMEL_CHILE_ROUTE,
     INGESTA_SYNC_WORLD_BANK_ROUTE,
     INGESTA_UPLOAD_ROUTE,
+    INGESTA_UPLOAD_SIMEL_ROUTE,
     JSON_SERIALIZATION_MODE,
     OPENAPI_TAG_INGESTA,
     ApiErrorCode,
     SyncStatus,
 )
+from app.domain.interfaces.indicador_repository import IIndicadorRepository
+from app.infrastructure.connectors.simel_chile_connector import SimelChileConnector
 
 ingesta_router = APIRouter(
     prefix=INGESTA_ROUTE,
@@ -455,6 +463,16 @@ async def sync_bcentral_chile_indicators(
     description=(
         "Ejecuta extracción y persistencia idempotente de indicadores "
         "oficiales desde la API de Series de Tiempo de Datos Argentina."
+    INGESTA_SYNC_SIMEL_CHILE_ROUTE,
+    response_model=SyncExternalDataResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Sincronizar indicadores oficiales desde SIMEL Chile (INE)",
+    description=(
+        "Intenta sincronización automatizada con la plataforma oficial "
+        "de SIMEL Chile. Nota: Debido a la protección activa por WAF "
+        "de Huawei Cloud (código HTTP 418), si la solicitud es rechazada, "
+        "el servicio devolverá un error descriptivo recomendando la ingesta "
+        "mediante la carga del archivo exportado vía POST /ingesta/upload/simel."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -467,6 +485,10 @@ async def sync_bcentral_chile_indicators(
         },
         status.HTTP_502_BAD_GATEWAY: {
             "description": "Error al comunicarse con la API externa.",
+            "description": (
+                "Acceso desatendido bloqueado por Huawei Cloud WAF (HTTP 418) "
+                "o fallo de comunicación con la plataforma remota."
+            ),
             "model": ApiResponse,
         },
     },
@@ -480,6 +502,14 @@ async def sync_datos_argentina_indicators(
 ) -> SyncExternalDataResponseSchema | JSONResponse:
     """Sincroniza indicadores oficiales desde Datos Argentina."""
 
+async def sync_simel_chile_indicators(
+    sync_service: Annotated[
+        ExternalSyncService,
+        Depends(provide_simel_chile_sync_service),
+    ],
+    payload: SyncExternalDataRequestSchema | None = None,
+) -> SyncExternalDataResponseSchema | JSONResponse:
+    """Sincroniza indicadores oficiales desde SIMEL Chile."""
     paises = payload.paises if payload else None
     indicadores = payload.indicadores if payload else None
     periodo_desde = payload.periodo_desde if payload else None
@@ -497,6 +527,9 @@ async def sync_datos_argentina_indicators(
             result_dto.error_message or "Ocurrió un error durante la sincronización."
         )
 
+            result_dto.error_message
+            or "Ocurrió un error inesperado durante la sincronización."
+        )
         is_db_err = any(
             tok in err_msg
             for tok in [
@@ -521,6 +554,8 @@ async def sync_datos_argentina_indicators(
 
         error_response = create_error_response(
             message=(f"Fallo en la sincronización de '{result_dto.source}'."),
+        error_response = create_error_response(
+            message=f"Fallo en la sincronización de '{result_dto.source}'.",
             status_code=http_status,
             errors=[
                 ErrorDetail(
@@ -551,4 +586,114 @@ async def sync_datos_argentina_indicators(
         data=response_data,
         message=(f"Sincronización de '{result_dto.source}' exitosa."),
         status_code=status.HTTP_200_OK,
+    )
+    msg = f"Sincronización de '{result_dto.source}' exitosa."
+    return create_success_response(
+        data=response_data,
+        message=msg,
+        status_code=status.HTTP_200_OK,
+    )
+
+
+@ingesta_router.post(
+    INGESTA_UPLOAD_SIMEL_ROUTE,
+    response_model=SyncExternalDataResponseSchema,
+    status_code=status.HTTP_201_CREATED,
+    summary="Cargar, validar y procesar archivo exportado de SIMEL Chile",
+    description=(
+        "Recibe un archivo CSV exportado desde el portal oficial de SIMEL Chile "
+        "(INE), valida formato y tamaño, normaliza sus registros al modelo "
+        "de dominio RawIndicatorRecord y los persiste idempotentemente en la "
+        "base de datos relacional de indicadores."
+    ),
+    responses={
+        status.HTTP_201_CREATED: {
+            "description": "Exportación de SIMEL procesada y persistida con éxito.",
+            "model": SyncExternalDataResponseSchema,
+        },
+        status.HTTP_400_BAD_REQUEST: {
+            "description": "Estructura CSV no válida o datos insuficientes.",
+            "model": ApiResponse,
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Error al persistir registros en base de datos.",
+            "model": ApiResponse,
+        },
+    },
+)
+async def upload_simel_csv_file(
+    file: Annotated[
+        UploadFile,
+        File(
+            description="Archivo CSV exportado desde el portal oficial de SIMEL Chile"
+        ),
+    ],
+    upload_service: Annotated[
+        FileUploadService,
+        Depends(provide_file_upload_service),
+    ],
+    simel_connector: Annotated[
+        SimelChileConnector,
+        Depends(provide_simel_chile_connector),
+    ],
+    indicador_repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> SyncExternalDataResponseSchema:
+    """Procesa un archivo CSV exportado de SIMEL Chile e inserta observaciones.
+
+    Args:
+        file: Archivo multipart enviado por el cliente.
+        upload_service: Servicio de almacenamiento y validación de subida.
+        simel_connector: Adaptador de dominio para parseo y normalización.
+        indicador_repository: Repositorio para persistencia en base de datos.
+
+    Returns:
+        SyncExternalDataResponseSchema: Resumen de registros normalizados y guardados.
+    """
+    import time
+
+    start_time = time.perf_counter()
+    file_bytes = await file.read()
+    filename = file.filename or "simel_export.csv"
+
+    # 1. Validar reglas de archivo y almacenar en disco para trazabilidad
+    await upload_service.upload_csv(
+        filename=filename,
+        content=file_bytes,
+        content_type=file.content_type,
+    )
+
+    # 2. Parsear y normalizar al modelo de dominio
+    raw_records = simel_connector.parse_simel_csv(
+        content=file_bytes,
+        filename=filename,
+    )
+
+    # 3. Persistir en la base de datos de manera idempotente
+    total_persisted = await indicador_repository.upsert_batch(raw_records)
+
+    duration = time.perf_counter() - start_time
+    countries_synced = sorted(list({r.pais for r in raw_records}))
+    indicators_synced = sorted(list({r.indicador for r in raw_records}))
+
+    response_data = SyncExternalDataResponseData(
+        source=DEFAULT_SIMEL_CHILE_SOURCE,
+        status=SyncStatus.SUCCESS,
+        total_fetched=len(raw_records),
+        total_persisted=total_persisted,
+        execution_time_seconds=round(duration, 3),
+        countries_synced=countries_synced,
+        indicators_synced=indicators_synced,
+        error_message=None,
+    )
+
+    return create_success_response(
+        data=response_data,
+        message=(
+            f"Exportación de SIMEL Chile procesada con éxito. "
+            f"{total_persisted} observaciones persistidas."
+        ),
+        status_code=status.HTTP_201_CREATED,
     )
