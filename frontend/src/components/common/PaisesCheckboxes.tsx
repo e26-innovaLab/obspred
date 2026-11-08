@@ -1,5 +1,4 @@
 import { PAISES } from "../../services/mock/catalogo";
-import { SERIE_PAIS } from "../../styles/paletaMarca";
 import type { Pais } from "../../types/kpi";
 import { AR, UY, CL } from "country-flag-icons/react/3x2";
 
