@@ -31,12 +31,11 @@ export function AppLayout() {
   const abierto = menuAbierto && rutaDelMenu === pathname;
 
   // Estado del sidebar
-  const [isCollapsed , setIsCollapsed ] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
-    console.log("Sidebar cerrado / abierto");
     setIsCollapsed((prev) => !prev);
-  }
+  };
 
   return (
     <div className={`app-layout ${isCollapsed ? 'sidebar--collapsed' : ''}`}>
@@ -58,21 +57,29 @@ export function AppLayout() {
         </div>
         <nav id="menu-principal" data-abierto={abierto} className={isCollapsed ? 'sidebar--collapsed' : ''}>
           {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end}  title={isCollapsed ? item.label : undefined}>
+            <NavLink key={item.to} to={item.to} end={item.end} title={isCollapsed ? item.label : undefined}>
               <img src={item.icon} alt="" />
               <span>{item.label}</span>
             </NavLink>
           ))}
 
+          <NavLink
+            to="/cargar-datos"
+            className="sidebar__cargar-datos"
+            title={isCollapsed ? 'Cargar datos' : undefined}
+          >
+            <span>↑</span>
+            <span>Cargar datos</span>
+          </NavLink>
+
           <button
-          className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
-          title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-           onClick={toggleSidebar}
+            className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
+            title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+            onClick={toggleSidebar}
           >
             <img src={colapsarIcon} alt="Colapsar"/>
             <span>Colapsar</span>
           </button>
-
         </nav>
       </header>
       <main className="app-content">
