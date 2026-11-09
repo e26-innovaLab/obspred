@@ -11,7 +11,7 @@ import ocupacionesIcon from "../../assets/icons/ocupaciones.png";
 import colapsarIcon from "../../assets/icons/colapsar.png";
 import abrirIcon from "../../assets/icons/abrir.png";
 import uploadIcon from "../../assets/icons/upload.png";
-import miInformeIcon from "../../assets/icons/mi-informe.svg";
+import miInformeIcon from "../../assets/icons/miInformeIcon.png";
 
 // Las etiquetas siguen el Figma ("Inicio") y van con inicial mayúscula.
 const NAV_ITEMS = [
