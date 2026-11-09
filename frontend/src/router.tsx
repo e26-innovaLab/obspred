@@ -13,6 +13,9 @@ const CompararPage = lazy(() => import('./features/comparar/CompararPage').then(
 const TrazabilidadPage = lazy(() =>
   import('./features/trazabilidad/TrazabilidadPage').then((m) => ({ default: m.TrazabilidadPage })),
 );
+const CargarDatosPage = lazy(() =>
+  import('./features/cargar-datos/CargarDatosPage').then((m) => ({ default: m.CargarDatosPage })),
+);
 
 // Componente helper para envolver las rutas hijas en Suspense y mostrar una pantalla de carga mientras se descargan los módulos.
 function conSuspense(element: React.ReactNode) {
@@ -27,7 +30,7 @@ export const router = createBrowserRouter([
     children: [
       // Ruta principal / Dashboard
       { index: true, element: conSuspense(<DashboardPage />) },
-      
+
       // Rutas de las secciones de la aplicación
       { path: 'ocupaciones', element: conSuspense(<OcupacionesPage />) },
       { path: 'tendencias', element: conSuspense(<TendenciasPage />) },
@@ -35,7 +38,8 @@ export const router = createBrowserRouter([
       { path: 'brechas', element: conSuspense(<BrechasPage />) },
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
       { path: 'detail', element: conSuspense(<DetailPage />) },
-      
+      { path: 'cargar-datos', element: conSuspense(<CargarDatosPage />) },
+
       // Ruta de captura (catch-all) para páginas no encontradas (404)
       { path: '*', element: conSuspense(<NotFoundPage />) },
     ],
