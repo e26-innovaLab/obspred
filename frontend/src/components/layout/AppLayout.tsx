@@ -17,6 +17,8 @@ const NAV_ITEMS = [
   { to: "/comparar", label: "Comparar países", icon: compararIcon },
   { to: "/brechas", label: "Brechas de habilidades", icon: breachasIcon },
   { to: "/trazabilidad", label: "Trazabilidad y fuentes", icon: fuentesIcon },
+  { to: "/cargar-datos", label: "Cargar datos", icon: fuentesIcon },
+];
 ];
 
 // En computadora el menú es una barra lateral fija. En celular y tablet
