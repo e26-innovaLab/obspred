@@ -7,7 +7,6 @@ import { SerieHistoricaChart } from '../../components/charts/SerieHistoricaChart
 import { useFiltros } from '../../store/useFiltros';
 import { useDashboardData, useDashboardGraficos, KPIS_INICIO } from './hooks/useDashboardData';
 import { TendenciaSectorList } from './components/TendenciaSectorList';
-import { AlertasPanel } from './components/AlertasPanel';
 import { RankingList } from './components/RankingList';
 import { PAISES } from '../../services/mock/catalogo';
 import type { Pais } from '../../types/kpi';
@@ -20,7 +19,7 @@ const ORDEN_PAISES = PAISES.map((p) => p.id as Pais);
 // Filtros activos: País · Sector · Período.
 export function DashboardPage() {
   const { filtros } = useFiltros();
-  const { tendenciasPorSector, alertas } = useDashboardData();
+  const { tendenciasPorSector } = useDashboardData();
   const g = useDashboardGraficos();
 
   const [paises, setPaisesLocal] = useState<Pais[]>(ORDEN_PAISES);
@@ -132,10 +131,7 @@ export function DashboardPage() {
           <TendenciaSectorList tendencias={tendenciasPorSector} />
         </div>
 
-        <div>
-          <h3>Alertas activas</h3>
-          <AlertasPanel alertas={alertas} />
-        </div>
+
       </div>
     </section>
   );
