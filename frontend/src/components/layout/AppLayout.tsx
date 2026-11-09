@@ -55,6 +55,11 @@ export function AppLayout() {
             </NavLink>
           ))}
 
+          <NavLink to="/mi-informe" className="sidebar__cargar-datos" title={isCollapsed ? 'Mi informe' : undefined}>
+            <span>📄</span>
+            <span>Mi informe</span>
+          </NavLink>
+
           <NavLink to="/cargar-datos" className="sidebar__cargar-datos" title={isCollapsed ? 'Cargar datos' : undefined}>
             <span>↑</span>
             <span>Cargar datos</span>
