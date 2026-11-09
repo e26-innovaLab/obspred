@@ -1,49 +1,31 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { InformeContext, type InformeContextValue, type Snapshot } from './informeContextInstance';
 
-export interface GraficoSnapshot {
-  id: string;
-  titulo: string;
-  descripcion?: string;
-  seccion: string;
-  timestamp: number;
-  paises?: string[];
-  datos?: unknown;
-}
-
-interface InformeContextValue {
-  graficos: GraficoSnapshot[];
-  agregar: (g: Omit<GraficoSnapshot, 'id' | 'timestamp'>) => void;
-  quitar: (id: string) => void;
-  limpiar: () => void;
-}
-
-const InformeContext = createContext<InformeContextValue | null>(null);
-
+// Provider global del informe personalizado.
+// Guarda snapshots de gráficos que el usuario va seleccionando desde cualquier página.
 export function InformeProvider({ children }: { children: ReactNode }) {
-  const [graficos, setGraficos] = useState<GraficoSnapshot[]>([]);
+  const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
 
-  const agregar = useCallback((g: Omit<GraficoSnapshot, 'id' | 'timestamp'>) => {
-    setGraficos((prev) => [
-      ...prev,
-      { ...g, id: `${Date.now()}-${Math.random().toString(36).slice(2)}`, timestamp: Date.now() },
-    ]);
+  const estaGuardado = useCallback((id: string) => snapshots.some((s) => s.id === id), [snapshots]);
+
+  const guardar = useCallback((snap: Snapshot) => {
+    setSnapshots((prev) => {
+      // Si ya existe ese id lo reemplaza (actualiza los datos con los filtros actuales).
+      const sinEste = prev.filter((s) => s.id !== snap.id);
+      return [...sinEste, snap];
+    });
   }, []);
 
   const quitar = useCallback((id: string) => {
-    setGraficos((prev) => prev.filter((g) => g.id !== id));
+    setSnapshots((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
-  const limpiar = useCallback(() => setGraficos([]), []);
+  const limpiar = useCallback(() => setSnapshots([]), []);
 
-  return (
-    <InformeContext.Provider value={{ graficos, agregar, quitar, limpiar }}>
-      {children}
-    </InformeContext.Provider>
+  const value = useMemo<InformeContextValue>(
+    () => ({ snapshots, estaGuardado, guardar, quitar, limpiar }),
+    [snapshots, estaGuardado, guardar, quitar, limpiar],
   );
-}
 
-export function useInforme() {
-  const ctx = useContext(InformeContext);
-  if (!ctx) throw new Error('useInforme debe usarse dentro de InformeProvider');
-  return ctx;
+  return <InformeContext.Provider value={value}>{children}</InformeContext.Provider>;
 }

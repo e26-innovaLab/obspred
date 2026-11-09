@@ -8,7 +8,9 @@ import breachasIcon from "../../assets/icons/brechas.png";
 import compararIcon from "../../assets/icons/comparar.png";
 import ocupacionesIcon from "../../assets/icons/ocupaciones.png";
 import colapsarIcon from "../../assets/icons/colapsar.png";
+import miInformeIcon from "../../assets/icons/mi-informe.svg";
 
+// Las etiquetas siguen el Figma ("Inicio") y van con inicial mayúscula.
 const NAV_ITEMS = [
   { to: "/", label: "Inicio", end: true, icon: inicioIcon },
   { to: "/ocupaciones", label: "Ocupaciones", icon: ocupacionesIcon },
@@ -16,18 +18,25 @@ const NAV_ITEMS = [
   { to: "/comparar", label: "Comparar países", icon: compararIcon },
   { to: "/brechas", label: "Brechas de habilidades", icon: breachasIcon },
   { to: "/trazabilidad", label: "Trazabilidad y fuentes", icon: fuentesIcon },
+  { to: "/mi-informe", label: "Mi informe", icon: miInformeIcon },
 ];
 
+// En computadora el menú es una barra lateral fija. En celular y tablet
+// (≤ 900px) pasa a una barra superior con botón "Menú" que despliega los links.
 export function AppLayout() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const { pathname } = useLocation();
+  // Al navegar se cierra el menú: se guarda la ruta en la que se abrió.
   const [rutaDelMenu, setRutaDelMenu] = useState(pathname);
   const abierto = menuAbierto && rutaDelMenu === pathname;
-  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Estado del sidebar
+  const [isCollapsed , setIsCollapsed ] = useState(false);
 
   const toggleSidebar = () => {
+    console.log("Sidebar cerrado / abierto");
     setIsCollapsed((prev) => !prev);
-  };
+  }
 
   return (
     <div className={`app-layout ${isCollapsed ? 'sidebar--collapsed' : ''}`}>
@@ -49,30 +58,21 @@ export function AppLayout() {
         </div>
         <nav id="menu-principal" data-abierto={abierto} className={isCollapsed ? 'sidebar--collapsed' : ''}>
           {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} title={isCollapsed ? item.label : undefined}>
+            <NavLink key={item.to} to={item.to} end={item.end}  title={isCollapsed ? item.label : undefined}>
               <img src={item.icon} alt="" />
               <span>{item.label}</span>
             </NavLink>
           ))}
 
-          <NavLink to="/mi-informe" className="sidebar__cargar-datos" title={isCollapsed ? 'Mi informe' : undefined}>
-            <span>📄</span>
-            <span>Mi informe</span>
-          </NavLink>
-
-          <NavLink to="/cargar-datos" className="sidebar__cargar-datos" title={isCollapsed ? 'Cargar datos' : undefined}>
-            <span>↑</span>
-            <span>Cargar datos</span>
-          </NavLink>
-
           <button
-            className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
-            title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
-            onClick={toggleSidebar}
+          className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
+          title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+           onClick={toggleSidebar}
           >
             <img src={colapsarIcon} alt="Colapsar"/>
             <span>Colapsar</span>
           </button>
+
         </nav>
       </header>
       <main className="app-content">

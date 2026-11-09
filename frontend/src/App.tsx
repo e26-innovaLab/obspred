@@ -6,11 +6,11 @@ import './App.css';
 
 function App() {
   return (
-    <FiltrosProvider>
-      <InformeProvider>
+    <InformeProvider>
+      <FiltrosProvider>
         <RouterProvider router={router} />
-      </InformeProvider>
-    </FiltrosProvider>
+      </FiltrosProvider>
+    </InformeProvider>
   );
 }
 
