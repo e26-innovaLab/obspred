@@ -8,6 +8,8 @@ import breachasIcon from "../../assets/icons/brechas.png";
 import compararIcon from "../../assets/icons/comparar.png";
 import ocupacionesIcon from "../../assets/icons/ocupaciones.png";
 import colapsarIcon from "../../assets/icons/colapsar.png";
+import abrirIcon from "../../assets/icons/abrir.png";
+import uploadIcon from "../../assets/icons/upload.png"
 
 const NAV_ITEMS = [
   { to: "/", label: "Inicio", end: true, icon: inicioIcon },
@@ -16,6 +18,7 @@ const NAV_ITEMS = [
   { to: "/comparar", label: "Comparar países", icon: compararIcon },
   { to: "/brechas", label: "Brechas de habilidades", icon: breachasIcon },
   { to: "/trazabilidad", label: "Trazabilidad y fuentes", icon: fuentesIcon },
+  { to: "/cargar-datos", label: "Cargar Datos", icon: uploadIcon },
 ];
 
 export function AppLayout() {
@@ -30,10 +33,10 @@ export function AppLayout() {
   };
 
   return (
-    <div className={`app-layout ${isCollapsed ? 'sidebar--collapsed' : ''}`}>
+    <div className={`app-layout ${isCollapsed ? "sidebar--collapsed" : ""}`}>
       <header className="app-header">
         <div className="app-header__barra">
-          <img className="logo" src={logo} alt="Logo El Faro" />
+          <img className="logo" src={logo} alt="Logo Faro" />
           <button
             type="button"
             className="app-header__menu-btn"
@@ -47,26 +50,33 @@ export function AppLayout() {
             <span aria-hidden>{abierto ? "✕" : "☰"}</span> Menú
           </button>
         </div>
-        <nav id="menu-principal" data-abierto={abierto} className={isCollapsed ? 'sidebar--collapsed' : ''}>
+        <nav
+          id="menu-principal"
+          data-abierto={abierto}
+          className={isCollapsed ? "sidebar--collapsed" : ""}
+        >
           {NAV_ITEMS.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} title={isCollapsed ? item.label : undefined}>
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              title={isCollapsed ? item.label : undefined}
+            >
               <img src={item.icon} alt="" />
               <span>{item.label}</span>
             </NavLink>
           ))}
 
-          <NavLink to="/cargar-datos" className="sidebar__cargar-datos" title={isCollapsed ? 'Cargar datos' : undefined}>
-            <span>↑</span>
-            <span>Cargar datos</span>
-          </NavLink>
-
           <button
-            className={`sidebar__toggle ${isCollapsed ? 'active' : ''}`}
-            title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+            className={`sidebar__toggle ${isCollapsed ? "active" : ""}`}
+            title={isCollapsed ? "Expandir menú" : "Colapsar menú"}
             onClick={toggleSidebar}
           >
-            <img src={colapsarIcon} alt="Colapsar"/>
-            <span>Colapsar</span>
+            <img
+              src={isCollapsed ? abrirIcon : colapsarIcon}
+              alt={isCollapsed ? "Expandir" : "Colapsar"}
+            />
+            <span>{isCollapsed ? "Abrir" : "Cerrar"}</span>
           </button>
         </nav>
       </header>
