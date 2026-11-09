@@ -1551,3 +1551,170 @@
 .notfound-page h2 {
   font-size: clamp(22px, 3vw, 30px);
 }
+
+
+/* CONTENEDOR DE NOTIFICACIONES */
+.notifications-container {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+  z-index: 20;
+}
+
+/* CAMPANITA */
+.notification-bell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  padding: 8px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notification-bell:hover {
+  background: #e9eef3;
+}
+
+.notification-bell img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* CONTADOR ROJO */
+.notification-bell__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d93025;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid #F6F8FA;
+  z-index: 2;
+}
+
+/* PANEL DESPLEGABLE */
+.notification-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  max-height: 420px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #e1e6eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ENCABEZADO DEL PANEL */
+.notification-dropdown__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #e9eef3;
+}
+
+.notification-dropdown__header h3 {
+  margin: 0;
+  color: var(--azul-oscuro);
+  font-size: 16px;
+}
+
+.notification-dropdown__header span {
+  color: #687783;
+  font-size: 12px;
+}
+
+/* LISTADO */
+.notification-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* NOTIFICACIÓN INDIVIDUAL */
+.notification-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #edf0f2;
+  border-left: 4px solid #9aa8b5;
+}
+
+.notification-item[data-nivel="alto"] {
+  border-left-color: #d93025;
+}
+
+.notification-item[data-nivel="medio"] {
+  border-left-color: #e6a23c;
+}
+
+.notification-item[data-nivel="bajo"] {
+  border-left-color: #4285b4;
+}
+
+.notification-item__content strong {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--azul-oscuro);
+  font-size: 13px;
+}
+
+.notification-item__content p {
+  margin: 0 0 7px;
+  color: #354656;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.notification-item__content time {
+  color: #89949e;
+  font-size: 11px;
+}
+
+.notification-item button {
+  align-self: flex-start;
+  padding: 5px 9px;
+  border: none;
+  border-radius: 5px;
+  background: #edf3f8;
+  color: var(--azul-oscuro);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.notification-item button:hover {
+  background: #dce8f1;
+}
+
+/* NOTIFICACIONES LEÍDAS */
+.notification-item--read {
+  opacity: 0.65;
+}
+
+/* SIN NOTIFICACIONES */
+.notification-dropdown__empty {
+  padding: 20px;
+  margin: 0;
+  color: #687783;
+  text-align: center;
+  font-size: 13px;
+}
