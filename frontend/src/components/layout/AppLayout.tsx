@@ -1,6 +1,9 @@
 
 import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { notifications as initialNotifications } from "../../services/mock/notifications";
+import { NotificationBell } from "../notifications/NotificationBell";
+import { NotificationDropdown } from "../notifications/NotificationDropdown";
 import logo from "../../assets/icons/logo2.png";
 import inicioIcon from "../../assets/icons/inicio.png";
 import tendenciasIcon from "../../assets/icons/tendencias.png";
@@ -37,6 +40,23 @@ export function AppLayout() {
 
   // Estado del sidebar
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const [notifications, setNotifications] = useState(initialNotifications);
+const [notificationsOpen, setNotificationsOpen] = useState(false);
+
+const unreadCount = notifications.filter(
+  (notification) => !notification.leida
+).length;
+
+const markAsRead = (id: number) => {
+  setNotifications((prev) =>
+    prev.map((notification) =>
+      notification.id === id
+        ? { ...notification, leida: true }
+        : notification
+    )
+  );
+};
 
   const toggleSidebar = () => {
     setIsCollapsed((prev) => !prev);
@@ -98,8 +118,22 @@ export function AppLayout() {
       </header>
 
       <main className="app-content">
-        <Outlet />
-      </main>
+  <div className="notifications-container">
+    <NotificationBell
+      unreadCount={unreadCount}
+      onClick={() => setNotificationsOpen((prev) => !prev)}
+    />
+
+    {notificationsOpen && (
+      <NotificationDropdown
+        notifications={notifications}
+        onMarkAsRead={markAsRead}
+      />
+    )}
+  </div>
+
+  <Outlet />
+</main>
     </div>
   );
 }
