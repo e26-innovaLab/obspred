@@ -37,7 +37,7 @@ export function BrechasChart({ habilidades }: { habilidades: HabilidadComparada[
           tick={{ fontSize: 13 }}
         />
         <Tooltip
-          formatter={(value: number, name: string) => [`${value}`, name]}
+          formatter={(value, name) => [`${Number(value)}`, String(name ?? "")]}
           contentStyle={{ fontSize: 13 }}
         />
         <Legend wrapperStyle={{ fontSize: 13 }} />
