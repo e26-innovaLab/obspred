@@ -1,4 +1,12 @@
-export function FuentesTable() {
+import type { FuenteTrazable } from "../../../services/mock/trazabilidad";
+
+const ESTADO_LABEL: Record<FuenteTrazable["estado"], string> = {
+  activa: "Activa",
+  desactualizada: "Desactualizada",
+  "no-disponible": "No disponible",
+};
+
+export function FuentesTable({ fuentes }: { fuentes: FuenteTrazable[] }) {
   return (
     <table className="fuentes-table">
       <thead>

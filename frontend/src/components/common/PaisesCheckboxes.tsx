@@ -1,18 +1,6 @@
-import { PAISES } from "../../services/mock/catalogo";
-import type { Pais } from "../../types/kpi";
-import { AR, UY, CL } from "country-flag-icons/react/3x2";
-
-{
-  /* <AR title="Argentina" />
-<UY title="Uruguay" />
-<CL title="Chile" /> */
-}
-
-const BANDERAS = {
-  AR: AR,
-  UY: UY,
-  CL: CL,
-} as const;
+import { PAISES } from '../../services/mock/catalogo';
+import { SERIE_PAIS } from '../../styles/paletaMarca';
+import type { Pais } from '../../types/kpi';
 
 interface Props {
   seleccionados: Pais[];
@@ -27,26 +15,26 @@ export function PaisesCheckboxes({ seleccionados, onToggle }: Props) {
       <legend>Países</legend>
       {PAISES.map((p) => {
         const checked = seleccionados.includes(p.id);
-        const Bandera = BANDERAS[p.id];
         return (
           <label
             key={p.id}
             className="filtros-comparacion__pais"
+            style={{ '--color-pais': SERIE_PAIS[p.id].color } as React.CSSProperties}
           >
             <input
               type="checkbox"
               checked={checked}
               onChange={() => onToggle(p.id)}
+              className="filtros-comparacion__input-oculto"
             />
-
-            <Bandera
-              className="filtros-comparacion__bandera"
-              title={p.nombre}
-              aria-hidden="true"
+            <span
+              className="filtros-comparacion__muestra"
+              data-checked={checked}
+              aria-hidden
             />
-
             {p.nombre}
-          </label>)
+          </label>
+        );
       })}
     </fieldset>
   );

@@ -168,7 +168,7 @@ class WorldBankConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            tasks: list[Any] = []
+            tasks = []
             for code in target_indicator_codes:
                 indicator_meta = self.INDICATOR_MAPPINGS[code]
                 url = (
@@ -336,21 +336,13 @@ class WorldBankConnector(IExternalDataConnector):
         }
 
         resolved: list[str] = []
-        seen: set[str] = set()
         for req in requested:
             if req in self.INDICATOR_MAPPINGS:
-                code = req
+                resolved.append(req)
             elif req in slug_to_code:
-                code = slug_to_code[req]
+                resolved.append(slug_to_code[req])
             else:
                 logger.warning("Indicador '%s' no reconocido en World Bank.", req)
-                continue
-
-            if code in seen:
-                continue
-
-            seen.add(code)
-            resolved.append(code)
 
         return resolved or list(self.INDICATOR_MAPPINGS.keys())
 

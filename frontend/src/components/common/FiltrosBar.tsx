@@ -3,7 +3,6 @@ import { PAISES, SECTORES, PERIODOS, ocupacionesPorSector } from '../../services
 import type { Pais } from '../../types/kpi';
 import { PaisesCheckboxes } from './PaisesCheckboxes';
 
-
 interface Props {
   // Cada vista muestra solo los filtros que sus KPIs necesitan
   // (principio del roadmap: "los filtros de Sector y Ocupación se activan
