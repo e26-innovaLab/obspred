@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import logo from "../../assets/icons/logo2.png";
@@ -9,8 +10,10 @@ import compararIcon from "../../assets/icons/comparar.png";
 import ocupacionesIcon from "../../assets/icons/ocupaciones.png";
 import colapsarIcon from "../../assets/icons/colapsar.png";
 import abrirIcon from "../../assets/icons/abrir.png";
-import uploadIcon from "../../assets/icons/upload.png"
+import uploadIcon from "../../assets/icons/upload.png";
+import miInformeIcon from "../../assets/icons/mi-informe.svg";
 
+// Las etiquetas siguen el Figma ("Inicio") y van con inicial mayúscula.
 const NAV_ITEMS = [
   { to: "/", label: "Inicio", end: true, icon: inicioIcon },
   { to: "/ocupaciones", label: "Ocupaciones", icon: ocupacionesIcon },
@@ -19,13 +22,20 @@ const NAV_ITEMS = [
   { to: "/brechas", label: "Brechas de habilidades", icon: breachasIcon },
   { to: "/trazabilidad", label: "Trazabilidad y fuentes", icon: fuentesIcon },
   { to: "/cargar-datos", label: "Cargar Datos", icon: uploadIcon },
+  { to: "/mi-informe", label: "Mi informe", icon: miInformeIcon },
 ];
 
+// En computadora el menú es una barra lateral fija. En celular y tablet
+// (≤ 900px) pasa a una barra superior con botón "Menú" que despliega los links.
 export function AppLayout() {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const { pathname } = useLocation();
+
+  // Al navegar se cierra el menú: se guarda la ruta en la que se abrió.
   const [rutaDelMenu, setRutaDelMenu] = useState(pathname);
   const abierto = menuAbierto && rutaDelMenu === pathname;
+
+  // Estado del sidebar
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const toggleSidebar = () => {
@@ -50,6 +60,7 @@ export function AppLayout() {
             <span aria-hidden>{abierto ? "✕" : "☰"}</span> Menú
           </button>
         </div>
+
         <nav
           id="menu-principal"
           data-abierto={abierto}
@@ -61,6 +72,11 @@ export function AppLayout() {
               to={item.to}
               end={item.end}
               title={isCollapsed ? item.label : undefined}
+              className={
+                item.to === "/cargar-datos"
+                  ? "sidebar__cargar-datos"
+                  : undefined
+              }
             >
               <img src={item.icon} alt="" />
               <span>{item.label}</span>
@@ -80,6 +96,7 @@ export function AppLayout() {
           </button>
         </nav>
       </header>
+
       <main className="app-content">
         <Outlet />
       </main>

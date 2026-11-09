@@ -16,6 +16,9 @@ const TrazabilidadPage = lazy(() =>
 const CargarDatosPage = lazy(() =>
   import('./features/cargar-datos/CargarDatosPage').then((m) => ({ default: m.CargarDatosPage })),
 );
+const MiDashboardPage = lazy(() =>
+  import('./features/mi-dashboard/MiDashboardPage').then((m) => ({ default: m.MiDashboardPage })),
+);
 
 // Componente helper para envolver las rutas hijas en Suspense y mostrar una pantalla de carga mientras se descargan los módulos.
 function conSuspense(element: React.ReactNode) {
@@ -39,6 +42,7 @@ export const router = createBrowserRouter([
       { path: 'trazabilidad', element: conSuspense(<TrazabilidadPage />) },
       { path: 'detail', element: conSuspense(<DetailPage />) },
       { path: 'cargar-datos', element: conSuspense(<CargarDatosPage />) },
+      { path: 'mi-informe', element: conSuspense(<MiDashboardPage />) },
 
       // Ruta de captura (catch-all) para páginas no encontradas (404)
       { path: '*', element: conSuspense(<NotFoundPage />) },
