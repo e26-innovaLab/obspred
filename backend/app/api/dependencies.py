@@ -40,6 +40,7 @@ from app.infrastructure.persistence.repositories.fuente_repository import (
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
+from app.application.services.alertas_service import AlertaService
 
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
@@ -286,3 +287,10 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_alert_service(
+        session: AsyncSession = Depends(get_db_session),
+) -> AlertaService:
+    indicador_repository = SqlAlchemyIndicadorRepository(session=session)
+    return AlertaService(indicador_repository=indicador_repository)

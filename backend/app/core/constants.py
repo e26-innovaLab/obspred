@@ -215,6 +215,14 @@ class FuenteEstado(StrEnum):
 
 
 # ==============================================================================
+# 9. Constantes de Connfiguracion Umbral para alertas
+# ==============================================================================
+
+UMBRAL_ALERTA_MEDIO: Final[float] = 5.0  # Umbral de variación porcentual para alerta media
+UMBRAL_ALERTA_ALTO: Final[float] = 8.0  # Umbral de variación porcentual para alerta alta
+
+
+# ==============================================================================
 # Exportaciones Públicas
 # ==============================================================================
 
