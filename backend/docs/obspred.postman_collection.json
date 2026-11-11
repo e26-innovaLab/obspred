@@ -853,6 +853,11 @@
                   "key": "hasta",
                   "value": "",
                   "description": "Período hasta"
+                },
+                {
+                  "key": "trimestre",
+                  "value": "",
+                  "description": "Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4)"
                 }
               ]
             }

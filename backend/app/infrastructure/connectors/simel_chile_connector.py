@@ -181,16 +181,10 @@ class SimelChileConnector(IExternalDataConnector):
     TRIMESTRE_MAPPINGS: Final[dict[str, str]] = {
         "ene - mar": "Q1",
         "ene-mar": "Q1",
-        "feb - abr": "Q1-Q2",
-        "mar - may": "Q2",
         "abr - jun": "Q2",
         "abr-jun": "Q2",
-        "may - jul": "Q2-Q3",
-        "jun - ago": "Q3",
         "jul - sep": "Q3",
         "jul-sep": "Q3",
-        "ago - oct": "Q3-Q4",
-        "sep - nov": "Q4",
         "oct - dic": "Q4",
         "oct-dic": "Q4",
     }
@@ -489,7 +483,9 @@ class SimelChileConnector(IExternalDataConnector):
             raw_time = (row.get("TIME_PERIOD") or "").strip()
             if not raw_time:
                 continue
-            periodo = self._normalize_sdmx_time_period(raw_time)
+            periodo, trimestre = self._parse_sdmx_time_and_quarter(raw_time)
+            if not periodo:
+                continue
 
             raw_ind = (row.get("INDICADOR") or "").strip()
             indicador_slug = (
@@ -528,6 +524,7 @@ class SimelChileConnector(IExternalDataConnector):
                     ocupacion=None,
                     indicador=indicador_slug,
                     periodo=periodo,
+                    trimestre=trimestre,
                     valor=parsed_val,
                     tipo=TipoIndicador.OBSERVADO,
                     fuente=self.DEFAULT_SOURCE_NAME,
@@ -538,10 +535,25 @@ class SimelChileConnector(IExternalDataConnector):
 
         return records
 
-    def _normalize_sdmx_time_period(self, time_str: str) -> str:
-        """Traduce formatos temporales SDMX a notación estándar de períodos.
+    @staticmethod
+    def _extract_trimestre(periodo: str | None) -> str | None:
+        """Extrae la notación de trimestre (ej. 'Q1', 'Q2') si existe en el período."""
+        if not periodo:
+            return None
+        match = re.search(r"Q([1-4])", periodo, re.IGNORECASE)
+        return f"Q{match.group(1)}" if match else None
 
-        Ejemplo: '2024-03-01/P3M' (trimestre móvil terminado en marzo) -> '2024-Q1'.
+    def _parse_sdmx_time_and_quarter(
+        self, time_str: str
+    ) -> tuple[str | None, str | None]:
+        """Traduce formatos temporales SDMX a período (año) y trimestre.
+
+        Solo mapea los trimestres cerrados oficiales del calendario:
+        - Mes 03 (Ene-Mar) -> ('YYYY', 'Q1')
+        - Mes 06 (Abr-Jun) -> ('YYYY', 'Q2')
+        - Mes 09 (Jul-Sep) -> ('YYYY', 'Q3')
+        - Mes 12 (Oct-Dic) -> ('YYYY', 'Q4')
+        Los trimestres móviles intermedios retornan (None, None).
         """
         clean = time_str.strip()
         if "/P3M" in clean or "/P1M" in clean:
@@ -550,10 +562,15 @@ class SimelChileConnector(IExternalDataConnector):
             if len(parts) >= 2:
                 year = parts[0]
                 month = int(parts[1])
-                # Meses 1 a 3 -> Q1, 4 a 6 -> Q2, 7 a 9 -> Q3, 10 a 12 -> Q4
-                quarter = (month - 1) // 3 + 1
-                return f"{year}-Q{quarter}"
-        return clean
+                quarter_map = {3: "Q1", 6: "Q2", 9: "Q3", 12: "Q4"}
+                if month in quarter_map:
+                    return year, quarter_map[month]
+                return None, None
+        return clean, self._extract_trimestre(clean)
+
+    def _normalize_sdmx_time_period(self, time_str: str) -> str | None:
+        p, _ = self._parse_sdmx_time_and_quarter(time_str)
+        return p
 
     def _decode_content(self, content: str | bytes, filename: str) -> str:
         """Decodifica el contenido binario probando codificaciones comunes."""
@@ -641,7 +658,7 @@ class SimelChileConnector(IExternalDataConnector):
         raw_periodo = (row.get(col_indices["periodo"]) or "").strip()
         if not raw_periodo:
             return None
-        periodo = self._normalize_period(raw_periodo)
+        periodo, trimestre = self._parse_csv_period_and_quarter(raw_periodo)
 
         raw_indicador = (
             row.get(col_indices.get("indicador", "")) or "indicador_laboral"
@@ -676,6 +693,7 @@ class SimelChileConnector(IExternalDataConnector):
             ocupacion=raw_ocupacion,
             indicador=indicador_slug,
             periodo=periodo,
+            trimestre=trimestre,
             valor=parsed_val,
             tipo=TipoIndicador.OBSERVADO,
             fuente=self.DEFAULT_SOURCE_NAME,
@@ -699,19 +717,25 @@ class SimelChileConnector(IExternalDataConnector):
         except ValueError:
             return None
 
-    def _normalize_period(self, period_str: str) -> str:
-        """Normaliza descripciones de trimestres móviles o años."""
+    def _parse_csv_period_and_quarter(self, period_str: str) -> tuple[str, str | None]:
+        """Normaliza descripciones de períodos en CSV separando año y trimestre."""
         clean = period_str.strip()
         lower = clean.lower()
 
         match_year = re.search(r"\b(20\d\d)\b", clean)
-        year = match_year.group(1) if match_year else ""
+        year = match_year.group(1) if match_year else clean
 
         for key, q in self.TRIMESTRE_MAPPINGS.items():
             if key in lower:
-                return f"{year}-{q}" if year else q
+                return year, q
 
-        return clean
+        match_q = re.search(r"Q([1-4])", clean, re.IGNORECASE)
+        trimestre = f"Q{match_q.group(1)}" if match_q else None
+        return year, trimestre
+
+    def _normalize_period(self, period_str: str) -> str:
+        p, _ = self._parse_csv_period_and_quarter(period_str)
+        return p
 
     def _normalize_indicator_slug(self, raw_indicador: str) -> str:
         """Convierte denominaciones de indicadores a slugs canónicos."""
