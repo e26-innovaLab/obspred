@@ -1,16 +1,15 @@
 from collections import defaultdict
-from app.domain.interfaces.indicador_repository import IIndicadorRepository
+
 from app.api.v1.schemas.alertas_schema import AlertaItemDto
-from app.core.constants import (
-    UMBRAL_ALERTA_ALTO,
-    UMBRAL_ALERTA_MEDIO
-)
+from app.core.constants import UMBRAL_ALERTA_ALTO, UMBRAL_ALERTA_MEDIO
+from app.domain.interfaces.indicador_repository import IIndicadorRepository
+
 
 class AlertaService:
     def __init__(self, indicador_repository: IIndicadorRepository) -> None:
         self._indicador_repository = indicador_repository
 
-    
+
     async def get_alertas (
             self,
             pais: str | None = None,
@@ -66,7 +65,7 @@ class AlertaService:
             if anterior.valor == 0:
                 continue
 
-            #calcular variaciones 
+            #calcular variaciones
 
             variacion_pct = (
                 (actual.valor - anterior.valor) /  abs (anterior.valor)
@@ -90,7 +89,7 @@ class AlertaService:
                 continue
 
 
-            #Generar titulo y descripcion 
+            #Generar titulo y descripcion
             titulo,descripcion = self._generar_titulo_descripcion(
                 indicador=actual.indicador,
                 variacion_pct=variacion_pct,
@@ -112,7 +111,7 @@ class AlertaService:
                     descripcion = descripcion
                 )
         return alertas
-    
+
     @staticmethod
     def _clasificar_tipo(indicador: str) -> str:
         """Clasifica el tipo de alerta según el indicador."""
@@ -130,9 +129,9 @@ class AlertaService:
         )
         if any(palabras in nombre for palabras in indicadores_empleo):
             return "variacion_significativa"
-        
+
         return "Variacion_significativa"
-            
+
     @staticmethod
     def _generar_titulo_descripcion(
         indicador: str,
@@ -166,6 +165,6 @@ class AlertaService:
                 f"Incremento en el indicador {nombre} en el período {periodo}."
             )
         return titulo, descripcion
-    
+
 
 

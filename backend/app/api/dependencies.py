@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.alertas_service import AlertaService
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.application.services.fuentes_service import FuenteService
@@ -40,7 +41,6 @@ from app.infrastructure.persistence.repositories.fuente_repository import (
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
 )
-from app.application.services.alertas_service import AlertaService
 
 
 async def provide_db_session() -> AsyncGenerator[AsyncSession, None]:
