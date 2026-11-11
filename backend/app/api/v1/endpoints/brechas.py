@@ -1,7 +1,11 @@
+from typing import Annotated
 """Controlador y endpoints para el análisis de brechas formativas y de habilidades."""
 
 from fastapi import APIRouter, Path, Query, status
 
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, status
+
+from app.api.dependencies import provide_brecha_service
 from app.api.v1.schemas.brechas_schema import (
     BrechasDataSchema,
     BrechasResponseSchema,
@@ -9,6 +13,9 @@ from app.api.v1.schemas.brechas_schema import (
     MetadatosFuente,
 )
 from app.api.v1.schemas.response_schema import create_success_response
+from app.application.services.brecha_service import BrechaService
+from app.core.constants import BRECHAS_ROUTE
+from app.domain.exceptions.brecha_exceptions import OcupacionNoEncontradaError
 from app.core.constants import BRECHAS_ROUTE, OPENAPI_TAG_BRECHAS
 
 brechas_router = APIRouter(
@@ -67,74 +74,76 @@ async def get_brechas_generales(
     ),
 )
 async def get_brechas_por_ocupacion(
-    ocupacion: str = Path(
-        ...,
-        description="Identificador o nombre normalizado de la ocupación",
-        examples=["desarrollador_software"],
-    ),
-    pais: str = Query(
-        "ARG",
-        description="Código ISO del país (ARG, URY, CHL)",
-        examples=["ARG"],
-    ),
-    sector: str | None = Query(
-        None,
-        description="Sector económico para acotar el análisis",
-        examples=["Tecnología"],
-    ),
+    ocupacion: Annotated[
+        str,
+        Path(
+            ...,
+            description="Identificador o nombre normalizado de la ocupación",
+            examples=["desarrollador_software"],
+        ),
+    ],
+    service: Annotated[
+        BrechaService,
+        Depends(provide_brecha_service),
+    ],
+    pais: Annotated[
+        str,
+        Query(
+            description="Código ISO del país (ARG, URY, CHL)",
+            examples=["ARG"],
+        ),
+    ] = "ARG",
+    sector: Annotated[
+        str | None,
+        Query(
+            description="Sector económico para acotar el análisis",
+            examples=["Tecnología"],
+        ),
+    ] = None,
 ) -> BrechasResponseSchema:
-    """Procesa la consulta de brechas para una ocupación específica.
+    try:
+        # 1. Obtenemos las brechas (DTOs) desde el servicio de aplicación
+        habilidades_dtos = await service.get_by_ocupation(ocupacion)
 
-    Args:
-        ocupacion: Identificador o denominación de la ocupación analizada.
-        pais: Código ISO 3166-1 alpha-3 del país.
-        sector: Filtro opcional por sector económico.
+        # 2. Mapeamos los DTOs de dominio a los esquemas de Pydantic de la API
+        habilidades_items = [
+            HabilidadBrechaItem(
+                habilidad=dto.habilidad,
+                demanda=dto.demanda,
+                oferta_formativa=dto.oferta_formativa,
+                emergente=dto.emergente,
+                brecha=dto.brecha,
+            )
+            for dto in habilidades_dtos
+        ]
 
-    Returns:
-        BrechasResponseSchema: Envoltorio ApiResponse con el detalle de brechas
-            y metadatos de fuentes.
-    """
-    # TODO [backend]: Conectar con BrechasService / Repositorio de habilidades:
-    # 1. Inyectar servicio de brechas formativas.
-    # 2. Filtrar habilidades asociadas a la ocupación dada.
-    habilidades_mock = [
-        HabilidadBrechaItem(
-            habilidad="Alfabetización digital",
-            demanda=95.0,
-            ofertaFormativa=60.0,
-            emergente=False,
-        ),
-        HabilidadBrechaItem(
-            habilidad="Trabajo en equipo remoto",
-            demanda=92.0,
-            ofertaFormativa=28.0,
-            emergente=True,
-        ),
-        HabilidadBrechaItem(
-            habilidad="Pensamiento analítico",
-            demanda=90.0,
-            ofertaFormativa=40.0,
-            emergente=False,
-        ),
-    ]
+        # 3. Armamos los metadatos de la fuente
+        metadatos = MetadatosFuente(
+            fuente="SENCE SABE / ESCO",
+            fecha_actualizacion="2026-09-30",
+            metodologia=(
+                "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+            ),
+        )
 
-    metadatos = MetadatosFuente(
-        fuente="SENCE SABE / ESCO",
-        fecha_actualizacion="2026-09-30",
-        metodologia=(
-            "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
-        ),
-    )
+        # 4. Construimos el esquema con los ítems mapeados
+        data = BrechasDataSchema(
+            pais=pais,
+            sector=sector if sector else "Tecnología",
+            ocupacion=ocupacion,
+            habilidades=habilidades_items,
+            metadatos=metadatos,
+        )
 
-    data = BrechasDataSchema(
-        pais=pais,
-        sector=sector if sector else "Tecnología",
-        ocupacion=ocupacion,
-        habilidades=habilidades_mock,
-        metadatos=metadatos,
-    )
-    return create_success_response(
-        data=data,
-        message="Brechas de habilidades obtenidas con éxito.",
-        status_code=status.HTTP_200_OK,
-    )
+        # 5. Retornamos la respuesta estandarizada
+        return create_success_response(
+            data=data,
+            message="Brechas de habilidades obtenidas con éxito.",
+            status_code=status.HTTP_200_OK
+        )
+
+    except OcupacionNoEncontradaError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        ) from e

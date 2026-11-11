@@ -48,7 +48,7 @@ class HabilidadBrechaItem(BaseModel):
     """Representa una barra del gráfico Demanda vs Oferta formativa."""
 
     model_config = ConfigDict(
-        opulate_by_name=True,
+        populate_by_name=True,
         frozen=True,
     )
 
@@ -68,6 +68,11 @@ class HabilidadBrechaItem(BaseModel):
         False,
         alias="emergente",
         description="Indica si destaca en la lista de habilidades emergentes",
+    )
+    brecha: float = Field(
+        ...,
+        description="Diferencia neta calculada entre demanda y oferta formativa",
+        examples=[64.0],
     )
 
 
