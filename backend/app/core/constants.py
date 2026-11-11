@@ -134,6 +134,7 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+INGESTA_SYNC_DATOS_ARGENTINA_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/datos-argentina"
 INGESTA_SYNC_SIMEL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/simel-chile"
 INGESTA_UPLOAD_SIMEL_ROUTE: Final[str] = f"{INGESTA_UPLOAD_ROUTE}/simel"
 METRICAS_ROUTE: Final[str] = "/metricas"
@@ -187,6 +188,10 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 
+# Constantes de configuración para conector de datos argentina
+DEFAULT_DATOS_ARGENTINA_SOURCE_NAME: Final[str] = "Datos Argentina"
+DEFAULT_DATOS_ARGENTINA_BASE_URL: Final[str] = "https://apis.datos.gob.ar/series/api"
+DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS: Final[float] = 30.0
 # Constantes de configuración para SIMEL (Sistema de Información Laboral - Chile)
 DEFAULT_SIMEL_CHILE_SOURCE: Final[str] = "SIMEL - INE Chile"
 DEFAULT_SIMEL_CHILE_BASE_URL: Final[str] = "https://www.simel.gob.cl"

@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.dependencies import (
     provide_bcentral_chile_sync_service,
+    provide_datos_argentina_sync_service,
     provide_file_upload_service,
     provide_ilostat_sync_service,
     provide_indicador_repository,
@@ -17,6 +18,7 @@ from app.api.dependencies import (
 from app.api.v1.schemas.ingesta_schema import (
     FileUploadData,
     FileUploadResponseSchema,
+    SyncDatosArgentinaRequestSchema,
     SyncExternalDataRequestSchema,
     SyncExternalDataResponseData,
     SyncExternalDataResponseSchema,
@@ -33,6 +35,7 @@ from app.core.constants import (
     DEFAULT_SIMEL_CHILE_SOURCE,
     INGESTA_ROUTE,
     INGESTA_SYNC_BCENTRAL_CHILE_ROUTE,
+    INGESTA_SYNC_DATOS_ARGENTINA_ROUTE,
     INGESTA_SYNC_ILOSTAT_ROUTE,
     INGESTA_SYNC_SIMEL_CHILE_ROUTE,
     INGESTA_SYNC_WORLD_BANK_ROUTE,
@@ -453,6 +456,13 @@ async def sync_bcentral_chile_indicators(
 
 
 @ingesta_router.post(
+    INGESTA_SYNC_DATOS_ARGENTINA_ROUTE,
+    response_model=SyncExternalDataResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Sincronizar indicadores oficiales desde Datos Argentina",
+    description=(
+        "Ejecuta extracción y persistencia idempotente de indicadores "
+        "oficiales desde la API de Series de Tiempo de Datos Argentina."
     INGESTA_SYNC_SIMEL_CHILE_ROUTE,
     response_model=SyncExternalDataResponseSchema,
     status_code=status.HTTP_200_OK,
@@ -474,6 +484,7 @@ async def sync_bcentral_chile_indicators(
             "model": ApiResponse,
         },
         status.HTTP_502_BAD_GATEWAY: {
+            "description": "Error al comunicarse con la API externa.",
             "description": (
                 "Acceso desatendido bloqueado por Huawei Cloud WAF (HTTP 418) "
                 "o fallo de comunicación con la plataforma remota."
@@ -482,6 +493,15 @@ async def sync_bcentral_chile_indicators(
         },
     },
 )
+async def sync_datos_argentina_indicators(
+    sync_service: Annotated[
+        ExternalSyncService,
+        Depends(provide_datos_argentina_sync_service),
+    ],
+    payload: SyncDatosArgentinaRequestSchema | None = None,
+) -> SyncExternalDataResponseSchema | JSONResponse:
+    """Sincroniza indicadores oficiales desde Datos Argentina."""
+
 async def sync_simel_chile_indicators(
     sync_service: Annotated[
         ExternalSyncService,
@@ -504,6 +524,9 @@ async def sync_simel_chile_indicators(
 
     if result_dto.status == SyncStatus.FAILED:
         err_msg = (
+            result_dto.error_message or "Ocurrió un error durante la sincronización."
+        )
+
             result_dto.error_message
             or "Ocurrió un error inesperado durante la sincronización."
         )
@@ -516,16 +539,21 @@ async def sync_simel_chile_indicators(
                 "5432",
             ]
         )
+
         http_status = (
             status.HTTP_500_INTERNAL_SERVER_ERROR
             if is_db_err
             else status.HTTP_502_BAD_GATEWAY
         )
+
         err_code = (
             ApiErrorCode.DATABASE_CONNECTION_ERROR
             if is_db_err
             else ApiErrorCode.EXTERNAL_SERVICE_ERROR
         )
+
+        error_response = create_error_response(
+            message=(f"Fallo en la sincronización de '{result_dto.source}'."),
         error_response = create_error_response(
             message=f"Fallo en la sincronización de '{result_dto.source}'.",
             status_code=http_status,
@@ -537,6 +565,7 @@ async def sync_simel_chile_indicators(
                 )
             ],
         )
+
         return JSONResponse(
             status_code=http_status,
             content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
@@ -553,6 +582,11 @@ async def sync_simel_chile_indicators(
         error_message=result_dto.error_message,
     )
 
+    return create_success_response(
+        data=response_data,
+        message=(f"Sincronización de '{result_dto.source}' exitosa."),
+        status_code=status.HTTP_200_OK,
+    )
     msg = f"Sincronización de '{result_dto.source}' exitosa."
     return create_success_response(
         data=response_data,
