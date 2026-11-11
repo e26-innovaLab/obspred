@@ -12,6 +12,10 @@ from app.domain.exceptions.indice_empleabilidad import (
     InsufficientDataException,
     InvalidOccupationException,
 )
+from app.domain.exceptions.simel_exceptions import (
+    InvalidSimelCsvException,
+    SimelWafBlockedException,
+)
 
 __all__ = [
     "DomainException",
@@ -23,4 +27,6 @@ __all__ = [
     "InvalidFileContentException",
     "InvalidFileExtensionException",
     "InvalidOccupationException",
+    "InvalidSimelCsvException",
+    "SimelWafBlockedException",
 ]
