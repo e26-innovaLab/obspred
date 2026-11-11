@@ -1,19 +1,22 @@
 import asyncio
+import logging
 
 from app.infrastructure.connectors.datos_argentina_connector import (
     DatosArgentinaConnector,
 )
 
+logger = logging.getLogger(__name__)
+
 
 async def main():
     connector = DatosArgentinaConnector()
 
-    print("\n--- 1. PROBANDO CONEXIÓN ---")
+    logger.info("--- 1. PROBANDO CONEXIÓN ---")
 
     health = await connector.check_health()
-    print(f"API disponible: {health}")
+    logger.info("API disponible: %s", health)
 
-    print("\n--- 2. BUSCANDO SERIES ---")
+    logger.info("--- 2. BUSCANDO SERIES ---")
 
     try:
         result = await connector.search_series(
@@ -21,25 +24,37 @@ async def main():
             limit=5,
         )
 
-        print("Respuesta de la API:")
-        print(result)
+        logger.info("Respuesta de la API:")
+        logger.info("%s", result)
 
-    except Exception as exc:
-        print(f"Error en la búsqueda: {exc}")
+    except Exception:
+        logger.exception("Error en la búsqueda")
 
-    print("\n--- 3. PROBANDO FETCH ---")
-    records = await connector.fetch_indicators(
-        paises=["ARG"],
-        indicadores=list(DatosArgentinaConnector.INDICATOR_MAPPINGS.keys()),
-        periodo_desde="2018-01-01",
-        periodo_hasta="2019-01-01",
-    )
+    logger.info("--- 3. PROBANDO FETCH ---")
 
-    print(f"Registros obtenidos: {len(records)}")
+    try:
+        records = await connector.fetch_indicators(
+            paises=["ARG"],
+            indicadores=list(
+                DatosArgentinaConnector.INDICATOR_MAPPINGS.keys()
+            ),
+            periodo_desde="2018-01-01",
+            periodo_hasta="2019-01-01",
+        )
 
-    for record in records:
-        print(record)
+        logger.info("Registros obtenidos: %s", len(records))
+
+        for record in records:
+            logger.info("%s", record)
+
+    except Exception:
+        logger.exception("Error al obtener los indicadores")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+
     asyncio.run(main())
