@@ -138,7 +138,11 @@ class AlertaService:
         variacion_pct: float,
         periodo: str
     ) -> tuple[str, str]:
-        """Genera el título y la descripción de la alerta según el indicador y la variación."""
+        """
+        Genera el título y la descripción de la alerta según el indicador
+        y la variación.
+
+        """
         nombres = {
              "tasa_desempleo": "Desempleo",
             "tasa_desocupacion_total": "Desempleo",

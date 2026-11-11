@@ -112,7 +112,12 @@ async def get_alertas(
         resultado = [a for a in resultado if a.pais == pais_norm] ]"""
 
 
-    resultado = await alert_service.get_alertas(pais=pais, indicador=indicador, sector=sector, tipo=tipo)
+    resultado = await alert_service.get_alertas(
+        pais=pais,
+        indicador=indicador,
+        sector=sector,
+        tipo=tipo
+        )
 
     return create_success_response(
         data=AlertasDataSchema(alertas=resultado),
