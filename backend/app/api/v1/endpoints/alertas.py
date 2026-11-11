@@ -4,12 +4,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query, status
 
+from app.api.dependencies import Depends, provide_alert_service
 from app.api.v1.schemas.alertas_schema import (
-    AlertaItemDto,
     AlertasDataSchema,
     AlertasResponseSchema,
 )
 from app.api.v1.schemas.response_schema import create_success_response
+from app.application.services.alertas_service import AlertaService
 from app.core.constants import ALERTAS_ROUTE, OPENAPI_TAG_ALERTAS
 
 alertas_router = APIRouter(
@@ -38,6 +39,7 @@ async def get_alertas(
         str | None, Query(description="Filtrar por país ISO-3 (ej. 'ARG')")
     ] = None,
     sector: Annotated[str | None, Query(description="Filtrar por sector")] = None,
+    alert_service: AlertaService = Depends(provide_alert_service)
 ) -> AlertasResponseSchema:
     """Procesa la consulta de alertas estadísticas.
 
@@ -55,7 +57,8 @@ async def get_alertas(
     # 1. Inyectar servicio de alertas o cálculo de variaciones interperíodo.
     # 2. Aplicar umbrales fijados (ej. >5% variación = medio, >8% = alto).
     # 3. Filtrar por tipo de alerta solicitado y país.
-    alertas_mock = [
+    #
+    """ alertas_mock = [
         AlertaItemDto(
             id="puestos_demandados-ARG-2023-Q4",
             pais="ARG",
@@ -106,7 +109,15 @@ async def get_alertas(
         resultado = [a for a in resultado if a.indicador == indicador]
     if pais:
         pais_norm = pais.strip().upper()
-        resultado = [a for a in resultado if a.pais == pais_norm]
+        resultado = [a for a in resultado if a.pais == pais_norm] ]"""
+
+
+    resultado = await alert_service.get_alertas(
+        pais=pais,
+        indicador=indicador,
+        sector=sector,
+        tipo=tipo
+        )
 
     return create_success_response(
         data=AlertasDataSchema(alertas=resultado),

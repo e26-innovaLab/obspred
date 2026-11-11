@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.alertas_service import AlertaService
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.application.services.fuentes_service import FuenteService
@@ -286,3 +287,10 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_alert_service(
+        session: AsyncSession = Depends(get_db_session),
+) -> AlertaService:
+    indicador_repository = SqlAlchemyIndicadorRepository(session=session)
+    return AlertaService(indicador_repository=indicador_repository)
