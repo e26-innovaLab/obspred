@@ -134,6 +134,7 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+INGESTA_SYNC_ESCO_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/esco"
 INGESTA_SYNC_DATOS_ARGENTINA_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/datos-argentina"
 INGESTA_SYNC_SIMEL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/simel-chile"
 INGESTA_UPLOAD_SIMEL_ROUTE: Final[str] = f"{INGESTA_UPLOAD_ROUTE}/simel"
@@ -187,6 +188,11 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
     "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para conector ESCO
+DEFAULT_ESCO_BASE_URL: Final[str] = "https://ec.europa.eu/esco/api/search"
+DEFAULT_ESCO_SOURCE: Final[str] = "ESCO"
+DEFAULT_ESCO_TIMEOUT_SECONDS: Final[float] = 30.0
 
 # Constantes de configuración para conector de datos argentina
 DEFAULT_DATOS_ARGENTINA_SOURCE_NAME: Final[str] = "Datos Argentina"
@@ -273,6 +279,8 @@ __all__ = [
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
+    "INGESTA_SYNC_DATOS_ARGENTINA_ROUTE",
+    "INGESTA_SYNC_ESCO_ROUTE",
     "INGESTA_SYNC_SIMEL_CHILE_ROUTE",
     "INGESTA_UPLOAD_SIMEL_ROUTE",
     # OpenAPI Tags
@@ -304,6 +312,9 @@ __all__ = [
     "DEFAULT_BCENTRAL_CHILE_SOURCE",
     "DEFAULT_BCENTRAL_CHILE_BASE_URL",
     "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
+    "DEFAULT_ESCO_SOURCE",
+    "DEFAULT_ESCO_BASE_URL",
+    "DEFAULT_ESCO_TIMEOUT_SECONDS",
     "DEFAULT_SIMEL_CHILE_SOURCE",
     "DEFAULT_SIMEL_CHILE_BASE_URL",
     "DEFAULT_SIMEL_SDMX_BASE_URL",

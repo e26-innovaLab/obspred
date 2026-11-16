@@ -89,6 +89,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
                 existing.tipo = record.tipo
                 existing.trimestre = record.trimestre
                 existing.fecha_actualizacion = record.fecha_actualizacion
+                existing.detalles = record.detalles
                 existing.updated_at = now_utc
             else:
                 new_model = IndicadorModel(
@@ -102,6 +103,7 @@ class SqlAlchemyIndicadorRepository(IIndicadorRepository):
                     tipo=record.tipo,
                     fuente=record.fuente,
                     fecha_actualizacion=record.fecha_actualizacion,
+                    detalles=record.detalles,
                     created_at=now_utc,
                 )
                 self._session.add(new_model)
