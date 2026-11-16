@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from app.api.dependencies import provide_fuente_service
 from app.api.v1.schemas.fuentes_schema import (
     FuenteCreateSchema,
+    FuenteItemSchema,
     FuenteResponseSchema,
     FuentesResponseSchema,
 )
@@ -27,17 +28,12 @@ async def get_all_fuentes(
     """
     Obtiene todas las fuentes disponibles en el sistema.
     """
-    try:
-        fuentes = await service.get_all_fuentes()
-        response_meta = ResponseMeta(
-            status_code=status.HTTP_200_OK, message="Fuentes obtenidas con éxito."
-        )
-        return create_success_response(data=fuentes, meta=response_meta)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al obtener las fuentes: {str(e)}",
-        ) from e
+
+    fuentes = await service.get_all_fuentes()
+    response_meta = ResponseMeta(
+        status_code=status.HTTP_200_OK, message="Fuentes obtenidas con éxito."
+    )
+    return create_success_response(data=fuentes, meta=response_meta)
 
 
 @fuentes_router.get(
@@ -52,24 +48,17 @@ async def get_fuente_by_id(
     """
     Obtiene una fuente específica por su ID.
     """
-    try:
-        fuente = await service.get_fuente_by_id(fuente_id)
-        if fuente is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Fuente con ID {fuente_id} no encontrada.",
-            )
-        response_meta = ResponseMeta(
-            status_code=status.HTTP_200_OK, message="Fuente obtenida con éxito."
-        )
-        return create_success_response(data=fuente, meta=response_meta)
-    except HTTPException:
-        raise
-    except Exception as e:
+
+    fuente = await service.get_fuente_by_id(fuente_id)
+    if fuente is None:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al obtener la fuente: {str(e)}",
-        ) from e
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Fuente con ID {fuente_id} no encontrada.",
+        )
+    response_meta = ResponseMeta(
+        status_code=status.HTTP_200_OK, message="Fuente obtenida con éxito."
+    )
+    return create_success_response(data=fuente, meta=response_meta)
 
 
 @fuentes_router.get(
@@ -85,17 +74,11 @@ async def get_fuentes_by_estado(
     """
     Obtiene todas las fuentes que coinciden con un estado específico.
     """
-    try:
-        fuentes = await service.get_fuentes_by_estado(estado)
-        response_meta = ResponseMeta(
-            status_code=status.HTTP_200_OK, message="Fuentes obtenidas con éxito."
-        )
-        return create_success_response(data=fuentes, meta=response_meta)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al obtener las fuentes por estado: {str(e)}",
-        ) from e
+    fuentes = await service.get_fuentes_by_estado(estado)
+    response_meta = ResponseMeta(
+        status_code=status.HTTP_200_OK, message="Fuentes obtenidas con éxito."
+    )
+    return create_success_response(data=fuentes, meta=response_meta)
 
 
 @fuentes_router.post(
@@ -111,14 +94,58 @@ async def create_fuente(
     """
     Crea una nueva fuente en el sistema.
     """
-    try:
-        new_fuente = await service.create_fuente(fuente_data)
-        response_meta = ResponseMeta(
-            status_code=status.HTTP_201_CREATED, message="Fuente creada con éxito."
-        )
-        return create_success_response(data=new_fuente, meta=response_meta)
-    except Exception as e:
+
+    new_fuente = await service.create_fuente(fuente_data)
+    response_meta = ResponseMeta(
+        status_code=status.HTTP_201_CREATED, message="Fuente creada con éxito."
+    )
+    return create_success_response(data=new_fuente, meta=response_meta)
+
+
+@fuentes_router.put(
+    "/{fuente_id}",
+    response_model=FuenteResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="actualizar fuente existente",
+)
+async def update_fuente(
+    fuente_id: int,
+    fuente_data: FuenteItemSchema,
+    service: Annotated[FuenteService, Depends(provide_fuente_service)],
+) -> FuenteResponseSchema:
+    """
+    Actualiza una fuente existente en el sistema.
+    """
+    if fuente_id != fuente_data.id:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al crear la fuente: {str(e)}",
-        ) from e
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=(
+                "El ID de la fuente en la URL no coincide con el ID en el cuerpo"
+                " de la solicitud."
+            ),
+        )
+
+    updated_fuente = await service.update_fuente(fuente_id, fuente_data)
+
+    response_meta = ResponseMeta(
+        status_code=status.HTTP_200_OK, message="Fuente actualizada con éxito."
+    )
+    return create_success_response(data=updated_fuente, meta=response_meta)
+
+
+@fuentes_router.delete(
+    "/{fuente_id}",
+    response_model=FuenteResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="eliminar fuente existente",
+)
+async def delete_fuente(
+    fuente_id: int,
+    service: Annotated[FuenteService, Depends(provide_fuente_service)],
+) -> FuenteResponseSchema:
+    """Elimina una fuente existente en el sistema."""
+    await service.delete_fuente(fuente_id)
+    response_meta = ResponseMeta(
+        status_code=status.HTTP_200_OK, message="Fuente eliminada con éxito."
+    )
+    return create_success_response(data=None, meta=response_meta)

@@ -51,3 +51,33 @@ class IFuenteRepository(ABC):
             List[Fuente]: Lista de todas las fuentes de datos.
         """
         pass
+
+    @abstractmethod
+    async def update(self, fuente: Fuente) -> None:
+        """Actualiza una fuente de datos existente en la base de datos.
+
+        Args:
+            fuente (Fuente): Instancia de la fuente con los cambios a actualizar.
+        """
+        pass
+
+    @abstractmethod
+    async def delete(self, fuente_id: int) -> None:
+        """Elimina una fuente de datos de la base de datos por su ID.
+
+        Args:
+            fuente_id (int): ID de la fuente a eliminar.
+        """
+        pass
+
+    @abstractmethod
+    async def exists(self, fuente_nombre) -> bool:
+        """Verifica si una fuente de datos existe en la base de datos por su ID.
+
+        Args:
+            fuente_id (int): ID de la fuente a verificar.
+
+        Returns:
+            bool: True si la fuente existe, False si no.
+        """
+        pass

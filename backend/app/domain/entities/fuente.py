@@ -8,7 +8,7 @@ from app.core.constants import FuenteEstado
 class Fuente:
     nombre: str
     descripcion: str | None = None
-    estado: FuenteEstado = FuenteEstado.NO_DISPONIBLE
+    estado: FuenteEstado = FuenteEstado.ACTIVA
     id: int | None = None
     descripcion: str | None = None
     url: str | None = None
