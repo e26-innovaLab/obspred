@@ -30,6 +30,7 @@ class IIndicadorRepository(ABC):
         indicador: str | None = None,
         desde: str | None = None,
         hasta: str | None = None,
+        trimestre: str | None = None,
     ) -> list[IndicadorModel]:
         """Consulta registros de indicadores aplicando la jerarquía estricta de filtros.
 
@@ -40,6 +41,7 @@ class IIndicadorRepository(ABC):
             indicador: Identificador clave del indicador.
             desde: Período temporal inicial del rango.
             hasta: Período temporal final del rango.
+            trimestre: Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4).
 
         Returns:
             List[IndicadorModel]: Lista de modelos ORM coincidentes con los filtros.

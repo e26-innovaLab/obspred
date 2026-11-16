@@ -1,11 +1,26 @@
-import asyncio
+"""Script de prueba manual y diagnóstico para el conector del Banco Central de Chile.
 
-from app.infrastructure.connectors.bcentral_chile_connector import (
+Permite verificar la conectividad con el servicio web REST SIETE y la obtención
+de indicadores macroeconómicos y laborales para Chile.
+Requiere conexión a internet y credenciales válidas en la configuración.
+"""
+
+import asyncio
+import sys
+from pathlib import Path
+
+# Asegurar que el directorio raíz de backend esté en sys.path para ejecuciones directas
+backend_dir = Path(__file__).resolve().parents[2]
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+from app.infrastructure.connectors.bcentral_chile_connector import (  # noqa: E402
     BCentralChileConnector,
 )
 
 
-async def main():
+async def main() -> None:
+    """Ejecuta la verificación de salud y extracción de prueba para BCentral Chile."""
     connector = BCentralChileConnector()
 
     print("--- 1. Probando check_health() ---")
@@ -27,7 +42,7 @@ async def main():
     print(f"Total registros obtenidos: {len(records)}")
 
     # Mostramos un resumen por indicador
-    indicadores_vistos = {}
+    indicadores_vistos: dict[str, int] = {}
     for r in records:
         indicadores_vistos[r.indicador] = indicadores_vistos.get(r.indicador, 0) + 1
 

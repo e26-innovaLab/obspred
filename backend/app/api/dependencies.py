@@ -7,6 +7,7 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.alertas_service import AlertaService
+from app.application.services.brecha_service import BrechaService
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.application.services.fuentes_service import FuenteService
@@ -15,6 +16,7 @@ from app.application.services.indice_empleabilidad_service import (
 )
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
+from app.domain.interfaces.brecha_repository import IBrechaRepository
 from app.domain.interfaces.external_connector import IExternalDataConnector
 from app.domain.interfaces.file_storage_service import IFileStorageService
 from app.domain.interfaces.file_validator import IFileValidator
@@ -25,6 +27,10 @@ from app.domain.interfaces.indice_empleabilidad_repository import (
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
+from app.infrastructure.connectors.datos_argentina_connector import (
+    DatosArgentinaConnector,
+)
+from app.infrastructure.connectors.esco_connector import EscoConnector
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
 from app.infrastructure.connectors.simel_chile_connector import (
     SimelChileConnector,
@@ -34,6 +40,9 @@ from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndicadorRepository,
     SqlAlchemyIndiceEmpleabilidadRepository,
+)
+from app.infrastructure.persistence.repositories.brecha_repository import (
+    SQLAlchemyBrechaRepository,
 )
 from app.infrastructure.persistence.repositories.fuente_repository import (
     SqlAlchemyFuenteRepository,
@@ -181,6 +190,40 @@ def provide_world_bank_sync_service(
     return ExternalSyncService(connector=connector, repository=repository)
 
 
+def provide_brecha_repository(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> IBrechaRepository:
+    """Provee el repositorio para la persistencia y consulta de Brechas.
+
+    Args:
+        session: Sesión transaccional inyectada por FastAPI.
+
+    Returns:
+        IBrechaRepository: Instancia concreta de SQLAlchemyBrechaRepository.
+    """
+    return SQLAlchemyBrechaRepository(db=session)
+
+
+def provide_brecha_service(
+    repository: Annotated[
+        IBrechaRepository,
+        Depends(provide_brecha_repository),
+    ],
+) -> BrechaService:
+    """Provee el servicio de aplicación para las Brechas de Habilidades.
+
+    Args:
+        repository: Repositorio inyectado por FastAPI.
+
+    Returns:
+        BrechaService: Servicio listo para su uso en controladores.
+    """
+    return BrechaService(repository=repository)
+
+
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -290,7 +333,83 @@ def provide_fuente_service(
 
 
 def provide_alert_service(
-        session: AsyncSession = Depends(get_db_session),
+    indicador_repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
 ) -> AlertaService:
-    indicador_repository = SqlAlchemyIndicadorRepository(session=session)
+    """Provee el servicio de aplicación para generación y consulta de alertas.
+
+    Args:
+        indicador_repository: Repositorio de indicadores inyectado por FastAPI.
+
+    Returns:
+        AlertaService: Servicio de alertas configurado con repositorio de indicadores.
+    """
     return AlertaService(indicador_repository=indicador_repository)
+
+
+def provide_esco_connector() -> IExternalDataConnector:
+    """Provee una instancia del conector oficial de ESCO (Taxonomías).
+
+    Returns:
+        IExternalDataConnector: Instancia de EscoConnector configurada.
+    """
+    return EscoConnector(settings.esco_base_url)
+
+
+def provide_esco_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_esco_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con ESCO.
+
+    Args:
+        connector: Conector de ESCO inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_datos_argentina_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de Datos Argentina API.
+
+    Returns:
+        IExternalDataConnector: Instancia de DatosArgentinaConnector configurada.
+    """
+    return DatosArgentinaConnector(
+        base_url=getattr(settings, "datos_argentina_base_url", None),
+        timeout=getattr(settings, "datos_argentina_timeout_seconds", 30.0),
+    )
+
+
+def provide_datos_argentina_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_datos_argentina_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización
+    con la API de Datos Argentina.
+
+    Args:
+        connector: Conector de Datos Argentina inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)

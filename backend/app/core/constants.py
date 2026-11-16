@@ -134,6 +134,8 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+INGESTA_SYNC_ESCO_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/esco"
+INGESTA_SYNC_DATOS_ARGENTINA_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/datos-argentina"
 INGESTA_SYNC_SIMEL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/simel-chile"
 INGESTA_UPLOAD_SIMEL_ROUTE: Final[str] = f"{INGESTA_UPLOAD_ROUTE}/simel"
 METRICAS_ROUTE: Final[str] = "/metricas"
@@ -187,11 +189,33 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 
+# Constantes de configuración para conector ESCO
+DEFAULT_ESCO_BASE_URL: Final[str] = "https://ec.europa.eu/esco/api/search"
+DEFAULT_ESCO_SOURCE: Final[str] = "ESCO"
+DEFAULT_ESCO_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para conector de datos argentina
+DEFAULT_DATOS_ARGENTINA_SOURCE_NAME: Final[str] = "Datos Argentina"
+DEFAULT_DATOS_ARGENTINA_BASE_URL: Final[str] = "https://apis.datos.gob.ar/series/api"
+DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS: Final[float] = 30.0
 # Constantes de configuración para SIMEL (Sistema de Información Laboral - Chile)
 DEFAULT_SIMEL_CHILE_SOURCE: Final[str] = "SIMEL - INE Chile"
 DEFAULT_SIMEL_CHILE_BASE_URL: Final[str] = "https://www.simel.gob.cl"
 DEFAULT_SIMEL_SDMX_BASE_URL: Final[str] = "https://sdmx.ine.gob.cl/rest"
 DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para Brechas de Habilidades
+DEFAULT_BRECHAS_SOURCE: Final[str] = "SENCE SABE / ESCO"
+DEFAULT_BRECHAS_METODOLOGIA: Final[str] = (
+    "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+)
+DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA: Final[str] = (
+    "Taxonomía ESCO con demanda y oferta formativa persistida en base de datos."
+)
+BRECHAS_GET_SUCCESS_MESSAGE: Final[str] = "Brechas de habilidades obtenidas con éxito."
+BRECHAS_SAVE_SUCCESS_MESSAGE: Final[str] = (
+    "Brechas de habilidades persistidas con éxito."
+)
 
 
 # ==============================================================================
@@ -265,6 +289,8 @@ __all__ = [
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
+    "INGESTA_SYNC_DATOS_ARGENTINA_ROUTE",
+    "INGESTA_SYNC_ESCO_ROUTE",
     "INGESTA_SYNC_SIMEL_CHILE_ROUTE",
     "INGESTA_UPLOAD_SIMEL_ROUTE",
     # OpenAPI Tags
@@ -296,10 +322,19 @@ __all__ = [
     "DEFAULT_BCENTRAL_CHILE_SOURCE",
     "DEFAULT_BCENTRAL_CHILE_BASE_URL",
     "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
+    "DEFAULT_ESCO_SOURCE",
+    "DEFAULT_ESCO_BASE_URL",
+    "DEFAULT_ESCO_TIMEOUT_SECONDS",
     "DEFAULT_SIMEL_CHILE_SOURCE",
     "DEFAULT_SIMEL_CHILE_BASE_URL",
     "DEFAULT_SIMEL_SDMX_BASE_URL",
     "DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS",
+    # Brechas
+    "DEFAULT_BRECHAS_SOURCE",
+    "DEFAULT_BRECHAS_METODOLOGIA",
+    "DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA",
+    "BRECHAS_GET_SUCCESS_MESSAGE",
+    "BRECHAS_SAVE_SUCCESS_MESSAGE",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",

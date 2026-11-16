@@ -8,6 +8,51 @@
   },
   "item": [
     {
+      "name": "root_endpoint",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/",
+          "host": [
+            "http://localhost:8000"
+          ],
+          "path": []
+        },
+        "description": "Endpoint raíz informativo que confirma la disponibilidad del backend y documentación."
+      },
+      "response": [
+        {
+          "name": "200_ok_root",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:8000/",
+              "host": [
+                "http://localhost:8000"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Backend del Observatorio en funcionamiento.\",\n  \"data\": {\n    \"name\": \"Observatorio Predictivo API\",\n    \"status\": \"online\",\n    \"docs\": \"/docs\"\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+        }
+      ]
+    },
+    {
       "name": "ingesta",
       "item": [
         {
@@ -808,7 +853,218 @@
             },
             "description": "Consulta directa en vivo a la API SDMX oficial de .Stat Suite del INE Chile (DF_TDES_SEXO para Tasa de Desocupación nacional Ambos Sexos desde 2024)."
           },
-          "response": []
+          "response": [
+            {
+              "name": "200_ok_sdmx_csv_sample",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "text/csv"
+                  }
+                ],
+                "url": {
+                  "raw": "https://sdmx.ine.gob.cl/rest/data/CL01,DF_TDES_SEXO,1.0/M.TDES._T.AS?startPeriod=2024&format=csv",
+                  "host": [
+                    "http://localhost:8000"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/csv"
+                }
+              ],
+              "body": "DATAFLOW,FREQ,INDICATOR,SEX,AGE,GEO,TIME_PERIOD,OBS_VALUE,OBS_STATUS\nCL01:DF_TDES_SEXO(1.0),M,TDES,_T,_T,CL,2024-01,8.4,A\nCL01:DF_TDES_SEXO(1.0),M,TDES,_T,_T,CL,2024-02,8.5,A\nCL01:DF_TDES_SEXO(1.0),M,TDES,_T,_T,CL,2024-03,8.7,A\n"
+            }
+          ]
+        },
+        {
+          "name": "sync_datos_argentina",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "datos-argentina"
+              ]
+            },
+            "description": "Sincroniza y persiste indicadores oficiales de series de tiempo de Datos Argentina.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"indicadores\": [\n    \"empleo_registrado\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2024-12-31\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_datos_argentina",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' completada exitosamente.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"total_records_fetched\": 48,\n    \"total_records_inserted\": 48,\n    \"status\": \"success\",\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:30:00Z\"\n}"
+            },
+            {
+              "name": "502_error_sync_datos_argentina",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronización de 'Datos Argentina'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"Error de conexión o timeout al consultar la API de Datos Argentina.\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:30:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "sync_esco",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/esco",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "esco"
+              ]
+            },
+            "description": "Sincroniza taxonomías ocupacionales y habilidades estandarizadas desde la API de ESCO.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"limit\": 50,\n  \"language\": \"es\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_esco",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/esco",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'ESCO Taxonomías' completada exitosamente.\",\n  \"data\": {\n    \"source\": \"ESCO\",\n    \"total_records_fetched\": 50,\n    \"total_records_inserted\": 50,\n    \"status\": \"success\",\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:30:00Z\"\n}"
+            },
+            {
+              "name": "502_error_sync_esco",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/esco",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronización de 'ESCO'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"Error al conectar con la API de ESCO.\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:30:00Z\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -853,6 +1109,11 @@
                   "key": "hasta",
                   "value": "",
                   "description": "Período hasta"
+                },
+                {
+                  "key": "trimestre",
+                  "value": "",
+                  "description": "Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4)"
                 }
               ]
             }
@@ -2919,6 +3180,96 @@
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Brechas de habilidades obtenidas con éxito.\",\n  \"data\": {\n    \"pais\": \"CHL\",\n    \"sector\": \"tecnologia\",\n    \"ocupacion\": \"dev-software\",\n    \"habilidades\": [\n      {\n        \"habilidad\": \"Alfabetización digital\",\n        \"demanda\": 95.0,\n        \"ofertaFormativa\": 60.0,\n        \"emergente\": false\n      },\n      {\n        \"habilidad\": \"Trabajo en equipo remoto\",\n        \"demanda\": 92.0,\n        \"ofertaFormativa\": 28.0,\n        \"emergente\": true\n      },\n      {\n        \"habilidad\": \"Pensamiento analítico\",\n        \"demanda\": 90.0,\n        \"ofertaFormativa\": 40.0,\n        \"emergente\": false\n      }\n    ],\n    \"metadatos\": {\n      \"fuente\": \"SENCE SABE / ESCO\",\n      \"fecha_actualizacion\": \"2026-09-30\",\n      \"metodologia\": \"Taxonomía de referencia ESCO con demanda observada en avisos SABE.\"\n    }\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T20:54:14.562683Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "post_brechas_ocupacion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL_BASE}}/brechas/dev-software",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "brechas",
+                "dev-software"
+              ]
+            },
+            "description": "Persiste una lista de habilidades y brechas formativas para una ocupación específica.",
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"ocupacion\": \"dev-software\",\n    \"habilidad\": \"Python\",\n    \"demanda\": 92.5,\n    \"oferta_formativa\": 70.0,\n    \"emergente\": true\n  },\n  {\n    \"ocupacion\": \"dev-software\",\n    \"habilidad\": \"FastAPI\",\n    \"demanda\": 88.0,\n    \"oferta_formativa\": 55.0,\n    \"emergente\": true\n  },\n  {\n    \"ocupacion\": \"dev-software\",\n    \"habilidad\": \"SQL\",\n    \"demanda\": 95.0,\n    \"oferta_formativa\": 90.0,\n    \"emergente\": false\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201_created_brechas_ocupacion",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/dev-software",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Brechas para 'dev-software' guardadas con éxito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"ocupacion\": \"dev-software\",\n      \"habilidad\": \"Python\",\n      \"demanda\": 92.5,\n      \"oferta_formativa\": 70.0,\n      \"emergente\": true,\n      \"created_at\": \"2026-11-17T18:00:00Z\"\n    },\n    {\n      \"id\": 2,\n      \"ocupacion\": \"dev-software\",\n      \"habilidad\": \"FastAPI\",\n      \"demanda\": 88.0,\n      \"oferta_formativa\": 55.0,\n      \"emergente\": true,\n      \"created_at\": \"2026-11-17T18:00:00Z\"\n    },\n    {\n      \"id\": 3,\n      \"ocupacion\": \"dev-software\",\n      \"habilidad\": \"SQL\",\n      \"demanda\": 95.0,\n      \"oferta_formativa\": 90.0,\n      \"emergente\": false,\n      \"created_at\": \"2026-11-17T18:00:00Z\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            },
+            {
+              "name": "422_validation_error_brechas",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/brechas/dev-software",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": [\n    {\n      \"type\": \"missing\",\n      \"loc\": [\n        \"body\",\n        0,\n        \"habilidad\"\n      ],\n      \"msg\": \"Field required\",\n      \"input\": {}\n    }\n  ]\n}"
+            }
+          ]
         }
       ]
     },
@@ -3147,6 +3498,272 @@
               ],
               "cookie": [],
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Alertas recuperadas con éxito.\",\n  \"data\": {\n    \"alertas\": [\n      {\n        \"id\": \"puestos_demandados-ARG-2023-Q4\",\n        \"pais\": \"ARG\",\n        \"indicador\": \"puestos_demandados\",\n        \"periodo\": \"2023-Q4\",\n        \"variacion_pct\": 8.0,\n        \"nivel\": \"alto\",\n        \"titulo\": \"Puestos demandados: suba de 8 %\",\n        \"descripcion\": \"Variación acelerada respecto del período anterior (T3 2023).\"\n      },\n      {\n        \"id\": \"puestos_demandados-ARG-2026-Q2\",\n        \"pais\": \"ARG\",\n        \"indicador\": \"puestos_demandados\",\n        \"periodo\": \"2026-Q2\",\n        \"variacion_pct\": 6.2,\n        \"nivel\": \"medio\",\n        \"titulo\": \"Puestos demandados: suba de 6,2 %\",\n        \"descripcion\": \"Incremento sostenido impulsado por el sector tecnológico.\"\n      },\n      {\n        \"id\": \"tasa_desempleo-URY-2025-Q4\",\n        \"pais\": \"URY\",\n        \"indicador\": \"tasa_desempleo\",\n        \"periodo\": \"2025-Q4\",\n        \"variacion_pct\": -3.2,\n        \"nivel\": \"medio\",\n        \"titulo\": \"Desempleo: reducción del 3,2 %\",\n        \"descripcion\": \"Mejora en la tasa de desocupación en el cuarto trimestre reportada por ECH.\"\n      },\n      {\n        \"id\": \"tasa_desempleo-CHL-2025-Q3\",\n        \"pais\": \"CHL\",\n        \"indicador\": \"tasa_desempleo\",\n        \"periodo\": \"2025-Q3\",\n        \"variacion_pct\": -5.4,\n        \"nivel\": \"medio\",\n        \"titulo\": \"Desempleo: reducción del 5,4 %\",\n        \"descripcion\": \"Caída positiva de la desocupación en el tercer trimestre.\"\n      }\n    ]\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-03T20:54:14.565781Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "fuentes",
+      "item": [
+        {
+          "name": "get_all_fuentes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes"
+              ]
+            },
+            "description": "Consulta todas las fuentes estadísticas oficiales del Observatorio con su estado de frescura."
+          },
+          "response": [
+            {
+              "name": "200_ok_get_all_fuentes",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con éxito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"INDEC\",\n      \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina\",\n      \"url\": \"https://www.indec.gob.ar\",\n      \"ultima_actualizacion\": \"2026-10-31T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 2,\n      \"nombre\": \"INE Uruguay\",\n      \"descripcion\": \"Instituto Nacional de Estadística de Uruguay - Encuesta Continua de Hogares\",\n      \"url\": \"https://www.ine.gub.uy\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 3,\n      \"nombre\": \"SIMEL Chile\",\n      \"descripcion\": \"Sistema de Información y Análisis del Mercado de Trabajo de Chile (INE Chile)\",\n      \"url\": \"https://simel.ine.gob.cl\",\n      \"ultima_actualizacion\": \"2026-10-15T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 4,\n      \"nombre\": \"World Bank\",\n      \"descripcion\": \"Indicadores macroeconómicos y de desarrollo del Banco Mundial\",\n      \"url\": \"https://data.worldbank.org\",\n      \"ultima_actualizacion\": \"2026-10-01T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 5,\n      \"nombre\": \"ILOSTAT\",\n      \"descripcion\": \"Base de datos estadísticas del trabajo de la Organización Internacional del Trabajo\",\n      \"url\": \"https://ilostat.ilo.org\",\n      \"ultima_actualizacion\": \"2026-09-01T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 5,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_fuente_by_id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes/1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes",
+                "1"
+              ]
+            },
+            "description": "Consulta la ficha técnica y metodológica de una fuente oficial por su ID."
+          },
+          "response": [
+            {
+              "name": "200_ok_get_fuente_by_id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/1",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuente obtenida con éxito.\",\n  \"data\": {\n    \"id\": 1,\n    \"nombre\": \"INDEC\",\n    \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina\",\n    \"url\": \"https://www.indec.gob.ar\",\n    \"ultima_actualizacion\": \"2026-10-31T00:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            },
+            {
+              "name": "404_not_found_fuente",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/999",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": \"Fuente con ID 999 no encontrada.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "get_fuentes_by_estado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes/estado/activa",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes",
+                "estado",
+                "activa"
+              ]
+            },
+            "description": "Filtra fuentes por estado de frescura: activa, desactualizada o no_disponible."
+          },
+          "response": [
+            {
+              "name": "200_ok_fuentes_activas",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/estado/activa",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con éxito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"INDEC\",\n      \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina\",\n      \"url\": \"https://www.indec.gob.ar\",\n      \"ultima_actualizacion\": \"2026-10-31T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 3,\n      \"nombre\": \"SIMEL Chile\",\n      \"descripcion\": \"Sistema de Información y Análisis del Mercado de Trabajo de Chile\",\n      \"url\": \"https://simel.ine.gob.cl\",\n      \"ultima_actualizacion\": \"2026-10-15T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 2,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "post_fuente",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes"
+              ]
+            },
+            "description": "Registra una nueva fuente u organismo oficial en el catálogo de fuentes.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"ANEP Uruguay\",\n  \"descripcion\": \"Administración Nacional de Educación Pública de Uruguay\",\n  \"url\": \"https://www.anep.edu.uy\",\n  \"ultima_actualizacion\": \"2026-11-01T00:00:00Z\",\n  \"estado\": \"activa\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "201_created_fuente",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 201,\n  \"message\": \"Fuente creada con éxito.\",\n  \"data\": {\n    \"id\": 6,\n    \"nombre\": \"ANEP Uruguay\",\n    \"descripcion\": \"Administración Nacional de Educación Pública de Uruguay\",\n    \"url\": \"https://www.anep.edu.uy\",\n    \"ultima_actualizacion\": \"2026-11-01T00:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            },
+            {
+              "name": "422_validation_error_fuente",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Unprocessable Entity",
+              "code": 422,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": [\n    {\n      \"type\": \"missing\",\n      \"loc\": [\n        \"body\",\n        \"nombre\"\n      ],\n      \"msg\": \"Field required\",\n      \"input\": {}\n    }\n  ]\n}"
             }
           ]
         }

@@ -130,7 +130,7 @@ El método `parse_simel_csv()` detecta automáticamente la variante del archivo 
    [`data/examples/simel_chile_sample.csv`](../../data/examples/simel_chile_sample.csv)
 2. **Script de verificación y diagnóstico:**  
    ```bash
-   .venv/Scripts/python backend/test_conexion_simel.py
+   .venv/Scripts/python backend/tests/manual/test_conexion_simel.py
    ```
    *(Comprueba la conectividad con `sdmx.ine.gob.cl`, extrae indicadores en vivo para Chile y parsea el CSV de muestra).*
 3. **Pruebas automatizadas (Pytest):**  
