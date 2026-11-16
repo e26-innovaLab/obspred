@@ -63,9 +63,7 @@ class FuenteService:
         """
         fuente = await self.fuente_repository.get_by_id(fuente_id)
         if fuente is None:
-            raise EntityNotFoundException(
-                entity_name="Fuente", entity_id=fuente_id
-            )
+            raise EntityNotFoundException(entity_name="Fuente", entity_id=fuente_id)
 
         return self._map_entity_to_dto(fuente)
 
@@ -80,7 +78,6 @@ class FuenteService:
             raise DomainException(
                 f"Ya existe una fuente con el nombre '{fuente_dto.nombre}'."
             )
-
 
         fuente = Fuente(
             nombre=fuente_dto.nombre,
@@ -100,14 +97,12 @@ class FuenteService:
         fuentes = await self.fuente_repository.get_all()
         return [self._map_entity_to_dto(fuente) for fuente in fuentes]
 
-
-    async def update_fuente(self, fuente_id:id , fuente_dto: FuenteDTO) -> FuenteDTO:
+    async def update_fuente(self, fuente_id: int, fuente_dto: FuenteDTO) -> FuenteDTO:
         """Actualiza una fuente de datos existente en la base de datos.
 
         Args:
             fuente_dto (FuenteDTO): DTO de la fuente con los cambios a actualizar.
         """
-
 
         fuente = Fuente(
             id=fuente_id,
@@ -119,11 +114,8 @@ class FuenteService:
         )
         fuente_actualizada = await self.fuente_repository.update(fuente)
         if fuente_actualizada is None:
-           raise EntityNotFoundException(
-                entity_name="Fuente", entity_id=fuente_id
-            )
+            raise EntityNotFoundException(entity_name="Fuente", entity_id=fuente_id)
         return self._map_entity_to_dto(fuente_actualizada)
-
 
     async def delete_fuente(self, fuente_id: int) -> None:
         """Elimina una fuente de datos de la base de datos por su ID.
@@ -133,6 +125,4 @@ class FuenteService:
         """
         fuente_eliminada = await self.fuente_repository.delete(fuente_id)
         if not fuente_eliminada:
-            raise EntityNotFoundException(
-                entity_name="Fuente", entity_id=fuente_id
-            )
+            raise EntityNotFoundException(entity_name="Fuente", entity_id=fuente_id)

@@ -1,8 +1,11 @@
+
+
 const NotFoundPage = () => {
   return (
-    <div>
+    <div className="notfound-page">
       <h1>404</h1>
-      <p>Página no encontrada</p>
+      <h2>Página no encontrada</h2>
+      <p>Podés volver al menú lateral para navegar por el observatorio.</p>
     </div>
   );
 };

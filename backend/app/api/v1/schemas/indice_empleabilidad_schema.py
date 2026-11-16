@@ -191,3 +191,31 @@ class IndiceEmpleabilidadDataSchema(BaseModel):
 
 # Envoltorio tipado de respuesta estándar para el endpoint
 IndiceEmpleabilidadResponseSchema = ApiResponse[IndiceEmpleabilidadDataSchema]
+
+
+class OcupacionRankingItemDto(BaseModel):
+    """Fila en la tabla de ranking de ocupaciones por índice y puestos."""
+
+    model_config = ConfigDict(frozen=True)
+
+    ocupacion_id: str = Field(..., description="Slug de la ocupación.")
+    nombre: str = Field(..., description="Nombre canónico de la ocupación.")
+    puestos_disponibles: int = Field(
+        ..., description="Vacantes o puestos demandados observados."
+    )
+    indice_empleabilidad: float = Field(
+        ..., description="Score calculado en escala 0 a 100."
+    )
+    pais: str = Field(..., description="Código ISO-3 del país.")
+    fuente: str = Field(..., description="Fuente principal u organismo emisor.")
+
+
+class IndiceRankingDataSchema(BaseModel):
+    """Payload de ranking de ocupaciones para la vista Ocupaciones."""
+
+    model_config = ConfigDict(frozen=True)
+
+    ocupaciones: list[OcupacionRankingItemDto] = Field(default_factory=list)
+
+
+IndiceRankingResponseSchema = ApiResponse[IndiceRankingDataSchema]

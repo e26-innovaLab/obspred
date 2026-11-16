@@ -6,7 +6,7 @@ from app.domain.entities.fuente import Fuente
 
 class IFuenteRepository(ABC):
     """
-      Puerto abstracto para operaciones de persistencia y consulta de fuentes de datos.
+    Puerto abstracto para operaciones de persistencia y consulta de fuentes de datos.
 
     """
 

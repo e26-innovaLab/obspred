@@ -51,7 +51,7 @@ async def get_fuente_by_id(
 
     fuente = await service.get_fuente_by_id(fuente_id)
     if fuente is None:
-         raise HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Fuente con ID {fuente_id} no encontrada.",
         )
@@ -74,13 +74,11 @@ async def get_fuentes_by_estado(
     """
     Obtiene todas las fuentes que coinciden con un estado específico.
     """
-
     fuentes = await service.get_fuentes_by_estado(estado)
     response_meta = ResponseMeta(
         status_code=status.HTTP_200_OK, message="Fuentes obtenidas con éxito."
     )
     return create_success_response(data=fuentes, meta=response_meta)
-
 
 
 @fuentes_router.post(
@@ -104,16 +102,12 @@ async def create_fuente(
     return create_success_response(data=new_fuente, meta=response_meta)
 
 
-
-
 @fuentes_router.put(
-
-        "/{fuente_id}",
-        response_model=FuenteResponseSchema,
-        status_code=status.HTTP_200_OK,
-        summary="actualizar fuente existente",
-
-    )
+    "/{fuente_id}",
+    response_model=FuenteResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="actualizar fuente existente",
+)
 async def update_fuente(
     fuente_id: int,
     fuente_data: FuenteItemSchema,
@@ -125,10 +119,11 @@ async def update_fuente(
     if fuente_id != fuente_data.id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail= "El ID de la fuente en la URL no coincide con el ID en el cuerpo" \
-            " de la solicitud."
+            detail=(
+                "El ID de la fuente en la URL no coincide con el ID en el cuerpo"
+                " de la solicitud."
+            ),
         )
-
 
     updated_fuente = await service.update_fuente(fuente_id, fuente_data)
 
@@ -136,8 +131,6 @@ async def update_fuente(
         status_code=status.HTTP_200_OK, message="Fuente actualizada con éxito."
     )
     return create_success_response(data=updated_fuente, meta=response_meta)
-
-
 
 
 @fuentes_router.delete(
@@ -150,10 +143,7 @@ async def delete_fuente(
     fuente_id: int,
     service: Annotated[FuenteService, Depends(provide_fuente_service)],
 ) -> FuenteResponseSchema:
-    """
-    Elimina una fuente existente en el sistema.
-    """
-
+    """Elimina una fuente existente en el sistema."""
     await service.delete_fuente(fuente_id)
     response_meta = ResponseMeta(
         status_code=status.HTTP_200_OK, message="Fuente eliminada con éxito."

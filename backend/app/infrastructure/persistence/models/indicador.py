@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Float, Index, Integer, String, func
+from sqlalchemy import JSON, Date, DateTime, Float, Index, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.persistence.database import Base
@@ -54,6 +54,12 @@ class IndicadorModel(Base):
         index=True,
         doc="Período temporal del indicador (ej. 2024-Q1, 2024-01, 2024)",
     )
+    trimestre: Mapped[str | None] = mapped_column(
+        String(10),
+        nullable=True,
+        index=True,
+        doc="Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4)",
+    )
     valor: Mapped[float] = mapped_column(
         Float,
         nullable=False,
@@ -73,6 +79,12 @@ class IndicadorModel(Base):
         Date,
         nullable=False,
         doc="Fecha de última actualización del indicador (YYYY-MM-DD)",
+    )
+
+    detalles: Mapped[dict | None] = mapped_column(
+        JSON,
+        nullable=True,
+        doc="Campo JSON flexible para payloads de taxonomias",
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

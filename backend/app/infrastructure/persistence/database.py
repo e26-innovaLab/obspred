@@ -50,6 +50,15 @@ async_session_factory = async_sessionmaker(
 Base = declarative_base()
 
 
+async def dispose_database() -> None:
+    """Cierra el pool del motor principal antes de terminar el proceso.
+
+    Esto evita dejar conexiones SQLite vivas y en espera cuando el event loop
+    virtual de pytest se cierra al finalizar la suite.
+    """
+    await engine.dispose()
+
+
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Generador asíncrono para inyectar sesiones de base de datos en peticiones HTTP.
 

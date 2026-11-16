@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FiltrosBar } from '../../components/common/FiltrosBar';
 import { INDICADORES, PAISES } from '../../services/mock/catalogo';
 import { useTendenciasData } from './hooks/useTendenciasData';
+import { useFiltros } from '../../store/useFiltros';
 import { ChartCard } from '../../components/charts/ChartCard';
 import { SerieHistoricaChart } from '../../components/charts/SerieHistoricaChart';
 import { ProyeccionPanel } from './components/ProyeccionPanel';
@@ -17,6 +18,7 @@ const ORDEN_PAISES = PAISES.map((p) => p.id as Pais);
 export function TendenciasPage() {
   const [indicador, setIndicador] = useState(INDICADORES[0].id);
   const [paises, setPaisesLocal] = useState<Pais[]>(ORDEN_PAISES);
+  const { filtros } = useFiltros();
   const { serie, proyeccion, cambios } = useTendenciasData(indicador);
   const marcas = cambios.state.status === 'success' ? cambios.state.data : [];
   const nombre = INDICADORES.find((i) => i.id === indicador)?.nombre ?? '';
@@ -54,6 +56,10 @@ export function TendenciasPage() {
         acciones={selector}
         fuentes={(series) => series.flatMap((s) => s.fuentes)}
         mensajeSinDatos="Las fuentes de este país no publican este indicador para la selección actual."
+        guardar={{
+          id: `tendencia|${indicador}|${paises.join(',')}|${filtros.sector ?? ''}`,
+          buildContenido: (datos) => ({ tipo: 'serie', datos }),
+        }}
       >
         {(series) => (
           <>

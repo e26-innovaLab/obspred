@@ -96,8 +96,6 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         fuentes_model = result.scalars().all()
         return [self._map_model_to_entity(fuente) for fuente in fuentes_model]
 
-
-
     async def update(self, fuente: Fuente) -> Fuente:
         """Actualiza una fuente de datos existente en la base de datos.
 
@@ -135,14 +133,14 @@ class SqlAlchemyFuenteRepository(IFuenteRepository):
         fuente_model = result.scalar_one_or_none()
 
         if fuente_model is None:
-            logger.warning(f"No se encontró la fuente con ID {fuente_id} para eliminar."
-                           )
+            logger.warning(
+                f"No se encontró la fuente con ID {fuente_id} para eliminar."
+            )
             return None
 
         await self.session.delete(fuente_model)
         await self.session.commit()
         logger.info(f"Fuente con ID {fuente_id} eliminada con éxito.")
-
 
     async def exists(self, fuente_nombre: str) -> bool:
         """Verifica si una fuente de datos existe en la base de datos por su nombre.

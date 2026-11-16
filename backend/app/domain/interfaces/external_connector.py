@@ -16,11 +16,13 @@ class RawIndicatorRecord(BaseModel):
         ocupacion: Denominación o código normalizado de la ocupación analizada.
         indicador: Clave unificada del indicador (ej. tasa_desempleo).
         periodo: Cadena representativa del período temporal (ej. 2023, 2024-Q1).
+        trimestre: Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4).
         valor: Magnitud numérica observada o calculada.
         tipo: Tipo metodológico del dato (observado, calculado, proyeccion).
         fuente: Denominación oficial del organismo o servicio proveedor.
         fecha_actualizacion: Fecha de vigencia o publicación reportada por el origen.
         metadatos: Atributos contextuales complementarios reportados por la fuente.
+        detalles: Payload JSON enriquecido y estructurado opcional (para ESCO).
     """
 
     model_config = ConfigDict(frozen=True)
@@ -45,6 +47,10 @@ class RawIndicatorRecord(BaseModel):
         ...,
         description="Período temporal del registro (ej. 2023, 2024-Q1)",
     )
+    trimestre: str | None = Field(
+        default=None,
+        description="Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4)",
+    )
     valor: float = Field(
         ...,
         description="Valor numérico extraído del origen oficial",
@@ -64,6 +70,10 @@ class RawIndicatorRecord(BaseModel):
     metadatos: dict[str, Any] | None = Field(
         default=None,
         description="Metadatos técnicos y contextuales de trazabilidad",
+    )
+    detalles: dict[str, Any] | None = Field(
+        default=None,
+        description="Payload JSON estructurado complementario de la fuente externa",
     )
 
 

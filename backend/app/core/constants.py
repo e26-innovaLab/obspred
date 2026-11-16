@@ -134,6 +134,14 @@ DOCS_ROUTE: Final[str] = "/docs"
 REDOC_ROUTE: Final[str] = "/redoc"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_BCENTRAL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/bcentral-chile"
+INGESTA_SYNC_ESCO_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/esco"
+INGESTA_SYNC_DATOS_ARGENTINA_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/datos-argentina"
+INGESTA_SYNC_SIMEL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/simel-chile"
+INGESTA_UPLOAD_SIMEL_ROUTE: Final[str] = f"{INGESTA_UPLOAD_ROUTE}/simel"
+METRICAS_ROUTE: Final[str] = "/metricas"
+CATALOGO_ROUTE: Final[str] = "/catalogo"
+ALERTAS_ROUTE: Final[str] = "/alertas"
+BRECHAS_ROUTE: Final[str] = "/brechas"
 FUENTE_ROUTE: Final[str] = "/fuentes"
 
 
@@ -143,6 +151,10 @@ OPENAPI_TAG_HEALTH: Final[str] = "Health"
 OPENAPI_TAG_INDICADORES: Final[str] = "Indicadores"
 OPENAPI_TAG_INDICE_EMPLEABILIDAD: Final[str] = "Indice de Empleabilidad"
 OPENAPI_TAG_INGESTA: Final[str] = "Ingesta"
+OPENAPI_TAG_METRICAS: Final[str] = "Métricas"
+OPENAPI_TAG_CATALOGO: Final[str] = "Catálogo"
+OPENAPI_TAG_ALERTAS: Final[str] = "Alertas"
+OPENAPI_TAG_BRECHAS: Final[str] = "Brechas"
 OPENAPI_TAG_FUENTE: Final[str] = "Fuentes de Datos"
 
 
@@ -176,6 +188,34 @@ DEFAULT_BCENTRAL_CHILE_BASE_URL: Final[str] = (
     "https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx"
 )
 DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para conector ESCO
+DEFAULT_ESCO_BASE_URL: Final[str] = "https://ec.europa.eu/esco/api/search"
+DEFAULT_ESCO_SOURCE: Final[str] = "ESCO"
+DEFAULT_ESCO_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para conector de datos argentina
+DEFAULT_DATOS_ARGENTINA_SOURCE_NAME: Final[str] = "Datos Argentina"
+DEFAULT_DATOS_ARGENTINA_BASE_URL: Final[str] = "https://apis.datos.gob.ar/series/api"
+DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS: Final[float] = 30.0
+# Constantes de configuración para SIMEL (Sistema de Información Laboral - Chile)
+DEFAULT_SIMEL_CHILE_SOURCE: Final[str] = "SIMEL - INE Chile"
+DEFAULT_SIMEL_CHILE_BASE_URL: Final[str] = "https://www.simel.gob.cl"
+DEFAULT_SIMEL_SDMX_BASE_URL: Final[str] = "https://sdmx.ine.gob.cl/rest"
+DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# Constantes de configuración para Brechas de Habilidades
+DEFAULT_BRECHAS_SOURCE: Final[str] = "SENCE SABE / ESCO"
+DEFAULT_BRECHAS_METODOLOGIA: Final[str] = (
+    "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+)
+DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA: Final[str] = (
+    "Taxonomía ESCO con demanda y oferta formativa persistida en base de datos."
+)
+BRECHAS_GET_SUCCESS_MESSAGE: Final[str] = "Brechas de habilidades obtenidas con éxito."
+BRECHAS_SAVE_SUCCESS_MESSAGE: Final[str] = (
+    "Brechas de habilidades persistidas con éxito."
+)
 
 
 # ==============================================================================
@@ -231,15 +271,31 @@ __all__ = [
     "INGESTA_SYNC_ROUTE",
     "INGESTA_SYNC_WORLD_BANK_ROUTE",
     "TENDENCIAS_ROUTE",
+    "METRICAS_ROUTE",
+    "CATALOGO_ROUTE",
+    "ALERTAS_ROUTE",
+    "BRECHAS_ROUTE",
+    "FUENTE_ROUTE",
     "DOCS_ROUTE",
     "REDOC_ROUTE",
     "INGESTA_SYNC_BCENTRAL_CHILE_ROUTE",
+    "INGESTA_SYNC_DATOS_ARGENTINA_ROUTE",
+    "INGESTA_SYNC_ESCO_ROUTE",
+    "INGESTA_SYNC_SIMEL_CHILE_ROUTE",
+    "INGESTA_UPLOAD_SIMEL_ROUTE",
     # OpenAPI Tags
     "OPENAPI_TAG_ROOT",
     "OPENAPI_TAG_HEALTH",
     "OPENAPI_TAG_INDICADORES",
     "OPENAPI_TAG_INDICE_EMPLEABILIDAD",
     "OPENAPI_TAG_INGESTA",
+    "OPENAPI_TAG_METRICAS",
+    "OPENAPI_TAG_CATALOGO",
+    "OPENAPI_TAG_ALERTAS",
+    "OPENAPI_TAG_BRECHAS",
+    "OPENAPI_TAG_FUENTE",
+    # Fuentes y Estados
+    "FuenteEstado",
     # Almacenamiento e Ingesta
     "DEFAULT_UPLOAD_DIR",
     "CSV_FILE_EXTENSION",
@@ -256,6 +312,19 @@ __all__ = [
     "DEFAULT_BCENTRAL_CHILE_SOURCE",
     "DEFAULT_BCENTRAL_CHILE_BASE_URL",
     "DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS",
+    "DEFAULT_ESCO_SOURCE",
+    "DEFAULT_ESCO_BASE_URL",
+    "DEFAULT_ESCO_TIMEOUT_SECONDS",
+    "DEFAULT_SIMEL_CHILE_SOURCE",
+    "DEFAULT_SIMEL_CHILE_BASE_URL",
+    "DEFAULT_SIMEL_SDMX_BASE_URL",
+    "DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS",
+    # Brechas
+    "DEFAULT_BRECHAS_SOURCE",
+    "DEFAULT_BRECHAS_METODOLOGIA",
+    "DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA",
+    "BRECHAS_GET_SUCCESS_MESSAGE",
+    "BRECHAS_SAVE_SUCCESS_MESSAGE",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",

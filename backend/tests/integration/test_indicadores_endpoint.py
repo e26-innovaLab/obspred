@@ -26,6 +26,7 @@ async def test_get_indicadores_sin_filtros(async_client: AsyncClient) -> None:
     assert "timestamp" in payload
     assert payload["meta"]["total"] == 0
     assert payload["meta"]["extra"]["filtros"]["pais"] is None
+    assert payload["meta"]["extra"]["filtros"]["trimestre"] is None
 
 
 @pytest.mark.asyncio
@@ -44,6 +45,7 @@ async def test_get_indicadores_con_filtros_vacios(
         "ocupacion": "",
         "desde": "",
         "hasta": "",
+        "trimestre": "",
     }
     response = await async_client.get(url, params=params)
 
@@ -55,6 +57,7 @@ async def test_get_indicadores_con_filtros_vacios(
     assert payload["meta"]["extra"]["filtros"]["pais"] is None
     assert payload["meta"]["extra"]["filtros"]["sector"] is None
     assert payload["meta"]["extra"]["filtros"]["ocupacion"] is None
+    assert payload["meta"]["extra"]["filtros"]["trimestre"] is None
 
 
 @pytest.mark.asyncio
@@ -73,6 +76,7 @@ async def test_get_indicadores_con_filtros_completos(
         "ocupacion": "Desarrollador de software",
         "desde": "2024-Q1",
         "hasta": "2024-Q4",
+        "trimestre": "Q1",
     }
     response = await async_client.get(url, params=params)
 
@@ -88,6 +92,7 @@ async def test_get_indicadores_con_filtros_completos(
     )
     assert payload["meta"]["extra"]["filtros"]["desde"] == "2024-Q1"
     assert payload["meta"]["extra"]["filtros"]["hasta"] == "2024-Q4"
+    assert payload["meta"]["extra"]["filtros"]["trimestre"] == "Q1"
 
 
 @pytest.mark.asyncio
@@ -101,13 +106,35 @@ async def test_get_indicadores_sanitiza_espacios_en_blanco(
     """
     url = f"{settings.api_v1_prefix}{INDICADORES_ROUTE}"
     params = {
-        "pais": "  URY  ",
-        "sector": "   ",
+        "pais": "  CHL  ",
+        "sector": "  Salud  ",
+        "trimestre": "  Q2  ",
     }
     response = await async_client.get(url, params=params)
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["success"] is True
-    assert payload["meta"]["extra"]["filtros"]["pais"] == "URY"
-    assert payload["meta"]["extra"]["filtros"]["sector"] is None
+    assert payload["meta"]["extra"]["filtros"]["pais"] == "CHL"
+    assert payload["meta"]["extra"]["filtros"]["sector"] == "Salud"
+    assert payload["meta"]["extra"]["filtros"]["trimestre"] == "Q2"
+
+
+@pytest.mark.asyncio
+async def test_get_indicadores_parametro_no_permitido_retorna_422(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica que parámetros no reconocidos (extra='forbid') retornen HTTP 422.
+
+    Args:
+        async_client: Cliente HTTP asíncrono de pruebas.
+    """
+    url = f"{settings.api_v1_prefix}{INDICADORES_ROUTE}"
+    response = await async_client.get(url, params={"parametro_invalido": "hack"})
+
+    assert response.status_code == 422
+    payload = response.json()
+    assert payload["success"] is False
+    assert payload["status_code"] == 422
+    assert payload["data"] is None
+    assert len(payload["errors"]) > 0

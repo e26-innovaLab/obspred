@@ -6,7 +6,7 @@
 
 ## 1. Requisitos Previos
 
-- **Python:** 3.11+
+- **Python:** 3.11+ (64-bit). Ver detalle y pasos en la [Guía de Instalación de Python](guia-instalacion-python.md).
 - **Motor de Base de Datos:**
   - SQLite (incluido por defecto para desarrollo local).
   - PostgreSQL 15+ (recomendado para staging y producción).
