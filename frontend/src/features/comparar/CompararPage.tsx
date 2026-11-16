@@ -61,6 +61,10 @@ function Contenido({ paises, sector, indicador }: Pick<ReturnType<typeof useFilt
         estado={series.state}
         onRetry={series.retry}
         fuentes={(s) => s.flatMap((x) => x.fuentes)}
+        guardar={{
+          id: `comparar-serie|${indicador}|${paises.join(',')}|${sector ?? ''}`,
+          buildContenido: (datos) => ({ tipo: 'serie', datos }),
+        }}
       >
         {(s) => <SerieHistoricaChart series={s} />}
       </ChartCard>

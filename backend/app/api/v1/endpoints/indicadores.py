@@ -30,7 +30,7 @@ indicadores_router = APIRouter(
     summary="Consultar indicadores socioeconómicos, laborales y educativos",
     description=(
         "Obtiene indicadores normalizados bajo filtros jerárquicos: "
-        "país, sector, ocupación y rango temporal (desde / hasta)."
+        "país, sector, ocupación, rango temporal (desde / hasta) y trimestre."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -62,6 +62,7 @@ async def get_indicadores(
         ocupacion=filtros.ocupacion,
         desde=filtros.desde,
         hasta=filtros.hasta,
+        trimestre=filtros.trimestre,
     )
 
     data: list[IndicadorItemSchema] = [
@@ -71,6 +72,7 @@ async def get_indicadores(
             ocupacion=r.ocupacion,
             indicador=r.indicador,
             periodo=r.periodo,
+            trimestre=r.trimestre,
             valor=r.valor,
             tipo=r.tipo,
             fuente=r.fuente,

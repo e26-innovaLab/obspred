@@ -542,6 +542,7 @@ Para profundizar en la arquitectura, contratos, persistencia y despliegue del ba
 | [**Inyección de Dependencias**](docs/inyeccion-de-dependencias.md) | Estándar de inyección mediante `Annotated` y `Depends` en FastAPI. |
 | [**Manejo de Errores y Excepciones**](docs/manejo-de-errores-y-excepciones.md) | Jerarquía de excepciones de dominio y manejadores globales HTTP. |
 | [**Guía de Creación de Conectores**](docs/guia-creacion-conectores.md) | Pautas para crear clientes HTTP para fuentes públicas y APIs externas. |
+| [**Ingesta de SIMEL Chile (INE)**](docs/guia-ingesta-simel-chile.md) | Diagnóstico de WAF Huawei Cloud (HTTP 418), conector y normalizador CSV. |
 | [**Guía de Creación de CRUDs**](docs/guia-creacion-crud.md) | Paso a paso para implementar nuevos módulos y endpoints completos. |
 | [**Guía de Testing y Calidad**](docs/guia-de-testing-y-calidad.md) | Ejecución de pruebas unitarias y de integración con Pytest. |
 | [**Despliegue y Configuración de Entornos**](docs/despliegue-y-entornos.md) | Variables de entorno, Dockerfile y despliegue en plataformas cloud (Render, Railway). |

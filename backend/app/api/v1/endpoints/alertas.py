@@ -77,6 +77,19 @@ async def get_alertas(
             descripcion="Incremento sostenido impulsado por el sector tecnológico.",
         ),
         AlertaItemDto(
+            id="tasa_desempleo-URY-2025-Q4",
+            pais="URY",
+            indicador="tasa_desempleo",
+            periodo="2025-Q4",
+            variacion_pct=-3.2,
+            nivel="medio",
+            titulo="Desempleo: reducción del 3,2 %",
+            descripcion=(
+                "Mejora en la tasa de desocupación en el cuarto trimestre "
+                "reportada por ECH."
+            ),
+        ),
+        AlertaItemDto(
             id="tasa_desempleo-CHL-2025-Q3",
             pais="CHL",
             indicador="tasa_desempleo",

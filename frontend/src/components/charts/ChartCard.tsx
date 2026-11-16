@@ -1,8 +1,12 @@
 import type { ReactNode } from 'react';
+import './ChartCard.css';
 import type { AsyncState } from '../../hooks/useAsyncData';
 import type { Fuente, TipoIndicador } from '../../types/kpi';
+import type { SnapshotContenido } from '../../store/informeContextInstance';
 import { FuenteBadge } from '../common/FuenteBadge';
 import { SinDatos } from '../common/SinDatos';
+import { useInforme } from '../../store/useInforme';
+import { useFiltros } from '../../store/useFiltros';
 
 interface Props<T> {
   titulo: string;
@@ -14,6 +18,15 @@ interface Props<T> {
   mensajeSinDatos?: string;
   altura?: number;
   acciones?: ReactNode; // ej. selector de indicador
+  /**
+   * Si se pasa, habilita el botón "Guardar en mi informe".
+   * `id` debe ser único por instancia del gráfico (ej: "demanda", "ranking-sector").
+   * `buildContenido` convierte los datos en el snapshot serializable.
+   */
+  guardar?: {
+    id: string;
+    buildContenido: (data: T) => SnapshotContenido;
+  };
   children: (data: T) => ReactNode;
 }
 
@@ -29,8 +42,37 @@ export function ChartCard<T>({
   mensajeSinDatos,
   altura = 280,
   acciones,
+  guardar,
   children,
 }: Props<T>) {
+  const informe = useInforme();
+  const { filtros } = useFiltros();
+
+  const guardado = guardar ? informe.estaGuardado(guardar.id) : false;
+
+  const handleGuardar = () => {
+    if (!guardar || estado.status !== 'success') return;
+    const fuentesSnap = fuentes ? unicas(fuentes(estado.data)) : [];
+    const fechaGuardado = new Date().toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+    if (guardado) {
+      informe.quitar(guardar.id);
+    } else {
+      informe.guardar({
+        id: guardar.id,
+        titulo,
+        descripcion,
+        contenido: guardar.buildContenido(estado.data),
+        fuentes: fuentesSnap,
+        filtros,
+        fechaGuardado,
+      });
+    }
+  };
+
   return (
     <article className="chart-card" aria-busy={estado.status === 'loading'}>
       <header className="chart-card__header">
@@ -38,7 +80,20 @@ export function ChartCard<T>({
           <h3>{titulo}</h3>
           {descripcion && <p className="chart-card__descripcion">{descripcion}</p>}
         </div>
-        {acciones}
+        <div className="chart-card__header-acciones">
+          {acciones}
+          {guardar && estado.status === 'success' && (
+            <button
+              type="button"
+              className={`chart-card__btn-guardar${guardado ? ' chart-card__btn-guardar--activo' : ''}`}
+              onClick={handleGuardar}
+              aria-pressed={guardado}
+              title={guardado ? 'Quitar del informe' : 'Guardar en mi informe'}
+            >
+              {guardado ? '✓ Guardado' : '＋ Mi informe'}
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="chart-card__cuerpo" style={{ minHeight: altura }}>

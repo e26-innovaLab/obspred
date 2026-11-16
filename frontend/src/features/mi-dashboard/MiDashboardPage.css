@@ -1,0 +1,127 @@
+/* Mi Dashboard — página de informe personalizado */
+
+.mi-dashboard__acciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.mi-dashboard__contador {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.mi-dashboard__acciones-botones {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mi-dashboard__btn-limpiar {
+  padding: 0.4rem 0.9rem;
+  border: 1.5px solid var(--color-border, #d1d5db);
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--color-text, #374151);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.mi-dashboard__btn-limpiar:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.mi-dashboard__btn-pdf {
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: var(--color-primary, #4f46e5);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mi-dashboard__btn-pdf:hover {
+  background: #3730a3;
+}
+
+.mi-dashboard__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.mi-dashboard__informe-header {
+  display: none; /* visible solo en print */
+  border-bottom: 2px solid var(--color-primary, #4f46e5);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.mi-dashboard__informe-header h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.1rem;
+}
+
+.mi-dashboard__informe-header p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.mi-dashboard__snapshot {
+  position: relative;
+}
+
+.mi-dashboard__btn-quitar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary, #9ca3af);
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  line-height: 1;
+  transition: color 0.15s;
+  flex-shrink: 0;
+}
+
+.mi-dashboard__btn-quitar:hover {
+  color: #ef4444;
+}
+
+.mi-dashboard__snapshot-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #9ca3af);
+}
+
+/* Print */
+@media print {
+  .app-header,
+  .mi-dashboard__acciones,
+  .mi-dashboard__btn-quitar {
+    display: none !important;
+  }
+  .app-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .mi-dashboard__informe-header {
+    display: block !important;
+  }
+  .dashboard__graficos {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .chart-card {
+    break-inside: avoid;
+  }
+}

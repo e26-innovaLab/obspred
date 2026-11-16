@@ -9,6 +9,9 @@ from app.infrastructure.connectors.esco_connector import (
 from app.infrastructure.connectors.ilostat_connector import (
     ILOSTATConnector,
 )
+from app.infrastructure.connectors.simel_chile_connector import (
+    SimelChileConnector,
+)
 from app.infrastructure.connectors.world_bank_connector import (
     WorldBankConnector,
 )
@@ -18,4 +21,5 @@ __all__ = [
     "ILOSTATConnector",
     "BCentralChileConnector",
     "EscoConnector",
+    "SimelChileConnector",
 ]
