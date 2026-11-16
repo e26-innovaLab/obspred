@@ -204,3 +204,4 @@ alembic -c backend/alembic.ini current
 # Iniciar backend
 uvicorn app.main:app --app-dir backend --reload --port 8000
 ```
+ignorar
