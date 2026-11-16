@@ -6,6 +6,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.alertas_service import AlertaService
 from app.application.services.brecha_service import BrechaService
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
@@ -329,6 +330,23 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_alert_service(
+    indicador_repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> AlertaService:
+    """Provee el servicio de aplicación para generación y consulta de alertas.
+
+    Args:
+        indicador_repository: Repositorio de indicadores inyectado por FastAPI.
+
+    Returns:
+        AlertaService: Servicio de alertas configurado con repositorio de indicadores.
+    """
+    return AlertaService(indicador_repository=indicador_repository)
 
 
 def provide_esco_connector() -> IExternalDataConnector:
