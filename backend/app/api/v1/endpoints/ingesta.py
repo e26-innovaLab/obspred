@@ -463,16 +463,6 @@ async def sync_bcentral_chile_indicators(
     description=(
         "Ejecuta extracción y persistencia idempotente de indicadores "
         "oficiales desde la API de Series de Tiempo de Datos Argentina."
-    INGESTA_SYNC_SIMEL_CHILE_ROUTE,
-    response_model=SyncExternalDataResponseSchema,
-    status_code=status.HTTP_200_OK,
-    summary="Sincronizar indicadores oficiales desde SIMEL Chile (INE)",
-    description=(
-        "Intenta sincronización automatizada con la plataforma oficial "
-        "de SIMEL Chile. Nota: Debido a la protección activa por WAF "
-        "de Huawei Cloud (código HTTP 418), si la solicitud es rechazada, "
-        "el servicio devolverá un error descriptivo recomendando la ingesta "
-        "mediante la carga del archivo exportado vía POST /ingesta/upload/simel."
     ),
     responses={
         status.HTTP_200_OK: {
@@ -485,10 +475,6 @@ async def sync_bcentral_chile_indicators(
         },
         status.HTTP_502_BAD_GATEWAY: {
             "description": "Error al comunicarse con la API externa.",
-            "description": (
-                "Acceso desatendido bloqueado por Huawei Cloud WAF (HTTP 418) "
-                "o fallo de comunicación con la plataforma remota."
-            ),
             "model": ApiResponse,
         },
     },
@@ -501,15 +487,6 @@ async def sync_datos_argentina_indicators(
     payload: SyncDatosArgentinaRequestSchema | None = None,
 ) -> SyncExternalDataResponseSchema | JSONResponse:
     """Sincroniza indicadores oficiales desde Datos Argentina."""
-
-async def sync_simel_chile_indicators(
-    sync_service: Annotated[
-        ExternalSyncService,
-        Depends(provide_simel_chile_sync_service),
-    ],
-    payload: SyncExternalDataRequestSchema | None = None,
-) -> SyncExternalDataResponseSchema | JSONResponse:
-    """Sincroniza indicadores oficiales desde SIMEL Chile."""
     paises = payload.paises if payload else None
     indicadores = payload.indicadores if payload else None
     periodo_desde = payload.periodo_desde if payload else None
@@ -527,9 +504,6 @@ async def sync_simel_chile_indicators(
             result_dto.error_message or "Ocurrió un error durante la sincronización."
         )
 
-            result_dto.error_message
-            or "Ocurrió un error inesperado durante la sincronización."
-        )
         is_db_err = any(
             tok in err_msg
             for tok in [
@@ -552,8 +526,6 @@ async def sync_simel_chile_indicators(
             else ApiErrorCode.EXTERNAL_SERVICE_ERROR
         )
 
-        error_response = create_error_response(
-            message=(f"Fallo en la sincronización de '{result_dto.source}'."),
         error_response = create_error_response(
             message=f"Fallo en la sincronización de '{result_dto.source}'.",
             status_code=http_status,
@@ -584,9 +556,112 @@ async def sync_simel_chile_indicators(
 
     return create_success_response(
         data=response_data,
-        message=(f"Sincronización de '{result_dto.source}' exitosa."),
+        message=f"Sincronización de '{result_dto.source}' exitosa.",
         status_code=status.HTTP_200_OK,
     )
+
+
+@ingesta_router.post(
+    INGESTA_SYNC_SIMEL_CHILE_ROUTE,
+    response_model=SyncExternalDataResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Sincronizar indicadores oficiales desde SIMEL Chile (INE)",
+    description=(
+        "Intenta sincronización automatizada con la plataforma oficial "
+        "de SIMEL Chile. Nota: Debido a la protección activa por WAF "
+        "de Huawei Cloud (código HTTP 418), si la solicitud es rechazada, "
+        "el servicio devolverá un error descriptivo recomendando la ingesta "
+        "mediante la carga del archivo exportado vía POST /ingesta/upload/simel."
+    ),
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Sincronización completada exitosamente.",
+            "model": SyncExternalDataResponseSchema,
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Error de persistencia o conexión con base de datos.",
+            "model": ApiResponse,
+        },
+        status.HTTP_502_BAD_GATEWAY: {
+            "description": (
+                "Acceso desatendido bloqueado por Huawei Cloud WAF (HTTP 418) "
+                "o fallo de comunicación con la plataforma remota."
+            ),
+            "model": ApiResponse,
+        },
+    },
+)
+async def sync_simel_chile_indicators(
+    sync_service: Annotated[
+        ExternalSyncService,
+        Depends(provide_simel_chile_sync_service),
+    ],
+    payload: SyncExternalDataRequestSchema | None = None,
+) -> SyncExternalDataResponseSchema | JSONResponse:
+    """Sincroniza indicadores oficiales desde SIMEL Chile."""
+    paises = payload.paises if payload else None
+    indicadores = payload.indicadores if payload else None
+    periodo_desde = payload.periodo_desde if payload else None
+    periodo_hasta = payload.periodo_hasta if payload else None
+
+    result_dto = await sync_service.sync_data(
+        paises=paises,
+        indicadores=indicadores,
+        periodo_desde=periodo_desde,
+        periodo_hasta=periodo_hasta,
+    )
+
+    if result_dto.status == SyncStatus.FAILED:
+        err_msg = (
+            result_dto.error_message
+            or "Ocurrió un error inesperado durante la sincronización."
+        )
+        is_db_err = any(
+            tok in err_msg
+            for tok in [
+                "Connect call failed",
+                "OperationalError",
+                "database",
+                "5432",
+            ]
+        )
+        http_status = (
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+            if is_db_err
+            else status.HTTP_502_BAD_GATEWAY
+        )
+        err_code = (
+            ApiErrorCode.DATABASE_CONNECTION_ERROR
+            if is_db_err
+            else ApiErrorCode.EXTERNAL_SERVICE_ERROR
+        )
+        error_response = create_error_response(
+            message=f"Fallo en la sincronización de '{result_dto.source}'.",
+            status_code=http_status,
+            errors=[
+                ErrorDetail(
+                    code=err_code,
+                    detail=err_msg,
+                    field="source",
+                )
+            ],
+        )
+        return JSONResponse(
+            status_code=http_status,
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
+        )
+
+    response_data = SyncExternalDataResponseData(
+        source=result_dto.source,
+        status=result_dto.status,
+        total_fetched=result_dto.total_fetched,
+        total_persisted=result_dto.total_persisted,
+        execution_time_seconds=result_dto.execution_time_seconds,
+        countries_synced=result_dto.countries_synced,
+        indicators_synced=result_dto.indicators_synced,
+        error_message=result_dto.error_message,
+    )
+
     msg = f"Sincronización de '{result_dto.source}' exitosa."
     return create_success_response(
         data=response_data,

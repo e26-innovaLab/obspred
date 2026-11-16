@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, Float, Integer, String, func
+from sqlalchemy import Boolean, DateTime, Float, Integer, String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.persistence.database import Base
@@ -14,6 +14,13 @@ class HabilidadBrechaModel(Base):
     """
 
     __tablename__ = "habilidades_brechas"
+    __table_args__ = (
+        UniqueConstraint(
+            "ocupacion",
+            "habilidad",
+            name="uq_habilidades_brechas_ocupacion_habilidad",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(
         Integer,

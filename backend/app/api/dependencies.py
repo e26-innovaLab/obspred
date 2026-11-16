@@ -40,7 +40,8 @@ from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndiceEmpleabilidadRepository,
 )
 from app.infrastructure.persistence.repositories.brecha_repository import (
-    SQLAlchemyBrechaRepository,)
+    SQLAlchemyBrechaRepository,
+)
 from app.infrastructure.persistence.repositories.fuente_repository import (
     SqlAlchemyFuenteRepository,
 )
@@ -219,6 +220,8 @@ def provide_brecha_service(
         BrechaService: Servicio listo para su uso en controladores.
     """
     return BrechaService(repository=repository)
+
+
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()

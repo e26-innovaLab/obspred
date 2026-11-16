@@ -198,6 +198,19 @@ DEFAULT_SIMEL_CHILE_BASE_URL: Final[str] = "https://www.simel.gob.cl"
 DEFAULT_SIMEL_SDMX_BASE_URL: Final[str] = "https://sdmx.ine.gob.cl/rest"
 DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS: Final[float] = 30.0
 
+# Constantes de configuración para Brechas de Habilidades
+DEFAULT_BRECHAS_SOURCE: Final[str] = "SENCE SABE / ESCO"
+DEFAULT_BRECHAS_METODOLOGIA: Final[str] = (
+    "Taxonomía de referencia ESCO con demanda observada en avisos SABE."
+)
+DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA: Final[str] = (
+    "Taxonomía ESCO con demanda y oferta formativa persistida en base de datos."
+)
+BRECHAS_GET_SUCCESS_MESSAGE: Final[str] = "Brechas de habilidades obtenidas con éxito."
+BRECHAS_SAVE_SUCCESS_MESSAGE: Final[str] = (
+    "Brechas de habilidades persistidas con éxito."
+)
+
 
 # ==============================================================================
 # 7. Mensajes Estándar para Respuestas REST (ApiResponse)
@@ -295,6 +308,12 @@ __all__ = [
     "DEFAULT_SIMEL_CHILE_BASE_URL",
     "DEFAULT_SIMEL_SDMX_BASE_URL",
     "DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS",
+    # Brechas
+    "DEFAULT_BRECHAS_SOURCE",
+    "DEFAULT_BRECHAS_METODOLOGIA",
+    "DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA",
+    "BRECHAS_GET_SUCCESS_MESSAGE",
+    "BRECHAS_SAVE_SUCCESS_MESSAGE",
     # Mensajes
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",
