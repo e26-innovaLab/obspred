@@ -931,6 +931,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "datos-argentina"
                   ]
                 }
               },
@@ -968,6 +973,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "datos-argentina"
                   ]
                 }
               },
@@ -1005,6 +1015,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "datos-argentina"
                   ]
                 }
               },
@@ -1042,6 +1057,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "datos-argentina"
                   ]
                 }
               },
@@ -1070,6 +1090,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "datos-argentina"
                   ]
                 }
               },
