@@ -908,7 +908,7 @@
             "description": "Sincroniza y persiste indicadores oficiales de series de tiempo de Datos Argentina.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"indicadores\": [\n    \"empleo_registrado\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2024-12-31\"\n}",
+              "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"indicadores\": [\n    \"empleo_registrado_total\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2026-12-31\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -943,7 +943,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' completada exitosamente.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"total_records_fetched\": 48,\n    \"total_records_inserted\": 48,\n    \"status\": \"success\",\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:30:00Z\"\n}"
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' exitosa.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"status\": \"success\",\n    \"total_fetched\": 25,\n    \"total_persisted\": 25,\n    \"execution_time_seconds\": 1.25,\n    \"countries_synced\": [\n      \"ARG\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_registrado_total\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-16T22:15:00.000000Z\"\n}"
             },
             {
               "name": "502_error_sync_datos_argentina",

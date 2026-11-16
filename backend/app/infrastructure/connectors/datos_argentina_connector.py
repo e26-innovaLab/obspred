@@ -30,7 +30,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
     INDICATOR_MAPPINGS: Final[dict[str, dict[str, Any]]] = {
         # Empleo registrado
         "empleo_registrado_total": {
-            "id": "156.1_TLTAL_0_0_5",
+            "id": "155.1_TLTAL_C_0_0_5",
             "nombre": "Total empleo registrado",
             "sector": None,
             "ocupacion": None,
