@@ -1,14 +1,29 @@
+"""Script de prueba y diagnóstico para el conector de Datos Argentina.
+
+Verifica la disponibilidad de la API de series de tiempo de Datos Argentina
+(apis.datos.gob.ar), la búsqueda de series y la extracción de indicadores.
+Requiere conexión a internet.
+"""
+
 import asyncio
 import logging
+import sys
+from pathlib import Path
 
-from app.infrastructure.connectors.datos_argentina_connector import (
+# Asegurar que el directorio raíz de backend esté en sys.path para ejecuciones directas
+backend_dir = Path(__file__).resolve().parents[2]
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+from app.infrastructure.connectors.datos_argentina_connector import (  # noqa: E402
     DatosArgentinaConnector,
 )
 
 logger = logging.getLogger(__name__)
 
 
-async def main():
+async def main() -> None:
+    """Ejecuta el flujo de verificación y prueba de extracción de Datos Argentina."""
     connector = DatosArgentinaConnector()
 
     logger.info("--- 1. PROBANDO CONEXIÓN ---")

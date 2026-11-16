@@ -4,6 +4,7 @@ Configura middlewares de seguridad, rutas centrales, estandarización de respues
 y manejadores globales de excepciones bajo el esquema ApiResponse.
 """
 
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Request, status
@@ -33,6 +34,7 @@ from app.core.constants import (
 )
 from app.core.logging import logger
 from app.domain.exceptions.base import DomainException, EntityNotFoundException
+from app.infrastructure.persistence.database import dispose_database
 
 
 def register_exception_handlers(app: FastAPI) -> None:
@@ -158,12 +160,20 @@ def create_application() -> FastAPI:
     Returns:
         FastAPI: Instancia de la aplicación configurada con rutas y middlewares.
     """
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI):
+        """Asegura la liberación del pool de conexiones antes de cerrar la app."""
+        yield
+        await dispose_database()
+
     application = FastAPI(
         title=settings.app_name,
         description=settings.app_description,
         version=DEFAULT_APP_VERSION,
         docs_url=DOCS_ROUTE if settings.debug else None,
         redoc_url=REDOC_ROUTE if settings.debug else None,
+        lifespan=lifespan,
     )
 
     # Configuración de CORS
