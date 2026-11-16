@@ -10,6 +10,7 @@ from app.core.constants import (
     CATALOGO_ROUTE,
     INDICE_EMPLEABILIDAD_ROUTE,
     METRICAS_ROUTE,
+    TENDENCIAS_ROUTE,
 )
 
 
@@ -166,3 +167,29 @@ async def test_indice_empleabilidad_ranking_endpoint(
     payload = response.json()
     assert payload["success"] is True
     assert len(payload["data"]["ocupaciones"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_tendencias_endpoint(async_client: AsyncClient) -> None:
+    """Verifica que /tendencias responda bajo el envoltorio canónico ApiResponse."""
+    url = f"{settings.api_v1_prefix}{TENDENCIAS_ROUTE}/"
+    response = await async_client.get(
+        url,
+        params={
+            "pais": "Argentina",
+            "sector": "tecnologia",
+            "ocupacion": "dev-software",
+            "indicador": "puestos_demandados",
+        },
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["status_code"] == 200
+    assert payload["data"]["pais"] == "Argentina"
+    assert "serie_historica" in payload["data"]
+    assert "proyeccion" in payload["data"]
+    assert "cambios_significativos" in payload["data"]
+    assert "metadatos_historico" in payload["data"]
+    assert "timestamp" in payload

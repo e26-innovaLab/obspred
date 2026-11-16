@@ -8,6 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.alertas_service import AlertaService
 from app.application.services.brecha_service import BrechaService
+from app.application.services.external_services_health_service import (
+    ExternalServicesHealthService,
+)
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
 from app.application.services.fuentes_service import FuenteService
@@ -413,3 +416,54 @@ def provide_datos_argentina_sync_service(
         ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
     """
     return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_external_services_health_service(
+    world_bank: Annotated[
+        IExternalDataConnector,
+        Depends(provide_world_bank_connector),
+    ],
+    simel_chile: Annotated[
+        SimelChileConnector,
+        Depends(provide_simel_chile_connector),
+    ],
+    datos_argentina: Annotated[
+        IExternalDataConnector,
+        Depends(provide_datos_argentina_connector),
+    ],
+    bcentral_chile: Annotated[
+        IExternalDataConnector,
+        Depends(provide_bcentral_chile_connector),
+    ],
+    ilostat: Annotated[
+        IExternalDataConnector,
+        Depends(provide_ilostat_connector),
+    ],
+    esco: Annotated[
+        IExternalDataConnector,
+        Depends(provide_esco_connector),
+    ],
+) -> ExternalServicesHealthService:
+    """Provee el servicio de salud y disponibilidad de todas las fuentes externas.
+
+    Args:
+        world_bank: Conector inyectado del Banco Mundial.
+        simel_chile: Conector inyectado de SIMEL - INE Chile.
+        datos_argentina: Conector inyectado de Datos Argentina.
+        bcentral_chile: Conector inyectado del Banco Central de Chile.
+        ilostat: Conector inyectado de ILOSTAT (OIT).
+        esco: Conector inyectado de la taxonomía ESCO.
+
+    Returns:
+        ExternalServicesHealthService: Orquestador listo para verificar la salud
+            de todos los conectores externos configurados.
+    """
+    connectors = [
+        world_bank,
+        simel_chile,
+        datos_argentina,
+        bcentral_chile,
+        ilostat,
+        esco,
+    ]
+    return ExternalServicesHealthService(connectors=connectors)
