@@ -7,9 +7,15 @@ Verifica:
 """
 
 import asyncio
+import sys
 from pathlib import Path
 
-from app.infrastructure.connectors.simel_chile_connector import (
+# Asegurar que el directorio raíz de backend esté en sys.path para ejecuciones directas
+backend_dir = Path(__file__).resolve().parents[2]
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
+
+from app.infrastructure.connectors.simel_chile_connector import (  # noqa: E402
     SimelChileConnector,
 )
 
@@ -53,12 +59,8 @@ async def main() -> None:
     print("\n==================================================================")
     print(" 3. PARSEO DE DATASET DE EJEMPLO: parse_simel_csv()")
     print("==================================================================")
-    sample_path = (
-        Path(__file__).resolve().parent.parent
-        / "data"
-        / "examples"
-        / "simel_chile_sample.csv"
-    )
+    repo_root = Path(__file__).resolve().parents[3]
+    sample_path = repo_root / "data" / "examples" / "simel_chile_sample.csv"
 
     if not sample_path.exists():
         print(f"No se encontró el archivo de ejemplo en: {sample_path}")

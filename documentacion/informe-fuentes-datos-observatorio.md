@@ -102,7 +102,7 @@ https://api.worldbank.org/v2/country/ARG;URY;CHL/indicator/SL.UEM.TOTL.ZS?format
     - Normaliza períodos (trimestres móviles como `2024-03-01/P3M` a `2024-Q1`).
     - Extrae e infiere automáticamente el campo opcional `trimestre` (`Q1`, `Q2`, `Q3`, `Q4`) para facilitar filtros analíticos sin romper el eje temporal de Recharts.
     - Ofrece soporte dual de contingencia para subir archivos CSV exportados desde el explorador web mediante `POST /api/v1/ingesta/upload/simel-csv`.
-    - Pruebas y diagnóstico interactivo en `backend/test_conexion_simel.py` y dataset en `data/examples/simel_chile_sample.csv`.
+    - Pruebas y diagnóstico interactivo en `backend/tests/manual/test_conexion_simel.py` y dataset en `data/examples/simel_chile_sample.csv`.
 - **Banco Central, Web Services** (requiere registro gratuito):
   `https://si3.bcentral.cl/SieteRestWS/SieteRestWS.ashx?user=USUARIO&pass=CLAVE&firstdate=2020-01-01&timeseries=<CODIGO_SERIE>&function=GetSeries`
 - **Datos abiertos (CKAN):** `https://datos.gob.cl/api/3/action/package_search?q=empleo`
