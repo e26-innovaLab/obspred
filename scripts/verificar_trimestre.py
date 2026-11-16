@@ -8,9 +8,8 @@ import sys
 backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "backend"))
 sys.path.insert(0, backend_path)
 
-from sqlalchemy import text  # noqa: E402
-
-from app.infrastructure.persistence.database import engine  # noqa: E402
+from app.infrastructure.persistence.database import engine
+from sqlalchemy import text
 
 
 async def main() -> None:

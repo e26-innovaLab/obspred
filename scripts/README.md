@@ -9,3 +9,15 @@ Inspecciona la base de datos para verificar la distribución y el estado de la c
 ```bash
 python scripts/verificar_trimestre.py
 ```
+
+### `poblar_datos_faltantes.py`
+Puebla de manera idempotente los registros faltantes para la demo y desarrollo del Observatorio:
+- Catálogo de fuentes oficiales de trazabilidad (`fuentes`).
+- Catálogo de brechas de habilidades por ocupación (`habilidades_brechas`).
+- Indicadores oficiales de Datos Argentina (series de empleo registrado y EPH).
+- Taxonomías ocupacionales de ESCO.
+- Dataset de muestra oficial de SIMEL Chile (INE).
+- Series de indicadores macroeconómicos y laborales del Banco Mundial.
+```bash
+python scripts/poblar_datos_faltantes.py
+```
