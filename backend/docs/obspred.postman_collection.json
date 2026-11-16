@@ -905,7 +905,7 @@
                 "datos-argentina"
               ]
             },
-            "description": "Sincroniza y persiste indicadores oficiales de series de tiempo de Datos Argentina.",
+            "description": "Sincroniza y persiste indicadores oficiales de series de tiempo de Datos Argentina.\n\nIndicadores disponibles:\n- `empleo_registrado_total`: Total empleo registrado privado (puestos de trabajo)\n- `empleo_registrado_industria`: Empleo registrado privado en industria (puestos de trabajo)\n- `tasa_actividad_total`: Tasa de actividad total EPH (%)\n- `tasa_empleo_total`: Tasa de empleo total EPH (%)\n- `tasa_desocupacion_total`: Tasa de desocupación total EPH (%)\n- `tasa_subocupacion_total`: Tasa de subocupación total EPH (%)\n- `tasa_subocupacion_demandante`: Tasa de subocupación demandante EPH (%)\n- `tasa_subocupacion_no_demandante`: Tasa de subocupación no demandante EPH (%)",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"indicadores\": [\n    \"empleo_registrado_total\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2026-12-31\"\n}",
@@ -944,6 +944,117 @@
                 }
               ],
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' exitosa.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"status\": \"success\",\n    \"total_fetched\": 25,\n    \"total_persisted\": 25,\n    \"execution_time_seconds\": 1.25,\n    \"countries_synced\": [\n      \"ARG\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_registrado_total\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-16T22:15:00.000000Z\"\n}"
+            },
+            {
+              "name": "200_ok_sync_datos_argentina_industria",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"indicadores\": [\n    \"empleo_registrado_industria\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2026-12-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' exitosa.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"status\": \"success\",\n    \"total_fetched\": 25,\n    \"total_persisted\": 25,\n    \"execution_time_seconds\": 1.12,\n    \"countries_synced\": [\n      \"ARG\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_registrado_industria\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-16T22:15:00.000000Z\"\n}"
+            },
+            {
+              "name": "200_ok_sync_datos_argentina_eph",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"indicadores\": [\n    \"tasa_actividad_total\",\n    \"tasa_empleo_total\",\n    \"tasa_desocupacion_total\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2026-12-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' exitosa.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"status\": \"success\",\n    \"total_fetched\": 18,\n    \"total_persisted\": 18,\n    \"execution_time_seconds\": 1.45,\n    \"countries_synced\": [\n      \"ARG\"\n    ],\n    \"indicators_synced\": [\n      \"tasa_actividad_total\",\n      \"tasa_desocupacion_total\",\n      \"tasa_empleo_total\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-16T22:15:00.000000Z\"\n}"
+            },
+            {
+              "name": "200_ok_sync_datos_argentina_todos",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"paises\": [\n    \"ARG\"\n  ],\n  \"periodo_desde\": \"2020-01-01\",\n  \"periodo_hasta\": \"2026-12-31\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/datos-argentina",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'Datos Argentina' exitosa.\",\n  \"data\": {\n    \"source\": \"Datos Argentina\",\n    \"status\": \"success\",\n    \"total_fetched\": 86,\n    \"total_persisted\": 86,\n    \"execution_time_seconds\": 3.42,\n    \"countries_synced\": [\n      \"ARG\"\n    ],\n    \"indicators_synced\": [\n      \"empleo_registrado_industria\",\n      \"empleo_registrado_total\",\n      \"tasa_actividad_total\",\n      \"tasa_desocupacion_total\",\n      \"tasa_empleo_total\",\n      \"tasa_subocupacion_demandante\",\n      \"tasa_subocupacion_no_demandante\",\n      \"tasa_subocupacion_total\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-16T22:15:00.000000Z\"\n}"
             },
             {
               "name": "502_error_sync_datos_argentina",
