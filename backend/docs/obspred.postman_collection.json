@@ -3333,7 +3333,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{URL_BASE}}/alertas?pais=URY&tipo=significativo",
+              "raw": "{{URL_BASE}}/alertas?pais=URY&indicador=tasa_desempleo&tipo=variacion_significativa",
               "host": [
                 "{{URL_BASE}}"
               ],
@@ -3344,15 +3344,27 @@
                 {
                   "key": "pais",
                   "value": "URY",
-                  "description": "Código ISO-3 (URY, ARG, CHL o vacío para todos)"
+                  "description": "Código ISO 3166-1 alpha-3 (ARG, URY, CHL o omitir para todos)"
+                },
+                {
+                  "key": "sector",
+                  "value": "tecnologia",
+                  "disabled": true,
+                  "description": "Filtro opcional por sector estratégico"
+                },
+                {
+                  "key": "indicador",
+                  "value": "tasa_desempleo",
+                  "description": "Filtro opcional por slug de indicador"
                 },
                 {
                   "key": "tipo",
-                  "value": "significativo",
-                  "description": "Tipo de alerta"
+                  "value": "variacion_significativa",
+                  "description": "Clasificación de la alerta ('variacion_significativa')"
                 }
               ]
-            }
+            },
+            "description": "Retorna alertas estadísticas y cambios significativos calculados a partir de variaciones interperíodo en indicadores oficiales."
           },
           "response": [
             {
@@ -3764,6 +3776,196 @@
                 }
               ],
               "body": "{\n  \"detail\": [\n    {\n      \"type\": \"missing\",\n      \"loc\": [\n        \"body\",\n        \"nombre\"\n      ],\n      \"msg\": \"Field required\",\n      \"input\": {}\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "put_fuente",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes/1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes",
+                "1"
+              ]
+            },
+            "description": "Actualiza los metadatos o estado de una fuente existente en el catálogo.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"nombre\": \"INDEC\",\n  \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina (Actualizado)\",\n  \"url\": \"https://www.indec.gob.ar\",\n  \"ultima_actualizacion\": \"2026-11-15T00:00:00Z\",\n  \"estado\": \"activa\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_update_fuente",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/1",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "1"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": 1,\n  \"nombre\": \"INDEC\",\n  \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina (Actualizado)\",\n  \"url\": \"https://www.indec.gob.ar\",\n  \"ultima_actualizacion\": \"2026-11-15T00:00:00Z\",\n  \"estado\": \"activa\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuente actualizada con éxito.\",\n  \"data\": {\n    \"id\": 1,\n    \"nombre\": \"INDEC\",\n    \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina (Actualizado)\",\n    \"url\": \"https://www.indec.gob.ar\",\n    \"ultima_actualizacion\": \"2026-11-15T00:00:00Z\",\n    \"estado\": \"activa\"\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            },
+            {
+              "name": "400_bad_request_id_mismatch",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/2",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "2"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"id\": 1,\n  \"nombre\": \"INDEC\",\n  \"descripcion\": \"ID no coincide\",\n  \"url\": \"https://www.indec.gob.ar\",\n  \"ultima_actualizacion\": \"2026-11-15T00:00:00Z\",\n  \"estado\": \"activa\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"detail\": \"El ID de la fuente en la URL no coincide con el ID en el cuerpo de la solicitud.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "delete_fuente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{URL_BASE}}/fuentes/1",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "fuentes",
+                "1"
+              ]
+            },
+            "description": "Elimina una fuente existente del catálogo por su ID."
+          },
+          "response": [
+            {
+              "name": "200_ok_delete_fuente",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/1",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "1"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuente eliminada con éxito.\",\n  \"data\": null,\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            },
+            {
+              "name": "404_not_found_fuente",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes/999",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "999"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 404,\n  \"message\": \"Fuente con identificador 999 no encontrada en el sistema.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"ENTITY_NOT_FOUND\",\n      \"detail\": \"Fuente con identificador 999 no encontrada en el sistema.\",\n      \"field\": \"Fuente\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
             }
           ]
         }
