@@ -82,7 +82,7 @@ class SyncDatosArgentinaRequestSchema(BaseModel):
 
     paises: list[str] | None = Field(
         default=None,
-        description="Países a sincronizar. Datos Argentina trabaja " \
+        description="Países a sincronizar. Datos Argentina trabaja "
         "principalmente con ARG.",
         examples=[["ARG"]],
     )

@@ -35,9 +35,7 @@ async def main():
     try:
         records = await connector.fetch_indicators(
             paises=["ARG"],
-            indicadores=list(
-                DatosArgentinaConnector.INDICATOR_MAPPINGS.keys()
-            ),
+            indicadores=list(DatosArgentinaConnector.INDICATOR_MAPPINGS.keys()),
             periodo_desde="2018-01-01",
             periodo_hasta="2019-01-01",
         )
