@@ -75,6 +75,45 @@ class SyncExternalDataRequestSchema(BaseModel):
     )
 
 
+class SyncDatosArgentinaRequestSchema(BaseModel):
+    """Parámetros de solicitud para la sincronización de Datos Argentina."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    paises: list[str] | None = Field(
+        default=None,
+        description="Países a sincronizar. Datos Argentina trabaja " \
+        "principalmente con ARG.",
+        examples=[["ARG"]],
+    )
+    indicadores: list[str] | None = Field(
+        default=None,
+        description="Indicadores disponibles en el conector de Datos Argentina.",
+        examples=[
+            [
+                "empleo_registrado_total",
+                "empleo_registrado_industria",
+                "tasa_actividad_total",
+                "tasa_empleo_total",
+                "tasa_desocupacion_total",
+                "tasa_subocupacion_total",
+                "tasa_subocupacion_demandante",
+                "tasa_subocupacion_no_demandante",
+            ]
+        ],
+    )
+    periodo_desde: str | None = Field(
+        default=None,
+        description="Año o período inicial de extracción.",
+        examples=["2018"],
+    )
+    periodo_hasta: str | None = Field(
+        default=None,
+        description="Año o período final de extracción.",
+        examples=["2024"],
+    )
+
+
 class SyncExternalDataResponseData(BaseModel):
     """Resultado detallado de la sincronización externa ejecutada."""
 

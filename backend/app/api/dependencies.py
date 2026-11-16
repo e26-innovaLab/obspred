@@ -26,7 +26,13 @@ from app.domain.interfaces.indice_empleabilidad_repository import (
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
+from app.infrastructure.connectors.datos_argentina_connector import (
+    DatosArgentinaConnector,
+)
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
+from app.infrastructure.connectors.simel_chile_connector import (
+    SimelChileConnector,
+)
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
@@ -277,6 +283,40 @@ def provide_bcentral_chile_sync_service(
     return ExternalSyncService(connector=connector, repository=repository)
 
 
+def provide_simel_chile_connector() -> SimelChileConnector:
+    """Provee la instancia del conector oficial de SIMEL Chile (INE).
+
+    Returns:
+        SimelChileConnector: Instancia de SimelChileConnector configurada.
+    """
+    return SimelChileConnector(
+        base_url=getattr(settings, "simel_chile_base_url", None),
+        timeout=getattr(settings, "simel_chile_timeout_seconds", 30.0),
+    )
+
+
+def provide_simel_chile_sync_service(
+    connector: Annotated[
+        SimelChileConnector,
+        Depends(provide_simel_chile_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de sincronización de SIMEL Chile.
+
+    Args:
+        connector: Conector de SIMEL Chile inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación para ingesta y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
 def provide_fuente_service(
     session: Annotated[
         AsyncSession,
@@ -285,3 +325,39 @@ def provide_fuente_service(
 ) -> FuenteService:
     repository = SqlAlchemyFuenteRepository(session=session)
     return FuenteService(repository)
+
+
+def provide_datos_argentina_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de Datos Argentina API.
+
+    Returns:
+        IExternalDataConnector: Instancia de DatosArgentinaConnector configurada.
+    """
+
+    return DatosArgentinaConnector(
+        base_url=getattr(settings, "datos_argentina_base_url", None),
+        timeout=getattr(settings, "datos_argentina_timeout_seconds", 30.0),
+    )
+
+
+def provide_datos_argentina_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_datos_argentina_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización
+    con la API de Datos Argentina.
+
+    Args:
+        connector: Conector de Datos Argentina inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)

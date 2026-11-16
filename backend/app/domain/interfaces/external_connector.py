@@ -16,6 +16,7 @@ class RawIndicatorRecord(BaseModel):
         ocupacion: Denominación o código normalizado de la ocupación analizada.
         indicador: Clave unificada del indicador (ej. tasa_desempleo).
         periodo: Cadena representativa del período temporal (ej. 2023, 2024-Q1).
+        trimestre: Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4).
         valor: Magnitud numérica observada o calculada.
         tipo: Tipo metodológico del dato (observado, calculado, proyeccion).
         fuente: Denominación oficial del organismo o servicio proveedor.
@@ -44,6 +45,10 @@ class RawIndicatorRecord(BaseModel):
     periodo: str = Field(
         ...,
         description="Período temporal del registro (ej. 2023, 2024-Q1)",
+    )
+    trimestre: str | None = Field(
+        default=None,
+        description="Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4)",
     )
     valor: float = Field(
         ...,
