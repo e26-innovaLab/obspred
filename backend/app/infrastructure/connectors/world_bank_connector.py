@@ -58,13 +58,13 @@ class WorldBankConnector(IExternalDataConnector):
         },
         "SL.SRV.EMPL.ZS": {
             "slug": "empleo_servicios",
-            "sector": "Servicios",
+            "sector": "servicios",
             "ocupacion": None,
             "nombre": "Empleo en servicios (% del empleo total)",
         },
         "SL.IND.EMPL.ZS": {
             "slug": "empleo_industria",
-            "sector": "Industria",
+            "sector": "industria",
             "ocupacion": None,
             "nombre": "Empleo en industria (% del empleo total)",
         },
@@ -82,7 +82,7 @@ class WorldBankConnector(IExternalDataConnector):
         },
         "IT.NET.USER.ZS": {
             "slug": "usuarios_internet",
-            "sector": "Tecnología",
+            "sector": "tecnologia",
             "ocupacion": None,
             "nombre": "Población con acceso a Internet (%)",
         },
