@@ -20,6 +20,7 @@ backend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "ba
 sys.path.insert(0, backend_path)
 
 from app.application.services.brecha_service import BrechaService
+from app.application.services.catalogo_service import CatalogoService
 from app.application.services.external_sync_service import ExternalSyncService
 from app.core.constants import FuenteEstado
 from app.infrastructure.connectors.datos_argentina_connector import (
@@ -32,6 +33,9 @@ from app.infrastructure.persistence.database import async_session_factory
 from app.infrastructure.persistence.models.fuente import FuenteModel
 from app.infrastructure.persistence.repositories.brecha_repository import (
     SQLAlchemyBrechaRepository,
+)
+from app.infrastructure.persistence.repositories.catalogo_repository import (
+    SqlAlchemyCatalogoRepository,
 )
 from app.infrastructure.persistence.repositories.indicador_repository import (
     SqlAlchemyIndicadorRepository,
@@ -114,9 +118,19 @@ FUENTES_SEMILLA = [
 ]
 
 
+async def poblar_catalogo_maestro(session) -> dict[str, int]:
+    """Puebla de manera idempotente las tablas maestras del catálogo."""
+    print("\n--- 1. POBLANDO TABLAS MAESTRAS DEL CATÁLOGO ---")
+    repo = SqlAlchemyCatalogoRepository(session=session)
+    service = CatalogoService(repository=repo)
+    stats = await service.seed_catalogo()
+    print(f"Catálogo maestro sembrado con éxito: {stats}")
+    return stats
+
+
 async def poblar_fuentes(session) -> int:
     """Puebla el catálogo de fuentes oficiales de forma idempotente."""
-    print("\n--- 1. POBLANDO TABLA 'fuentes' ---")
+    print("\n--- 2. POBLANDO TABLA 'fuentes' ---")
     ahora = datetime.now(timezone.utc)
     insertadas = 0
 
@@ -243,6 +257,9 @@ async def main() -> None:
     print("==========================================================")
 
     async with async_session_factory() as session:
+        # 0. Catálogo maestro
+        await poblar_catalogo_maestro(session)
+
         # 1. Fuentes
         await poblar_fuentes(session)
 
