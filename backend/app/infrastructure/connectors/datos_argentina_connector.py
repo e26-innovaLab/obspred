@@ -9,6 +9,7 @@ from app.core.constants import (
     DEFAULT_DATOS_ARGENTINA_BASE_URL,
     DEFAULT_DATOS_ARGENTINA_SOURCE_NAME,
     DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
     PaisCodigo,
     TipoIndicador,
 )
@@ -140,6 +141,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
             response = await client.get(
                 f"{self._base_url}/search/",
                 params={"q": "empleo", "limit": 1},
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
             )
             response.raise_for_status()
             return isinstance(response.json(), dict)

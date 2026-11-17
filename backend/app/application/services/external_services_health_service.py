@@ -12,7 +12,7 @@ from app.application.dtos.health_dto import (
     ExternalServiceHealthDTO,
     ExternalServicesHealthReportDTO,
 )
-from app.core.constants import HealthStatus
+from app.core.constants import DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS, HealthStatus
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import IExternalDataConnector
 
@@ -20,13 +20,19 @@ from app.domain.interfaces.external_connector import IExternalDataConnector
 class ExternalServicesHealthService:
     """Orquestador de verificación de salud de servicios y conectores externos."""
 
-    def __init__(self, connectors: Sequence[IExternalDataConnector]) -> None:
+    def __init__(
+        self,
+        connectors: Sequence[IExternalDataConnector],
+        timeout: float = DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    ) -> None:
         """Inicializa el servicio con los adaptadores a monitorear.
 
         Args:
             connectors: Colección de adaptadores que implementan IExternalDataConnector.
+            timeout: Tiempo máximo de espera en segundos para el chequeo individual.
         """
         self._connectors = connectors
+        self._timeout = timeout
 
     async def _check_single_connector(
         self, connector: IExternalDataConnector
@@ -49,9 +55,17 @@ class ExternalServicesHealthService:
         )
         url = getattr(connector, "base_url", "")
         start_time = time.perf_counter()
+        logger.debug(
+            "Iniciando verificación concurrente para %s (%s)...",
+            connector.source_name,
+            url,
+        )
 
         try:
-            is_healthy = await connector.check_health()
+            is_healthy = await asyncio.wait_for(
+                connector.check_health(),
+                timeout=self._timeout,
+            )
             elapsed_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
             status = HealthStatus.HEALTHY if is_healthy else HealthStatus.UNHEALTHY
             error = (
@@ -59,11 +73,36 @@ class ExternalServicesHealthService:
                 if is_healthy
                 else "El servicio no superó la verificación de salud."
             )
+            if is_healthy:
+                logger.info(
+                    "Conector %s respondió exitosamente en %.2f ms.",
+                    connector.source_name,
+                    elapsed_ms,
+                )
+            else:
+                logger.warning(
+                    "Conector %s reportó no disponible en %.2f ms: %s",
+                    connector.source_name,
+                    elapsed_ms,
+                    error,
+                )
+        except TimeoutError:
+            elapsed_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
+            logger.warning(
+                "Timeout en conector %s tras %.2f ms (límite: %.1fs).",
+                connector.source_name,
+                elapsed_ms,
+                self._timeout,
+            )
+            is_healthy = False
+            status = HealthStatus.UNHEALTHY
+            error = f"Tiempo de espera agotado ({self._timeout}s)."
         except Exception as exc:
             elapsed_ms = round((time.perf_counter() - start_time) * 1000.0, 2)
             logger.warning(
-                "Fallo en verificación de salud para %s: %s",
+                "Excepción en conector %s tras %.2f ms: %s",
                 connector.source_name,
+                elapsed_ms,
                 exc,
             )
             is_healthy = False
@@ -96,6 +135,13 @@ class ExternalServicesHealthService:
                 services=[],
             )
 
+        start_all_time = time.perf_counter()
+        logger.info(
+            "Verificando salud concurrente de %d conectores (timeout: %.1fs)...",
+            len(self._connectors),
+            self._timeout,
+        )
+
         tasks = [self._check_single_connector(conn) for conn in self._connectors]
         results: list[ExternalServiceHealthDTO] = await asyncio.gather(*tasks)
 
@@ -109,6 +155,15 @@ class ExternalServicesHealthService:
             overall_status = HealthStatus.UNHEALTHY
         else:
             overall_status = HealthStatus.DEGRADED
+
+        total_elapsed_ms = round((time.perf_counter() - start_all_time) * 1000.0, 2)
+        logger.info(
+            "Diagnóstico finalizado en %.2f ms: %d/%d disponibles (Estado: %s).",
+            total_elapsed_ms,
+            healthy_count,
+            total_services,
+            overall_status.value,
+        )
 
         return ExternalServicesHealthReportDTO(
             overall_status=overall_status,

@@ -117,3 +117,29 @@ async def test_empty_connectors_returns_healthy() -> None:
     assert report.healthy_count == 0
     assert report.unhealthy_count == 0
     assert report.services == []
+
+
+@pytest.mark.asyncio
+async def test_connector_timeout_is_handled_gracefully() -> None:
+    """Verifica que un conector lento sea cancelado sin bloquear el reporte."""
+    import asyncio
+
+    async def _slow_check() -> bool:
+        await asyncio.sleep(1.0)
+        return True
+
+    mock_slow = AsyncMock(spec=IExternalDataConnector)
+    type(mock_slow).source_name = "Slow Service"
+    mock_slow.source_id = "slow_service"
+    mock_slow.base_url = "https://example.com/slow"
+    mock_slow.check_health.side_effect = _slow_check
+
+    service = ExternalServicesHealthService(connectors=[mock_slow], timeout=0.05)
+    report = await service.check_all_services()
+
+    assert report.overall_status == HealthStatus.UNHEALTHY
+    assert report.unhealthy_count == 1
+    slow_service = report.services[0]
+    assert slow_service.is_available is False
+    assert slow_service.error is not None
+    assert "agotado" in slow_service.error.lower()

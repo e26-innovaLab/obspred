@@ -233,6 +233,9 @@ DEFAULT_ESCO_SOURCE: Final[str] = "ESCO"
 DEFAULT_ESCO_BASE_URL: Final[str] = "https://ec.europa.eu/esco/api/search"
 DEFAULT_ESCO_TIMEOUT_SECONDS: Final[float] = 30.0
 
+# Timeout para verificación de salud / ping en conectores externos
+DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS: Final[float] = 10.0
+
 # Brechas de Habilidades
 DEFAULT_BRECHAS_SOURCE: Final[str] = "SENCE SABE / ESCO"
 DEFAULT_BRECHAS_METODOLOGIA: Final[str] = (
@@ -346,6 +349,7 @@ __all__ = [
     "DEFAULT_ESCO_SOURCE",
     "DEFAULT_ESCO_BASE_URL",
     "DEFAULT_ESCO_TIMEOUT_SECONDS",
+    "DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS",
     "DEFAULT_BRECHAS_SOURCE",
     "DEFAULT_BRECHAS_METODOLOGIA",
     "DEFAULT_BRECHAS_METODOLOGIA_PERSISTIDA",
