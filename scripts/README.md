@@ -5,9 +5,16 @@ Este directorio contiene scripts personalizados para tareas de diagnóstico, ver
 ## Scripts disponibles
 
 ### `verificar_trimestre.py`
-Inspecciona la base de datos para verificar la distribución y el estado de la columna `trimestre` en la tabla `indicadores`.
+Inspecciona la base de datos para diagnosticar, limpiar y corregir la consistencia de los campos `periodo` (año canónico) y `trimestre` (Q1..Q4) en la tabla `indicadores`.
+
+**Modo diagnóstico:**
 ```bash
 python scripts/verificar_trimestre.py
+```
+
+**Modo corrección y limpieza automática:**
+```bash
+python scripts/verificar_trimestre.py --corregir
 ```
 
 ### `poblar_datos_faltantes.py`
