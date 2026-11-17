@@ -30,7 +30,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
     INDICATOR_MAPPINGS: Final[dict[str, dict[str, Any]]] = {
         # Empleo registrado
         "empleo_registrado_total": {
-            "id": "156.1_TLTAL_0_0_5",
+            "id": "155.1_TLTAL_C_0_0_5",
             "nombre": "Total empleo registrado",
             "sector": None,
             "ocupacion": None,
@@ -249,6 +249,45 @@ class DatosArgentinaConnector(IExternalDataConnector):
 
         return records
 
+    @staticmethod
+    def _parse_period_and_quarter(
+        date_str: str,
+        frecuencia: str | None = None,
+    ) -> tuple[str, str | None]:
+        """Extrae el año como período y calcula el trimestre para series trimestrales.
+
+        Datos Argentina entrega fechas en formato ISO 'YYYY-MM-DD'.
+        Para series trimestrales, desagrega el año (ej. '2023') y calcula
+        el trimestre ('Q1', 'Q2', 'Q3', 'Q4') según el mes de referencia:
+        - Meses 01-03 -> Q1
+        - Meses 04-06 -> Q2
+        - Meses 07-09 -> Q3
+        - Meses 10-12 -> Q4
+        Para series anuales, el trimestre permanece como None.
+
+        Args:
+            date_str: Cadena de fecha en formato ISO (ej. '2023-07-01').
+            frecuencia: Tipo de frecuencia ('trimestral', 'anual').
+
+        Returns:
+            tuple[str, str | None]: Tupla con (año, trimestre).
+        """
+        clean = str(date_str)[:10].strip()
+        parts = clean.split("-")
+        year = parts[0]
+        trimestre: str | None = None
+
+        if frecuencia == "trimestral" and len(parts) >= 2:
+            try:
+                month = int(parts[1])
+                if 1 <= month <= 12:
+                    quarter_num = (month - 1) // 3 + 1
+                    trimestre = f"Q{quarter_num}"
+            except (ValueError, TypeError):
+                trimestre = None
+
+        return year, trimestre
+
     def _parse_series_payload(
         self,
         payload: dict[str, Any],
@@ -265,7 +304,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
             if not isinstance(row, list) or len(row) < 2:
                 continue
 
-            periodo = str(row[0])[:10]
+            raw_date = str(row[0])[:10]
             raw_value = row[1]
 
             if raw_value is None:
@@ -276,8 +315,13 @@ class DatosArgentinaConnector(IExternalDataConnector):
             except (ValueError, TypeError):
                 continue
 
-            if not periodo:
+            if not raw_date:
                 continue
+
+            periodo, trimestre = self._parse_period_and_quarter(
+                date_str=raw_date,
+                frecuencia=metadata.get("frecuencia"),
+            )
 
             # La API devuelve las tasas como fracciones.
             # Ejemplo: 0.03325 equivale a 3.325 %.
@@ -291,6 +335,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
                     ocupacion=metadata.get("ocupacion"),
                     indicador=slug,
                     periodo=periodo,
+                    trimestre=trimestre,
                     valor=valor,
                     tipo=TipoIndicador.OBSERVADO,
                     fuente=self.source_name,
@@ -305,6 +350,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
                         "frecuencia": metadata["frecuencia"],
                         "dimension_geografica": metadata["dimension_geografica"],
                         "fecha_extraccion": fecha_extraccion.isoformat(),
+                        "fecha_referencia": raw_date,
                         "fecha_actualizacion_fuente": None,
                     },
                 )
