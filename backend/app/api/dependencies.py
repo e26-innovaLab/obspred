@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.application.services.alertas_service import AlertaService
 from app.application.services.brecha_service import BrechaService
+from app.application.services.catalogo_service import CatalogoService
 from app.application.services.external_services_health_service import (
     ExternalServicesHealthService,
 )
@@ -20,6 +21,7 @@ from app.application.services.indice_empleabilidad_service import (
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
 from app.domain.interfaces.brecha_repository import IBrechaRepository
+from app.domain.interfaces.catalogo_repository import ICatalogoRepository
 from app.domain.interfaces.external_connector import IExternalDataConnector
 from app.domain.interfaces.file_storage_service import IFileStorageService
 from app.domain.interfaces.file_validator import IFileValidator
@@ -46,6 +48,9 @@ from app.infrastructure.persistence.repositories import (
 )
 from app.infrastructure.persistence.repositories.brecha_repository import (
     SQLAlchemyBrechaRepository,
+)
+from app.infrastructure.persistence.repositories.catalogo_repository import (
+    SqlAlchemyCatalogoRepository,
 )
 from app.infrastructure.persistence.repositories.fuente_repository import (
     SqlAlchemyFuenteRepository,
@@ -467,3 +472,35 @@ def provide_external_services_health_service(
         esco,
     ]
     return ExternalServicesHealthService(connectors=connectors)
+
+
+def provide_catalogo_repository(
+    session: Annotated[AsyncSession, Depends(provide_db_session)],
+) -> ICatalogoRepository:
+    """Provee la implementación SQLAlchemy del repositorio del catálogo maestro.
+
+    Args:
+        session: Sesión de base de datos asíncrona inyectada.
+
+    Returns:
+        ICatalogoRepository: Instancia de SqlAlchemyCatalogoRepository.
+    """
+    return SqlAlchemyCatalogoRepository(session=session)
+
+
+def provide_catalogo_service(
+    repository: Annotated[
+        ICatalogoRepository,
+        Depends(provide_catalogo_repository),
+    ],
+) -> CatalogoService:
+    """Provee el servicio de aplicación para consulta y gestión del catálogo.
+
+    Args:
+        repository: Repositorio de catálogo inyectado.
+
+    Returns:
+        CatalogoService: Caso de uso listo para consulta y auto-seeding.
+    """
+    return CatalogoService(repository=repository)
+

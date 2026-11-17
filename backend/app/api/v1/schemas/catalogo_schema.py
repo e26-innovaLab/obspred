@@ -56,9 +56,19 @@ class IndicadorCatalogoDto(BaseModel):
 class PeriodosRangoDto(BaseModel):
     """Rango cronológico global cubierto por los datos disponibles."""
 
-    min: str = Field(..., description="Período más antiguo disponible (ej. '2018-Q1').")
-    max: str = Field(
-        ..., description="Período más reciente disponible (ej. '2026-Q2')."
+    min: str | None = Field(
+        default=None,
+        description=(
+            "Período más antiguo disponible (ej. '2018-Q1'). Nulo si no hay "
+            "observaciones."
+        ),
+    )
+    max: str | None = Field(
+        default=None,
+        description=(
+            "Período más reciente disponible (ej. '2026-Q2'). Nulo si no hay "
+            "observaciones."
+        ),
     )
 
 

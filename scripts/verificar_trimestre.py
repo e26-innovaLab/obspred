@@ -45,6 +45,24 @@ async def diagnosticar() -> int:
                 f"Rango período: {r.ej_min} a {r.ej_max}"
             )
 
+        # 1.b. Verificar distribución y normalización de sectores
+        query_sec = text("""
+            SELECT
+                sector,
+                COUNT(*) as cantidad
+            FROM indicadores
+            GROUP BY sector
+            ORDER BY sector NULLS LAST
+        """)
+        result_sec = await conn.execute(query_sec)
+        rows_sec = result_sec.fetchall()
+        print("\n========================================================")
+        print(" DISTRIBUCIÓN POR SECTOR EN 'indicadores'")
+        print("========================================================")
+        for s in rows_sec:
+            sec_display = s.sector if s.sector is not None else "NULL"
+            print(f"Sector: {sec_display:<25} | Total: {s.cantidad:<5}")
+
         # 2. Detección de anomalías en el campo 'periodo' (fechas ISO o sufijos -QX)
         anomalies_query = text("""
             SELECT
@@ -146,6 +164,19 @@ async def limpiar_y_corregir() -> None:
         """)
         res_clean_q = await conn.execute(sql_clean_q)
         print(f" - Sufijos '-QX' eliminados de 'periodo': {res_clean_q.rowcount}")
+
+        # E. Normalización canónica de sectores (minúsculas y sin tildes):
+        sectores_correcciones = {
+            "Tecnología": "tecnologia",
+            "Industria": "industria",
+            "Servicios": "servicios",
+            "Energía": "energia",
+        }
+        for orig, dest in sectores_correcciones.items():
+            sql_sec = text(f"UPDATE indicadores SET sector = '{dest}' WHERE sector = '{orig}'")
+            res_sec = await conn.execute(sql_sec)
+            if res_sec.rowcount > 0:
+                print(f" - Sector estandarizado '{orig}' -> '{dest}': {res_sec.rowcount}")
 
     print("\n [OK] Limpieza y corrección finalizada exitosamente.")
 

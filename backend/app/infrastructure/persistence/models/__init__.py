@@ -1,10 +1,20 @@
 """Modelos de datos relacionales basados en SQLAlchemy."""
 
 from app.infrastructure.persistence.models.brecha_model import HabilidadBrechaModel
+from app.infrastructure.persistence.models.catalogo import (
+    CatalogoIndicadorModel,
+    CatalogoOcupacionModel,
+    CatalogoPaisModel,
+    CatalogoSectorModel,
+)
 from app.infrastructure.persistence.models.fuente import FuenteModel
 from app.infrastructure.persistence.models.indicador import IndicadorModel
 
 __all__ = [
+    "CatalogoIndicadorModel",
+    "CatalogoOcupacionModel",
+    "CatalogoPaisModel",
+    "CatalogoSectorModel",
     "FuenteModel",
     "HabilidadBrechaModel",
     "IndicadorModel",

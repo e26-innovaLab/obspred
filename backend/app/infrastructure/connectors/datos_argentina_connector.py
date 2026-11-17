@@ -41,7 +41,7 @@ class DatosArgentinaConnector(IExternalDataConnector):
         "empleo_registrado_industria": {
             "id": "155.1_ISTRIARIA_C_0_0_9",
             "nombre": "Empleo registrado privado en industria",
-            "sector": "Industria",
+            "sector": "industria",
             "ocupacion": None,
             "unidad": "puestos de trabajo",
             "frecuencia": "trimestral",
