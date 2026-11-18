@@ -32,6 +32,9 @@ from app.domain.interfaces.indice_empleabilidad_repository import (
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
+from app.infrastructure.connectors.cepalstat_connector import (
+    CepalstatConnector,
+)
 from app.infrastructure.connectors.datos_argentina_connector import (
     DatosArgentinaConnector,
 )
@@ -423,6 +426,40 @@ def provide_datos_argentina_sync_service(
     return ExternalSyncService(connector=connector, repository=repository)
 
 
+def provide_cepalstat_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de CEPALSTAT API.
+
+    Returns:
+        IExternalDataConnector: Instancia de CepalstatConnector configurada.
+    """
+    return CepalstatConnector(
+        base_url=settings.cepalstat_api_base_url,
+        timeout=settings.cepalstat_timeout_seconds,
+    )
+
+
+def provide_cepalstat_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_cepalstat_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con la API de CEPALSTAT.
+
+    Args:
+        connector: Conector de CEPALSTAT inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para sincronizar CEPALSTAT.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
 def provide_external_services_health_service(
     world_bank: Annotated[
         IExternalDataConnector,
@@ -448,6 +485,10 @@ def provide_external_services_health_service(
         IExternalDataConnector,
         Depends(provide_esco_connector),
     ],
+    cepalstat: Annotated[
+        IExternalDataConnector,
+        Depends(provide_cepalstat_connector),
+    ],
 ) -> ExternalServicesHealthService:
     """Provee el servicio de salud y disponibilidad de todas las fuentes externas.
 
@@ -458,6 +499,7 @@ def provide_external_services_health_service(
         bcentral_chile: Conector inyectado del Banco Central de Chile.
         ilostat: Conector inyectado de ILOSTAT (OIT).
         esco: Conector inyectado de la taxonomía ESCO.
+        cepalstat: Conector inyectado de CEPALSTAT.
 
     Returns:
         ExternalServicesHealthService: Orquestador listo para verificar la salud
@@ -470,6 +512,7 @@ def provide_external_services_health_service(
         bcentral_chile,
         ilostat,
         esco,
+        cepalstat,
     ]
     return ExternalServicesHealthService(connectors=connectors)
 

@@ -1201,6 +1201,98 @@
               "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronización de 'ESCO'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"Error al conectar con la API de ESCO.\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T18:30:00Z\"\n}"
             }
           ]
+        },
+        {
+          "name": "sync_cepalstat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{URL_BASE}}/ingesta/sync/cepalstat",
+              "host": [
+                "{{URL_BASE}}"
+              ],
+              "path": [
+                "ingesta",
+                "sync",
+                "cepalstat"
+              ]
+            },
+            "description": "Sincroniza indicadores socioeconómicos y laborales oficiales desde la API de CEPALSTAT (CEPAL / Naciones Unidas).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paises\": [\n    \"ARG\",\n    \"URY\",\n    \"CHL\"\n  ],\n  \"indicadores\": [\n    \"tasa_desempleo\",\n    \"pib_per_capita\"\n  ],\n  \"periodo_desde\": \"2020\",\n  \"periodo_hasta\": \"2024\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200_ok_sync_cepalstat",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/cepalstat",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Sincronización de 'CEPALSTAT' exitosa.\",\n  \"data\": {\n    \"source\": \"CEPALSTAT\",\n    \"status\": \"success\",\n    \"total_fetched\": 15,\n    \"total_persisted\": 15,\n    \"execution_time_seconds\": 1.45,\n    \"countries_synced\": [\n      \"ARG\",\n      \"CHL\",\n      \"URY\"\n    ],\n    \"indicators_synced\": [\n      \"pib_per_capita\",\n      \"tasa_desempleo\"\n    ],\n    \"error_message\": null\n  },\n  \"errors\": null,\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T21:00:00Z\"\n}"
+            },
+            {
+              "name": "502_error_sync_cepalstat",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/ingesta/sync/cepalstat",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ]
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronización de 'CEPALSTAT'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"Fallo al comunicarse con la API de CEPALSTAT.\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T21:00:00Z\"\n}"
+            }
+          ]
+        }
         }
       ]
     },

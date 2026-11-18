@@ -11,6 +11,8 @@ from app.core.constants import (
     API_V1_PREFIX,
     DEFAULT_BCENTRAL_CHILE_BASE_URL,
     DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_CEPALSTAT_BASE_URL,
+    DEFAULT_CEPALSTAT_TIMEOUT_SECONDS,
     DEFAULT_DATOS_ARGENTINA_BASE_URL,
     DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
     DEFAULT_ESCO_BASE_URL,
@@ -103,6 +105,16 @@ class Settings(BaseSettings):
     simel_chile_base_url: str = DEFAULT_SIMEL_CHILE_BASE_URL
     simel_chile_sdmx_base_url: str = DEFAULT_SIMEL_SDMX_BASE_URL
     simel_chile_timeout_seconds: float = DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS
+
+    # CEPALSTAT (Comisión Económica para América Latina y el Caribe)
+    cepalstat_api_base_url: str = Field(
+        default=DEFAULT_CEPALSTAT_BASE_URL,
+        description="URL base oficial de la API de CEPALSTAT",
+    )
+    cepalstat_timeout_seconds: float = Field(
+        default=DEFAULT_CEPALSTAT_TIMEOUT_SECONDS,
+        description="Timeout en segundos para solicitudes a CEPALSTAT",
+    )
 
 
 # Instancia única reutilizable para inyección o importación directa

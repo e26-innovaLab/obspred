@@ -166,6 +166,7 @@ INGESTA_SYNC_DATOS_ARGENTINA_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/datos-ar
 INGESTA_SYNC_SIMEL_CHILE_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/simel-chile"
 INGESTA_SYNC_ILOSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/ilostat"
 INGESTA_SYNC_ESCO_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/esco"
+INGESTA_SYNC_CEPALSTAT_ROUTE: Final[str] = f"{INGESTA_SYNC_ROUTE}/cepalstat"
 
 
 # ==============================================================================
@@ -232,6 +233,13 @@ DEFAULT_ILOSTAT_TIMEOUT_SECONDS: Final[float] = 60.0
 DEFAULT_ESCO_SOURCE: Final[str] = "ESCO"
 DEFAULT_ESCO_BASE_URL: Final[str] = "https://ec.europa.eu/esco/api/search"
 DEFAULT_ESCO_TIMEOUT_SECONDS: Final[float] = 30.0
+
+# CEPALSTAT (Comisión Económica para América Latina y el Caribe)
+DEFAULT_CEPALSTAT_SOURCE: Final[str] = "CEPALSTAT"
+DEFAULT_CEPALSTAT_BASE_URL: Final[str] = (
+    "https://api-cepalstat.cepal.org/cepalstat/api/v1"
+)
+DEFAULT_CEPALSTAT_TIMEOUT_SECONDS: Final[float] = 30.0
 
 # Timeout para verificación de salud / ping en conectores externos
 DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS: Final[float] = 10.0

@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from app.api.dependencies import (
     provide_bcentral_chile_sync_service,
+    provide_cepalstat_sync_service,
     provide_datos_argentina_sync_service,
     provide_esco_sync_service,
     provide_file_upload_service,
@@ -36,6 +37,7 @@ from app.core.constants import (
     DEFAULT_SIMEL_CHILE_SOURCE,
     INGESTA_ROUTE,
     INGESTA_SYNC_BCENTRAL_CHILE_ROUTE,
+    INGESTA_SYNC_CEPALSTAT_ROUTE,
     INGESTA_SYNC_DATOS_ARGENTINA_ROUTE,
     INGESTA_SYNC_ESCO_ROUTE,
     INGESTA_SYNC_ILOSTAT_ROUTE,
@@ -883,4 +885,118 @@ async def upload_simel_csv_file(
             f"{total_persisted} observaciones persistidas."
         ),
         status_code=status.HTTP_201_CREATED,
+    )
+
+
+@ingesta_router.post(
+    INGESTA_SYNC_CEPALSTAT_ROUTE,
+    response_model=SyncExternalDataResponseSchema,
+    status_code=status.HTTP_200_OK,
+    summary="Sincronizar indicadores socioeconómicos y laborales desde CEPALSTAT",
+    description=(
+        "Ejecuta extracción y persistencia idempotente de indicadores "
+        "macroeconómicos, laborales y educativos oficiales armonizados "
+        "desde la API de CEPALSTAT (CEPAL / Naciones Unidas) para los países "
+        "del Observatorio (Argentina, Uruguay, Chile)."
+    ),
+    responses={
+        status.HTTP_200_OK: {
+            "description": "Sincronización completada exitosamente.",
+            "model": SyncExternalDataResponseSchema,
+        },
+        status.HTTP_500_INTERNAL_SERVER_ERROR: {
+            "description": "Error de persistencia o conexión con base de datos.",
+            "model": ApiResponse,
+        },
+        status.HTTP_502_BAD_GATEWAY: {
+            "description": "Error al comunicarse con la API remota de CEPALSTAT.",
+            "model": ApiResponse,
+        },
+    },
+)
+async def sync_cepalstat_indicators(
+    sync_service: Annotated[
+        ExternalSyncService,
+        Depends(provide_cepalstat_sync_service),
+    ],
+    payload: SyncExternalDataRequestSchema | None = None,
+) -> SyncExternalDataResponseSchema | JSONResponse:
+    """Sincroniza indicadores oficiales de CEPALSTAT.
+
+    Args:
+        sync_service: Servicio de orquestación de ingesta externa inyectado.
+        payload: Parámetros opcionales para filtrar países o indicadores.
+
+    Returns:
+        SyncExternalDataResponseSchema | JSONResponse: Resultado exitoso
+            o ApiResponse de error estándar.
+    """
+    paises = payload.paises if payload else None
+    indicadores = payload.indicadores if payload else None
+    periodo_desde = payload.periodo_desde if payload else None
+    periodo_hasta = payload.periodo_hasta if payload else None
+
+    result_dto = await sync_service.sync_data(
+        paises=paises,
+        indicadores=indicadores,
+        periodo_desde=periodo_desde,
+        periodo_hasta=periodo_hasta,
+    )
+
+    if result_dto.status == SyncStatus.FAILED:
+        err_msg = (
+            result_dto.error_message
+            or "Ocurrió un error inesperado durante la sincronización."
+        )
+        is_db_err = any(
+            tok in err_msg
+            for tok in [
+                "Connect call failed",
+                "OperationalError",
+                "database",
+                "5432",
+            ]
+        )
+        http_status = (
+            status.HTTP_500_INTERNAL_SERVER_ERROR
+            if is_db_err
+            else status.HTTP_502_BAD_GATEWAY
+        )
+        err_code = (
+            ApiErrorCode.DATABASE_CONNECTION_ERROR
+            if is_db_err
+            else ApiErrorCode.EXTERNAL_SERVICE_ERROR
+        )
+        error_response = create_error_response(
+            message=f"Fallo en la sincronización de '{result_dto.source}'.",
+            status_code=http_status,
+            errors=[
+                ErrorDetail(
+                    code=err_code,
+                    detail=err_msg,
+                    field="source",
+                )
+            ],
+        )
+        return JSONResponse(
+            status_code=http_status,
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
+        )
+
+    response_data = SyncExternalDataResponseData(
+        source=result_dto.source,
+        status=result_dto.status,
+        total_fetched=result_dto.total_fetched,
+        total_persisted=result_dto.total_persisted,
+        execution_time_seconds=result_dto.execution_time_seconds,
+        countries_synced=result_dto.countries_synced,
+        indicators_synced=result_dto.indicators_synced,
+        error_message=result_dto.error_message,
+    )
+
+    msg = f"Sincronización de '{result_dto.source}' exitosa."
+    return create_success_response(
+        data=response_data,
+        message=msg,
+        status_code=status.HTTP_200_OK,
     )

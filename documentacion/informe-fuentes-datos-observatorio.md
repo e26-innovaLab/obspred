@@ -168,6 +168,7 @@ Un registro normalizado en base de datos (`indicadores`) y API:
 - `POST /api/v1/ingesta/sync/simel-chile` (sincronización directa vía SDMX de INE Chile).
 - `POST /api/v1/ingesta/upload/simel-csv` (carga manual de contingencia CSV de SIMEL).
 - `POST /api/v1/ingesta/sync/world-bank` (sincronización con World Bank Indicators API).
+- `POST /api/v1/ingesta/sync/cepalstat` (sincronización con CEPALSTAT API de CEPAL).
 - `POST /api/v1/ingesta/sync/ilostat` (sincronización con ILOSTAT).
 - `POST /api/v1/ingesta/sync/bcentral-chile` (sincronización con Banco Central de Chile).
 
@@ -176,5 +177,6 @@ Frontend trabaja exclusivamente contra estos endpoints internos para evitar prob
 ## 10. Estado actual de ejecución
 
 1. **SIMEL Chile:** Conector implementado con extracción SDMX unificada, fallback CSV, tests unitarios (100% pasando) y migración Alembic `2cedef4ea4e2_add_trimestre_to_indicadores` aplicada.
-2. **Postman:** Colección actualizada en `backend/docs/obspred.postman_collection.json` con llamadas de sincronización, carga y ejemplos 200 OK para Argentina, Uruguay y Chile.
-3. **Scripts de Mantenimiento:** Herramientas de diagnóstico en [`/scripts`](../scripts/), incluyendo `verificar_trimestre.py`.
+2. **CEPALSTAT:** Conector `CepalstatConnector` implementado con soporte multi-país (ARG, URY, CHL), normalización de dimensiones, endpoint `/api/v1/ingesta/sync/cepalstat`, integración al health check y suite de tests unitarios (100% pasando).
+3. **Postman:** Colección actualizada en `backend/docs/obspred.postman_collection.json` con llamadas de sincronización, carga y ejemplos 200 OK para Argentina, Uruguay y Chile.
+4. **Scripts de Mantenimiento:** Herramientas de diagnóstico en [`/scripts`](../scripts/), incluyendo `verificar_trimestre.py`.
