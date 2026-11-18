@@ -129,7 +129,7 @@ DEFAULT_BRECHAS_CATALOG: dict[str, list[dict]] = {
 }
 
 
-SECTOR_DEFAULT_OCUPACION: dict[str, str] = {
+SECTOR_DEFAULT_OCUPACION: dict[SectorEstrategico | str, str] = {
     SectorEstrategico.TECNOLOGIA: "desarrollador_software",
     SectorEstrategico.SALUD: "enfermero_profesional",
     SectorEstrategico.ENERGIA: "tecnico_solar_fotovoltaico",
@@ -150,23 +150,21 @@ class BrechaService:
     def resolve_ocupacion_for_sector(
         self, sector: str | None, ocupacion: str | None
     ) -> str:
-        """Determina la ocupación canónica resolviendo fallbacks por sector."""
-        if ocupacion:
-            return ocupacion
-        if sector:
-            normalizado = sector.lower().replace("_", "-")
-            if normalizado in SECTOR_DEFAULT_OCUPACION:
-                return SECTOR_DEFAULT_OCUPACION[normalizado]
-            if sector.lower() in SECTOR_DEFAULT_OCUPACION:
-                return SECTOR_DEFAULT_OCUPACION[sector.lower()]
-        return "desarrollador_software"
         """Determina la ocupación representativa según el sector o el fallback."""
         if ocupacion and ocupacion.strip():
             return ocupacion.strip()
         if sector and sector.strip():
-            norm_sec = sector.strip().lower().replace(" ", "-").replace("í", "i")
+            norm_sec = (
+                sector.strip()
+                .lower()
+                .replace("_", "-")
+                .replace(" ", "-")
+                .replace("í", "i")
+            )
             if norm_sec in SECTOR_DEFAULT_OCUPACION:
                 return SECTOR_DEFAULT_OCUPACION[norm_sec]
+            if sector.strip().lower() in SECTOR_DEFAULT_OCUPACION:
+                return SECTOR_DEFAULT_OCUPACION[sector.strip().lower()]
         return "desarrollador_software"
 
     async def get_by_ocupation(self, ocupacion: str) -> list[HabilidadComparadaDTO]:

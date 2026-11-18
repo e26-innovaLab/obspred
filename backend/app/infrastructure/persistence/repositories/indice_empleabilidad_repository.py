@@ -880,10 +880,13 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
             # Construir entidad a partir de registros en BD
             canon_nombre = db_records[0].ocupacion or ocupacion
             cat_entry = self._resolve_catalog_entry(canon_nombre)
-            canon_sector = (
+            raw_sec = (
                 db_records[0].sector
                 or sector
                 or (cat_entry["sector"] if cat_entry else None)
+            )
+            canon_sector: str | None = (
+                raw_sec.value if isinstance(raw_sec, SectorEstrategico) else raw_sec
             )
             fuente = db_records[0].fuente or self._get_fuente_por_pais(pais)
             fecha_act = db_records[0].fecha_actualizacion

@@ -31,6 +31,7 @@ from app.api.v1.schemas.response_schema import create_success_response
 from app.api.v1.schemas.trazabilidad_schema import TrazabilidadFuenteSchema
 from app.core.constants import (
     DEFAULT_BCENTRAL_CHILE_SOURCE,
+    DEFAULT_ILOSTAT_CEPALSTAT_SOURCE,
     DEFAULT_INDEC_SOURCE,
     DEFAULT_INE_URUGUAY_SOURCE,
     DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
@@ -748,7 +749,7 @@ async def get_mapa_calor(
         celdas=celdas,
         fuentes=[
             TrazabilidadFuenteSchema(
-                fuente=DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
+                fuente=DEFAULT_ILOSTAT_CEPALSTAT_SOURCE,
                 fecha_actualizacion="2026-09-30",
                 estado_fuente=FuenteEstado.ACTIVA,
                 tipo=TipoIndicador.OBSERVADO,

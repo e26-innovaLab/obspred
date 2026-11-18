@@ -168,7 +168,7 @@ class SimelChileConnector(IExternalDataConnector):
     ]
 
     # Mapeo de términos de indicadores de SIMEL a slugs canónicos
-    INDICATOR_SLUG_MAPPINGS: Final[dict[str, str]] = {
+    INDICATOR_SLUG_MAPPINGS: Final[dict[str, IndicadorSlug | str]] = {
         "tasa de desocupacion": IndicadorSlug.TASA_DESEMPLEO,
         "tasa de desocupación": IndicadorSlug.TASA_DESEMPLEO,
         "tdes": IndicadorSlug.TASA_DESEMPLEO,
@@ -177,14 +177,14 @@ class SimelChileConnector(IExternalDataConnector):
         "tasa de ocupacion": IndicadorSlug.TASA_OCUPACION,
         "tasa de ocupación": IndicadorSlug.TASA_OCUPACION,
         "tocu": IndicadorSlug.TASA_OCUPACION,
-        "ocupados": "empleo_total",
+        "ocupados": IndicadorSlug.EMPLEO_TOTAL,
         "ocurama": IndicadorSlug.EMPLEO_SECTOR,
-        "ocupados por rama": "empleo_sector",
-        "ocupados segun rama": "empleo_sector",
-        "ocupados según rama": "empleo_sector",
-        "ocupados por grupo ocupacional": "empleo_ocupacion",
-        "tasa de participacion": "tasa_participacion",
-        "tasa de participación": "tasa_participacion",
+        "ocupados por rama": IndicadorSlug.EMPLEO_SECTOR,
+        "ocupados segun rama": IndicadorSlug.EMPLEO_SECTOR,
+        "ocupados según rama": IndicadorSlug.EMPLEO_SECTOR,
+        "ocupados por grupo ocupacional": IndicadorSlug.EMPLEO_OCUPACION,
+        "tasa de participacion": IndicadorSlug.TASA_PARTICIPACION,
+        "tasa de participación": IndicadorSlug.TASA_PARTICIPACION,
         "fuerza de trabajo": "fuerza_trabajo",
         "presion laboral": "tasa_presion_laboral",
         "presión laboral": "tasa_presion_laboral",

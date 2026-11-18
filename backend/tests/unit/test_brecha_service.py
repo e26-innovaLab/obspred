@@ -128,3 +128,37 @@ async def test_brecha_service_seed_catalogo(
     ocupaciones = await repo.get_all_ocupaciones()
     assert "desarrollador_software" in ocupaciones
     assert "analista_datos" in ocupaciones
+
+
+def test_resolve_ocupacion_for_sector_strip_y_normalizacion() -> None:
+    """Verifica que resolve_ocupacion_for_sector aplique strip
+    y normalización de espacios y guiones.
+    """
+    service = BrechaService(repository=None)  # type: ignore[arg-type]
+
+    # Padding con espacios en ocupación
+    assert (
+        service.resolve_ocupacion_for_sector(None, "  dev-software  ") == "dev-software"
+    )
+
+    # Sector con espacios y tilde
+    assert (
+        service.resolve_ocupacion_for_sector("economía conocimiento", None)
+        == "analista_datos"
+    )
+    assert (
+        service.resolve_ocupacion_for_sector("economia conocimiento", None)
+        == "analista_datos"
+    )
+
+    # Sector con guión bajo
+    assert (
+        service.resolve_ocupacion_for_sector("economia_conocimiento", None)
+        == "analista_datos"
+    )
+
+    # Sector estándar kebab-case
+    assert (
+        service.resolve_ocupacion_for_sector("economia-conocimiento", None)
+        == "analista_datos"
+    )

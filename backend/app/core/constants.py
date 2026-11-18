@@ -119,13 +119,15 @@ class IndicadorSlug(StrEnum):
     IMACEC = "imacec"
     USUARIOS_INTERNET = "usuarios_internet"
     BRECHA_HABILIDADES = "brecha_habilidades"
+    EMPLEO_TOTAL = "empleo_total"
 
 
 def normalizar_pais_codigo(raw: str | None) -> PaisCodigo | None:
     """Normaliza cadenas sueltas o códigos ISO a PaisCodigo canónico.
 
-    Acepta formatos como 'AR', 'ARG', 'Argentina', 'CL', 'CHL', 'Chile',
-    'UY', 'URY', 'Uruguay' sin importar espacios o mayúsculas/minúsculas.
+    Acepta formatos estándar ISO 3166-1 (alpha-2, alpha-3, numérico) y nombres
+    en español ('AR', 'ARG', 'Argentina', 'CL', 'CHL', 'Chile', 'UY', 'URY', 'Uruguay')
+    sin importar espacios o mayúsculas/minúsculas.
 
     Args:
         raw: Código o nombre del país a normalizar.
@@ -136,11 +138,11 @@ def normalizar_pais_codigo(raw: str | None) -> PaisCodigo | None:
     if not raw:
         return None
     val = raw.strip().upper()
-    if val in (PaisCodigo.ARG, "AR", "ARGENTINA", "032", "216"):
+    if val in (PaisCodigo.ARG, "AR", "ARGENTINA", "032"):
         return PaisCodigo.ARG
-    if val in (PaisCodigo.CHL, "CL", "CHILE", "152", "224"):
+    if val in (PaisCodigo.CHL, "CL", "CHILE", "152"):
         return PaisCodigo.CHL
-    if val in (PaisCodigo.URY, "UY", "URUGUAY", "858", "258"):
+    if val in (PaisCodigo.URY, "UY", "URUGUAY", "858"):
         return PaisCodigo.URY
     return None
 
@@ -193,6 +195,8 @@ class AlertaTipo(StrEnum):
     """Clasificación del tipo de evento de alerta detectado."""
 
     VARIACION_SIGNIFICATIVA = "variacion_significativa"
+    # Reservado metodológicamente para futura detección de reversión de tendencia
+    # o quiebre de signo interperíodo:
     CAMBIO_TENDENCIA = "cambio_tendencia"
 
 
@@ -286,6 +290,7 @@ DEFAULT_INE_URUGUAY_SOURCE: Final[str] = "INE Uruguay — ECH / ANEP — DGETP-U
 DEFAULT_REGIONAL_ARMONIZADAS_SOURCE: Final[str] = (
     "SENCE-SABE / INDEC / INE / OIT (Fuentes Oficiales Armonizadas)"
 )
+DEFAULT_ILOSTAT_CEPALSTAT_SOURCE: Final[str] = "ILOSTAT / CEPALSTAT Armonizado"
 
 # Banco Mundial (World Bank Indicators API)
 DEFAULT_WORLD_BANK_SOURCE: Final[str] = "World Bank"
@@ -434,6 +439,7 @@ __all__ = [
     "DEFAULT_SENCE_CHILE_SOURCE",
     "DEFAULT_INE_URUGUAY_SOURCE",
     "DEFAULT_REGIONAL_ARMONIZADAS_SOURCE",
+    "DEFAULT_ILOSTAT_CEPALSTAT_SOURCE",
     "DEFAULT_WORLD_BANK_SOURCE",
     "DEFAULT_WORLD_BANK_BASE_URL",
     "DEFAULT_WORLD_BANK_TIMEOUT_SECONDS",
