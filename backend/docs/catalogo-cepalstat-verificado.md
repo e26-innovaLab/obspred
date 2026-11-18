@@ -1,6 +1,10 @@
 # Catálogo Verificado de Indicadores CEPALSTAT (`obspred`)
 
 > **Propósito:** Documento de referencia técnica del catálogo de indicadores oficiales verificados de la API REST de CEPALSTAT (Comisión Económica para América Latina y el Caribe), contrastados en vivo contra el endpoint `https://api-cepalstat.cepal.org/cepalstat/api/v1/indicator/{id}/data`.
+>
+> **Referencias Oficiales:**
+> - [Portal de Datos Abiertos de CEPALSTAT](https://statistics.cepal.org/portal/cepalstat/open-data.html?lang=es)
+> - [Especificación OpenAPI 3.0 de CEPALSTAT](https://api-cepalstat.cepal.org/apispec_1.json)
 
 ---
 

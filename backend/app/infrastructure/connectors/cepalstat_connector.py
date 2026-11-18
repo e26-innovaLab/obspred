@@ -1,4 +1,10 @@
-"""Conector oficial para la API de CEPALSTAT (CEPAL / Naciones Unidas)."""
+"""Conector oficial para la API de CEPALSTAT (CEPAL / Naciones Unidas).
+
+Portal de datos abiertos:
+    https://statistics.cepal.org/portal/cepalstat/open-data.html?lang=es
+Especificación OpenAPI 3.0:
+    https://api-cepalstat.cepal.org/apispec_1.json
+"""
 
 import asyncio
 import json
@@ -56,6 +62,13 @@ class CepalstatConnector(IExternalDataConnector):
         "CHILE": "CHL",
         "152": "CHL",
         "224": "CHL",  # ID oficial de Chile en Dim 208 (País__ESTANDAR)
+    }
+
+    # Mapeo de códigos ISO-3 a IDs de miembros oficiales de CEPALSTAT (Dimensión 208)
+    COUNTRY_TO_MEMBER_ID: Final[dict[str, int]] = {
+        "ARG": 216,
+        "CHL": 224,
+        "URY": 258,
     }
 
     # Catálogo verificado de indicadores oficiales de CEPALSTAT (IDs numéricos reales)
@@ -204,6 +217,18 @@ class CepalstatConnector(IExternalDataConnector):
             for code in target_indicator_codes:
                 indicator_meta = self.INDICATOR_MAPPINGS[code]
                 url = f"{self._base_url}/indicator/{code}/data?lang=es&format=json"
+
+                # Filtro dimensional server-side soportado por OpenAPI de CEPALSTAT
+                members: list[str] = [
+                    str(self.COUNTRY_TO_MEMBER_ID[c])
+                    for c in target_countries
+                    if c in self.COUNTRY_TO_MEMBER_ID
+                ]
+                if code in ("127", "2470", "99"):
+                    members.append("146")  # Miembro 'Ambos sexos'
+                if members:
+                    url += f"&members={','.join(members)}"
+
                 tasks.append(
                     self._fetch_indicator_series(
                         client=client,
