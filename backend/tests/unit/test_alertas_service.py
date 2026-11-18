@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock
 import pytest
 
 from app.application.services.alertas_service import AlertaService
+from app.core.constants import AlertaNivel, AlertaTipo
 from app.infrastructure.persistence.models.indicador import IndicadorModel
 
 
@@ -84,3 +85,40 @@ async def test_alerta_service_sin_variacion_no_genera_alerta(
     alertas = await service.get_alertas(pais="ARG")
 
     assert len(alertas) == 0
+
+
+@pytest.mark.asyncio
+async def test_alerta_service_filtro_tipo_variacion_significativa(
+    mock_indicador_repository: AsyncMock,
+) -> None:
+    """Verifica que el filtro de tipo coincida sin inconsistencia de casing."""
+    rec1 = IndicadorModel(
+        pais="CHL",
+        sector="energia",
+        ocupacion=None,
+        indicador="pib_per_capita",
+        fuente="Banco Central de Chile",
+        periodo="2024",
+        valor=100.0,
+        tipo="observado",
+    )
+    rec2 = IndicadorModel(
+        pais="CHL",
+        sector="energia",
+        ocupacion=None,
+        indicador="pib_per_capita",
+        fuente="Banco Central de Chile",
+        periodo="2025",
+        valor=120.0,  # +20% variación
+        tipo="observado",
+    )
+    mock_indicador_repository.get_by_filters.return_value = [rec1, rec2]
+
+    service = AlertaService(indicador_repository=mock_indicador_repository)
+    alertas = await service.get_alertas(
+        pais="CHL", tipo=AlertaTipo.VARIACION_SIGNIFICATIVA
+    )
+
+    assert len(alertas) == 1
+    assert alertas[0].nivel == AlertaNivel.ALTO
+    assert alertas[0].indicador == "pib_per_capita"

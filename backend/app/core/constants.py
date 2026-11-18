@@ -97,6 +97,54 @@ class TipoIndicador(StrEnum):
     PROYECCION = "proyeccion"
 
 
+class IndicadorSlug(StrEnum):
+    """Identificadores canónicos normalizados para indicadores del Observatorio."""
+
+    TASA_DESEMPLEO = "tasa_desempleo"
+    TASA_DESOCUPACION = "tasa_desocupacion"
+    TASA_EMPLEO = "tasa_empleo"
+    TASA_OCUPACION = "tasa_ocupacion"
+    TASA_PARTICIPACION = "tasa_participacion"
+    PARTICIPACION_LABORAL = "participacion_laboral"
+    SALARIO_REAL_INDICE = "salario_real_indice"
+    PUESTOS_DEMANDADOS = "puestos_demandados"
+    EMPLEO_REGISTRADO_TOTAL = "empleo_registrado_total"
+    PIB_PER_CAPITA = "pib_per_capita"
+    MATRICULA_TERCIARIA = "matricula_terciaria"
+    INDICE_EMPLEABILIDAD = "indice_empleabilidad"
+    EMPLEO_SECTOR = "empleo_sector"
+    EMPLEO_OCUPACION = "empleo_ocupacion"
+    SALARIO_MEDIO = "salario_medio"
+    INDICE_REMUNERACIONES = "indice_remuneraciones"
+    IMACEC = "imacec"
+    USUARIOS_INTERNET = "usuarios_internet"
+    BRECHA_HABILIDADES = "brecha_habilidades"
+
+
+def normalizar_pais_codigo(raw: str | None) -> PaisCodigo | None:
+    """Normaliza cadenas sueltas o códigos ISO a PaisCodigo canónico.
+
+    Acepta formatos como 'AR', 'ARG', 'Argentina', 'CL', 'CHL', 'Chile',
+    'UY', 'URY', 'Uruguay' sin importar espacios o mayúsculas/minúsculas.
+
+    Args:
+        raw: Código o nombre del país a normalizar.
+
+    Returns:
+        PaisCodigo | None: Miembro del enum canónico o None si no es reconocido.
+    """
+    if not raw:
+        return None
+    val = raw.strip().upper()
+    if val in (PaisCodigo.ARG, "AR", "ARGENTINA", "032", "216"):
+        return PaisCodigo.ARG
+    if val in (PaisCodigo.CHL, "CL", "CHILE", "152", "224"):
+        return PaisCodigo.CHL
+    if val in (PaisCodigo.URY, "UY", "URUGUAY", "858", "258"):
+        return PaisCodigo.URY
+    return None
+
+
 class NivelEmpleabilidad(StrEnum):
     """Escala cualitativa del Índice de Empleabilidad según score numérico."""
 
@@ -120,10 +168,33 @@ DEFAULT_INDICE_METODOLOGIA_FUENTE: Final[str] = (
     "Observatorio Predictivo / Fuentes Oficiales Armonizadas"
 )
 
+INDICE_EMPLEABILIDAD_PESOS_DEFAULT: Final[dict[DimensionIndiceNombre, float]] = {
+    DimensionIndiceNombre.DEMANDA_PUESTOS: 0.35,
+    DimensionIndiceNombre.ESTABILIDAD_SALARIAL: 0.25,
+    DimensionIndiceNombre.COBERTURA_FORMATIVA: 0.20,
+    DimensionIndiceNombre.CRECIMIENTO_RECIENTE: 0.20,
+}
+
 
 # ==============================================================================
 # 4. Umbrales Estadísticos y Reglas de Negocio para Alertas
 # ==============================================================================
+
+
+class AlertaNivel(StrEnum):
+    """Nivel de severidad para eventos de alerta estadística."""
+
+    BAJO = "bajo"
+    MEDIO = "medio"
+    ALTO = "alto"
+
+
+class AlertaTipo(StrEnum):
+    """Clasificación del tipo de evento de alerta detectado."""
+
+    VARIACION_SIGNIFICATIVA = "variacion_significativa"
+    CAMBIO_TENDENCIA = "cambio_tendencia"
+
 
 # Umbral de variación porcentual para alerta media
 UMBRAL_ALERTA_MEDIO: Final[float] = 5.0
@@ -200,6 +271,21 @@ JSON_SERIALIZATION_MODE: Final[str] = "json"
 # ==============================================================================
 # 8. Conectores Externos y Fuentes Oficiales
 # ==============================================================================
+
+DEFAULT_HTTP_USER_AGENT: Final[str] = (
+    f"ObsPred-Backend/{DEFAULT_APP_VERSION} "
+    "(innova.lab Grupo 5; Observatorio Predictivo Socioeconomico)"
+)
+
+# Denominaciones canónicas oficiales de fuentes por país y ámbito
+DEFAULT_INDEC_SOURCE: Final[str] = (
+    "INDEC — Encuesta Permanente de Hogares / Secretaría de Trabajo"
+)
+DEFAULT_SENCE_CHILE_SOURCE: Final[str] = "SENCE — SABE / INE Chile — ENE y SIMEL"
+DEFAULT_INE_URUGUAY_SOURCE: Final[str] = "INE Uruguay — ECH / ANEP — DGETP-UTU"
+DEFAULT_REGIONAL_ARMONIZADAS_SOURCE: Final[str] = (
+    "SENCE-SABE / INDEC / INE / OIT (Fuentes Oficiales Armonizadas)"
+)
 
 # Banco Mundial (World Bank Indicators API)
 DEFAULT_WORLD_BANK_SOURCE: Final[str] = "World Bank"
@@ -286,11 +372,16 @@ __all__ = [
     "PaisCodigo",
     "SectorEstrategico",
     "TipoIndicador",
+    "IndicadorSlug",
+    "normalizar_pais_codigo",
     "NivelEmpleabilidad",
     "DimensionIndiceNombre",
     "INDICADOR_INDICE_EMPLEABILIDAD",
     "DEFAULT_INDICE_METODOLOGIA_FUENTE",
+    "INDICE_EMPLEABILIDAD_PESOS_DEFAULT",
     # 4. Umbrales de Alertas
+    "AlertaNivel",
+    "AlertaTipo",
     "UMBRAL_ALERTA_MEDIO",
     "UMBRAL_ALERTA_ALTO",
     # 5. Rutas HTTP
@@ -338,6 +429,11 @@ __all__ = [
     "DEFAULT_MAX_UPLOAD_SIZE_BYTES",
     "JSON_SERIALIZATION_MODE",
     # 8. Conectores Externos y Fuentes
+    "DEFAULT_HTTP_USER_AGENT",
+    "DEFAULT_INDEC_SOURCE",
+    "DEFAULT_SENCE_CHILE_SOURCE",
+    "DEFAULT_INE_URUGUAY_SOURCE",
+    "DEFAULT_REGIONAL_ARMONIZADAS_SOURCE",
     "DEFAULT_WORLD_BANK_SOURCE",
     "DEFAULT_WORLD_BANK_BASE_URL",
     "DEFAULT_WORLD_BANK_TIMEOUT_SECONDS",

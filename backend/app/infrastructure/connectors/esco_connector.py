@@ -10,6 +10,8 @@ from app.core.constants import (
     DEFAULT_ESCO_SOURCE,
     DEFAULT_ESCO_TIMEOUT_SECONDS,
     DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    DEFAULT_HTTP_USER_AGENT,
+    TipoIndicador,
 )
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import (
@@ -28,7 +30,7 @@ class EscoConnector(IExternalDataConnector):
         DEFAULT_ESCO_BASE_URL or "https://ec.europa.eu/esco/api/search"
     )
     DEFAULT_SOURCE_NAME: Final[str] = DEFAULT_ESCO_SOURCE or "ESCO"
-    DEFAULT_TIMEOUT_SECONDS: Final[float] = DEFAULT_ESCO_TIMEOUT_SECONDS or 30.0
+    DEFAULT_TIMEOUT_SECONDS: Final[float] = DEFAULT_ESCO_TIMEOUT_SECONDS
 
     def __init__(
         self,
@@ -42,7 +44,7 @@ class EscoConnector(IExternalDataConnector):
         self._timeout = timeout
         self._headers = {
             "Accept": "application/json",
-            "User-Agent": "ObsPred-Backend/1.0",
+            "User-Agent": DEFAULT_HTTP_USER_AGENT,
         }
 
     @property
@@ -136,10 +138,14 @@ class EscoConnector(IExternalDataConnector):
                                 indicador=f"taxonomia_{tipo}",
                                 periodo="actual",
                                 valor=0.0,
-                                tipo="catalogo",
+                                tipo=TipoIndicador.OBSERVADO,
                                 fuente=self.source_name,
                                 fecha_actualizacion=date.today(),
-                                metadatos={"uri": uri, "query_busqueda": query},
+                                metadatos={
+                                    "uri": uri,
+                                    "query_busqueda": query,
+                                    "tipo_registro": "catalogo_taxonomico",
+                                },
                                 detalles=item,
                             )
                             records.append(record)

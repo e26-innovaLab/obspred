@@ -7,11 +7,17 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import (
+    DEFAULT_INDEC_SOURCE,
+    DEFAULT_INE_URUGUAY_SOURCE,
+    DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
+    DEFAULT_SENCE_CHILE_SOURCE,
     INDICADOR_INDICE_EMPLEABILIDAD,
+    INDICE_EMPLEABILIDAD_PESOS_DEFAULT,
     DimensionIndiceNombre,
     PaisCodigo,
     SectorEstrategico,
     TipoIndicador,
+    normalizar_pais_codigo,
 )
 from app.core.logging import logger
 from app.domain.entities.indice_empleabilidad import (
@@ -792,16 +798,14 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         Returns:
             str: Identificación de organismos oficiales de datos.
         """
-        if not pais:
-            return "SENCE-SABE / INDEC / INE / OIT (Fuentes Oficiales Armonizadas)"
-        p = pais.upper().strip()
-        if p in (PaisCodigo.ARG, "AR", "ARGENTINA"):
-            return "INDEC — Encuesta Permanente de Hogares / Secretaría de Trabajo"
-        if p in (PaisCodigo.CHL, "CL", "CHILE"):
-            return "SENCE — SABE / INE Chile — ENE y SIMEL"
-        if p in (PaisCodigo.URY, "UY", "URUGUAY"):
-            return "INE Uruguay — ECH / ANEP — DGETP-UTU"
-        return f"Observatorio Predictivo ({p}) / Fuentes Armonizadas"
+        codigo = normalizar_pais_codigo(pais)
+        if codigo == PaisCodigo.ARG:
+            return DEFAULT_INDEC_SOURCE
+        if codigo == PaisCodigo.CHL:
+            return DEFAULT_SENCE_CHILE_SOURCE
+        if codigo == PaisCodigo.URY:
+            return DEFAULT_INE_URUGUAY_SOURCE
+        return DEFAULT_REGIONAL_ARMONIZADAS_SOURCE
 
     async def exists_ocupacion(self, ocupacion: str) -> bool:
         """Determina si la ocupación existe en el catálogo o base de datos.
@@ -875,7 +879,12 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
 
             # Construir entidad a partir de registros en BD
             canon_nombre = db_records[0].ocupacion or ocupacion
-            canon_sector = db_records[0].sector or sector or "general"
+            cat_entry = self._resolve_catalog_entry(canon_nombre)
+            canon_sector = (
+                db_records[0].sector
+                or sector
+                or (cat_entry["sector"] if cat_entry else None)
+            )
             fuente = db_records[0].fuente or self._get_fuente_por_pais(pais)
             fecha_act = db_records[0].fecha_actualizacion
 
@@ -891,25 +900,33 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.DEMANDA_PUESTOS,
                     valor=score,
-                    peso=0.35,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.DEMANDA_PUESTOS
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
                     valor=score,
-                    peso=0.25,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.ESTABILIDAD_SALARIAL
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.COBERTURA_FORMATIVA,
                     valor=score,
-                    peso=0.20,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.COBERTURA_FORMATIVA
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
                     valor=score,
-                    peso=0.20,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.CRECIMIENTO_RECIENTE
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
             ]

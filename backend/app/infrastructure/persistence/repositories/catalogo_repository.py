@@ -13,6 +13,7 @@ from app.application.dtos.catalogo_dto import (
     PeriodosRangoDTO,
     SectorCatalogoDTO,
 )
+from app.core.constants import IndicadorSlug, PaisCodigo, SectorEstrategico
 from app.core.logging import logger
 from app.domain.interfaces.catalogo_repository import ICatalogoRepository
 from app.infrastructure.persistence.models.catalogo import (
@@ -24,18 +25,38 @@ from app.infrastructure.persistence.models.catalogo import (
 from app.infrastructure.persistence.models.indicador import IndicadorModel
 
 CANONICAL_PAISES: list[dict[str, Any]] = [
-    {"id": "ARG", "nombre": "Argentina", "orden": 1},
-    {"id": "URY", "nombre": "Uruguay", "orden": 2},
-    {"id": "CHL", "nombre": "Chile", "orden": 3},
+    {"id": PaisCodigo.ARG, "nombre": "Argentina", "orden": 1},
+    {"id": PaisCodigo.URY, "nombre": "Uruguay", "orden": 2},
+    {"id": PaisCodigo.CHL, "nombre": "Chile", "orden": 3},
 ]
 
 CANONICAL_SECTORES: list[dict[str, Any]] = [
-    {"id": "tecnologia", "nombre": "Tecnología", "isic": ["J"], "orden": 1},
-    {"id": "salud", "nombre": "Salud", "isic": ["Q"], "orden": 2},
-    {"id": "energia", "nombre": "Energía", "isic": ["D"], "orden": 3},
-    {"id": "turismo", "nombre": "Turismo", "isic": ["I"], "orden": 4},
     {
-        "id": "economia-conocimiento",
+        "id": SectorEstrategico.TECNOLOGIA,
+        "nombre": "Tecnología",
+        "isic": ["J"],
+        "orden": 1,
+    },
+    {
+        "id": SectorEstrategico.SALUD,
+        "nombre": "Salud",
+        "isic": ["Q"],
+        "orden": 2,
+    },
+    {
+        "id": SectorEstrategico.ENERGIA,
+        "nombre": "Energía",
+        "isic": ["D"],
+        "orden": 3,
+    },
+    {
+        "id": SectorEstrategico.TURISMO,
+        "nombre": "Turismo",
+        "isic": ["I"],
+        "orden": 4,
+    },
+    {
+        "id": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
         "nombre": "Economía del Conocimiento",
         "isic": ["M"],
         "orden": 5,
@@ -47,28 +68,28 @@ CANONICAL_OCUPACIONES: list[dict[str, Any]] = [
     {
         "id": "dev-software",
         "nombre": "Desarrollador/a de software",
-        "sector_id": "tecnologia",
+        "sector_id": SectorEstrategico.TECNOLOGIA,
         "isco": "2512",
         "orden": 1,
     },
     {
         "id": "analista-datos",
         "nombre": "Analista de datos",
-        "sector_id": "tecnologia",
+        "sector_id": SectorEstrategico.TECNOLOGIA,
         "isco": "2511",
         "orden": 2,
     },
     {
         "id": "especialista-ciberseguridad",
         "nombre": "Especialista en ciberseguridad",
-        "sector_id": "tecnologia",
+        "sector_id": SectorEstrategico.TECNOLOGIA,
         "isco": "2529",
         "orden": 3,
     },
     {
         "id": "devops",
         "nombre": "Ingeniero/a DevOps / Cloud",
-        "sector_id": "tecnologia",
+        "sector_id": SectorEstrategico.TECNOLOGIA,
         "isco": "2519",
         "orden": 4,
     },
@@ -76,28 +97,28 @@ CANONICAL_OCUPACIONES: list[dict[str, Any]] = [
     {
         "id": "enfermeria",
         "nombre": "Enfermero/a profesional",
-        "sector_id": "salud",
+        "sector_id": SectorEstrategico.SALUD,
         "isco": "2221",
         "orden": 5,
     },
     {
         "id": "medico-general",
         "nombre": "Médico/a general",
-        "sector_id": "salud",
+        "sector_id": SectorEstrategico.SALUD,
         "isco": "2211",
         "orden": 6,
     },
     {
         "id": "tecnico-laboratorio",
         "nombre": "Técnico/a de laboratorio clínico",
-        "sector_id": "salud",
+        "sector_id": SectorEstrategico.SALUD,
         "isco": "3212",
         "orden": 7,
     },
     {
         "id": "kinesiologia",
         "nombre": "Kinesiólogo/a y fisioterapeuta",
-        "sector_id": "salud",
+        "sector_id": SectorEstrategico.SALUD,
         "isco": "2264",
         "orden": 8,
     },
@@ -105,28 +126,28 @@ CANONICAL_OCUPACIONES: list[dict[str, Any]] = [
     {
         "id": "ing-renovables",
         "nombre": "Ingeniero/a en energías renovables",
-        "sector_id": "energia",
+        "sector_id": SectorEstrategico.ENERGIA,
         "isco": "2149",
         "orden": 9,
     },
     {
         "id": "tecnico-solar",
         "nombre": "Técnico/a en instalaciones solares",
-        "sector_id": "energia",
+        "sector_id": SectorEstrategico.ENERGIA,
         "isco": "3113",
         "orden": 10,
     },
     {
         "id": "operador-redes",
         "nombre": "Operador/a de redes eléctricas",
-        "sector_id": "energia",
+        "sector_id": SectorEstrategico.ENERGIA,
         "isco": "3131",
         "orden": 11,
     },
     {
         "id": "gestor-ambiental",
         "nombre": "Especialista en eficiencia energética",
-        "sector_id": "energia",
+        "sector_id": SectorEstrategico.ENERGIA,
         "isco": "2143",
         "orden": 12,
     },
@@ -134,28 +155,28 @@ CANONICAL_OCUPACIONES: list[dict[str, Any]] = [
     {
         "id": "guia-turismo",
         "nombre": "Guía de turismo especializado",
-        "sector_id": "turismo",
+        "sector_id": SectorEstrategico.TURISMO,
         "isco": "5113",
         "orden": 13,
     },
     {
         "id": "gestor-hotelero",
         "nombre": "Gerente de servicios de alojamiento",
-        "sector_id": "turismo",
+        "sector_id": SectorEstrategico.TURISMO,
         "isco": "1411",
         "orden": 14,
     },
     {
         "id": "chef-ejecutivo",
         "nombre": "Chef / Cocinero/a profesional",
-        "sector_id": "turismo",
+        "sector_id": SectorEstrategico.TURISMO,
         "isco": "3434",
         "orden": 15,
     },
     {
         "id": "coordinador-eventos",
         "nombre": "Organizador/a de congresos y eventos",
-        "sector_id": "turismo",
+        "sector_id": SectorEstrategico.TURISMO,
         "isco": "3332",
         "orden": 16,
     },
@@ -163,28 +184,28 @@ CANONICAL_OCUPACIONES: list[dict[str, Any]] = [
     {
         "id": "product-manager",
         "nombre": "Gerente de producto digital",
-        "sector_id": "economia-conocimiento",
+        "sector_id": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
         "isco": "1219",
         "orden": 17,
     },
     {
         "id": "disenador-ux",
         "nombre": "Diseñador/a UX / UI",
-        "sector_id": "economia-conocimiento",
+        "sector_id": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
         "isco": "2166",
         "orden": 18,
     },
     {
         "id": "analista-financiero",
         "nombre": "Analista financiero y de inversiones",
-        "sector_id": "economia-conocimiento",
+        "sector_id": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
         "isco": "2412",
         "orden": 19,
     },
     {
         "id": "consultor-negocios",
         "nombre": "Consultor/a de innovación y estrategia",
-        "sector_id": "economia-conocimiento",
+        "sector_id": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
         "isco": "2421",
         "orden": 20,
     },
@@ -192,7 +213,7 @@ CANONICAL_OCUPACIONES: list[dict[str, Any]] = [
 
 CANONICAL_INDICADORES: list[dict[str, Any]] = [
     {
-        "id": "tasa_desempleo",
+        "id": IndicadorSlug.TASA_DESEMPLEO,
         "nombre": "Tasa de desempleo",
         "unidad": "%",
         "frecuencias": ["anual", "trimestral"],
@@ -204,7 +225,7 @@ CANONICAL_INDICADORES: list[dict[str, Any]] = [
         "orden": 1,
     },
     {
-        "id": "tasa_empleo",
+        "id": IndicadorSlug.TASA_EMPLEO,
         "nombre": "Tasa de empleo",
         "unidad": "%",
         "frecuencias": ["anual", "trimestral"],
@@ -215,7 +236,7 @@ CANONICAL_INDICADORES: list[dict[str, Any]] = [
         "orden": 2,
     },
     {
-        "id": "salario_real_indice",
+        "id": IndicadorSlug.SALARIO_REAL_INDICE,
         "nombre": "Salario real (Índice)",
         "unidad": "pts",
         "frecuencias": ["trimestral", "mensual"],
@@ -224,7 +245,7 @@ CANONICAL_INDICADORES: list[dict[str, Any]] = [
         "orden": 3,
     },
     {
-        "id": "puestos_demandados",
+        "id": IndicadorSlug.PUESTOS_DEMANDADOS,
         "nombre": "Puestos demandados",
         "unidad": "avisos",
         "frecuencias": ["trimestral", "mensual"],

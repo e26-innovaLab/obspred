@@ -8,10 +8,13 @@ import httpx
 
 from app.core.constants import (
     DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    DEFAULT_HTTP_USER_AGENT,
     DEFAULT_WORLD_BANK_BASE_URL,
     DEFAULT_WORLD_BANK_SOURCE,
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
+    IndicadorSlug,
     PaisCodigo,
+    SectorEstrategico,
     TipoIndicador,
 )
 from app.core.logging import logger
@@ -40,13 +43,13 @@ class WorldBankConnector(IExternalDataConnector):
     # Catálogo de indicadores oficiales verificados y su mapeo al modelo de dominio
     INDICATOR_MAPPINGS: dict[str, dict[str, Any]] = {
         "SL.UEM.TOTL.ZS": {
-            "slug": "tasa_desempleo",
+            "slug": IndicadorSlug.TASA_DESEMPLEO,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de desocupación total (% de fuerza laboral)",
         },
         "SL.TLF.CACT.ZS": {
-            "slug": "participacion_laboral",
+            "slug": IndicadorSlug.PARTICIPACION_LABORAL,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de participación en la fuerza laboral (%)",
@@ -70,20 +73,20 @@ class WorldBankConnector(IExternalDataConnector):
             "nombre": "Empleo en industria (% del empleo total)",
         },
         "NY.GDP.PCAP.CD": {
-            "slug": "pib_per_capita",
+            "slug": IndicadorSlug.PIB_PER_CAPITA,
             "sector": None,
             "ocupacion": None,
             "nombre": "PIB per cápita (US$ a precios actuales)",
         },
         "SE.TER.ENRR": {
-            "slug": "matricula_terciaria",
+            "slug": IndicadorSlug.MATRICULA_TERCIARIA,
             "sector": None,
             "ocupacion": None,
             "nombre": "Inscripción en educación terciaria (% bruto)",
         },
         "IT.NET.USER.ZS": {
-            "slug": "usuarios_internet",
-            "sector": "tecnologia",
+            "slug": IndicadorSlug.USUARIOS_INTERNET,
+            "sector": SectorEstrategico.TECNOLOGIA,
             "ocupacion": None,
             "nombre": "Población con acceso a Internet (%)",
         },
@@ -106,10 +109,7 @@ class WorldBankConnector(IExternalDataConnector):
         self._custom_client = client
         self._timeout = timeout
         self._headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (compatible; ObservatorioPredictivo/1.0; "
-                "+https://github.com/innova-lab/obspred)"
-            ),
+            "User-Agent": DEFAULT_HTTP_USER_AGENT,
             "Accept": "application/json",
         }
 

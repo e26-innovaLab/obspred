@@ -2,6 +2,7 @@ from app.application.dtos.brecha_dto import (
     HabilidadComparadaCreateDTO,
     HabilidadComparadaDTO,
 )
+from app.core.constants import SectorEstrategico
 from app.domain.entities.brecha import HabilidadComparada
 from app.domain.exceptions.brecha_exceptions import OcupacionNoEncontradaError
 from app.domain.interfaces.brecha_repository import IBrechaRepository
@@ -129,11 +130,12 @@ DEFAULT_BRECHAS_CATALOG: dict[str, list[dict]] = {
 
 
 SECTOR_DEFAULT_OCUPACION: dict[str, str] = {
-    "tecnologia": "desarrollador_software",
-    "salud": "enfermero_profesional",
-    "energia": "tecnico_solar_fotovoltaico",
-    "turismo": "soporte_ti",
-    "economia-conocimiento": "analista_datos",
+    SectorEstrategico.TECNOLOGIA: "desarrollador_software",
+    SectorEstrategico.SALUD: "enfermero_profesional",
+    SectorEstrategico.ENERGIA: "tecnico_solar_fotovoltaico",
+    SectorEstrategico.TURISMO: "soporte_ti",
+    SectorEstrategico.ECONOMIA_CONOCIMIENTO: "analista_datos",
+    # Compatibilidad con snake_case legado
     "economia_conocimiento": "analista_datos",
 }
 
@@ -148,6 +150,16 @@ class BrechaService:
     def resolve_ocupacion_for_sector(
         self, sector: str | None, ocupacion: str | None
     ) -> str:
+        """Determina la ocupación canónica resolviendo fallbacks por sector."""
+        if ocupacion:
+            return ocupacion
+        if sector:
+            normalizado = sector.lower().replace("_", "-")
+            if normalizado in SECTOR_DEFAULT_OCUPACION:
+                return SECTOR_DEFAULT_OCUPACION[normalizado]
+            if sector.lower() in SECTOR_DEFAULT_OCUPACION:
+                return SECTOR_DEFAULT_OCUPACION[sector.lower()]
+        return "desarrollador_software"
         """Determina la ocupación representativa según el sector o el fallback."""
         if ocupacion and ocupacion.strip():
             return ocupacion.strip()

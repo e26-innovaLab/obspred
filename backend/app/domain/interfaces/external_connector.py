@@ -6,6 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.core.constants import TipoIndicador
+
 
 class RawIndicatorRecord(BaseModel):
     """Representación normalizada en memoria de un registro de indicador extraído.
@@ -56,7 +58,7 @@ class RawIndicatorRecord(BaseModel):
         description="Valor numérico extraído del origen oficial",
     )
     tipo: str = Field(
-        default="observado",
+        default=TipoIndicador.OBSERVADO,
         description="Tipo metodológico: observado, calculado o proyeccion",
     )
     fuente: str = Field(

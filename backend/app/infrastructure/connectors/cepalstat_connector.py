@@ -18,8 +18,11 @@ from app.core.constants import (
     DEFAULT_CEPALSTAT_SOURCE,
     DEFAULT_CEPALSTAT_TIMEOUT_SECONDS,
     DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    DEFAULT_HTTP_USER_AGENT,
+    IndicadorSlug,
     PaisCodigo,
     TipoIndicador,
+    normalizar_pais_codigo,
 )
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import (
@@ -74,7 +77,7 @@ class CepalstatConnector(IExternalDataConnector):
     # Catálogo verificado de indicadores oficiales de CEPALSTAT (IDs numéricos reales)
     INDICATOR_MAPPINGS: Final[dict[str, dict[str, Any]]] = {
         "127": {
-            "slug": "tasa_desempleo",
+            "slug": IndicadorSlug.TASA_DESEMPLEO,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de desocupación por sexo",
@@ -90,7 +93,7 @@ class CepalstatConnector(IExternalDataConnector):
             "frecuencia": "trimestral",
         },
         "2470": {
-            "slug": "participacion_laboral",
+            "slug": IndicadorSlug.PARTICIPACION_LABORAL,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de participación en la fuerza de trabajo, por sexo",
@@ -98,7 +101,7 @@ class CepalstatConnector(IExternalDataConnector):
             "frecuencia": "anual",
         },
         "2205": {
-            "slug": "pib_per_capita",
+            "slug": IndicadorSlug.PIB_PER_CAPITA,
             "sector": None,
             "ocupacion": None,
             "nombre": (
@@ -109,7 +112,7 @@ class CepalstatConnector(IExternalDataConnector):
             "frecuencia": "anual",
         },
         "99": {
-            "slug": "matricula_terciaria",
+            "slug": IndicadorSlug.MATRICULA_TERCIARIA,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa bruta de matrícula de nivel terciario, por sexo",
@@ -137,10 +140,7 @@ class CepalstatConnector(IExternalDataConnector):
         self._custom_client = client
         self._timeout = timeout
         self._headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (compatible; ObservatorioPredictivo/1.0; "
-                "+https://github.com/innova-lab/obspred)"
-            ),
+            "User-Agent": DEFAULT_HTTP_USER_AGENT,
             "Accept": "application/json",
         }
 
@@ -193,8 +193,7 @@ class CepalstatConnector(IExternalDataConnector):
         """
         # Normalización exhaustiva de países objetivo
         raw_target_countries = [
-            self._normalize_country_code(p)
-            for p in (paises or self.DEFAULT_COUNTRIES)
+            self._normalize_country_code(p) for p in (paises or self.DEFAULT_COUNTRIES)
         ]
         target_countries = {p for p in raw_target_countries if p is not None}
         if not target_countries:
@@ -422,15 +421,12 @@ class CepalstatConnector(IExternalDataConnector):
                             )
                 # Dimensión Año
                 elif (
-                    any(k in d_name for k in ["año", "ano", "year"])
-                    or d_id == "29117"
+                    any(k in d_name for k in ["año", "ano", "year"]) or d_id == "29117"
                 ):
                     year_dim_id = d_id
                     for m in members:
                         if isinstance(m, dict):
-                            year_member_map[str(m.get("id"))] = str(
-                                m.get("name", "")
-                            )
+                            year_member_map[str(m.get("id"))] = str(m.get("name", ""))
                 # Dimensión Trimestre
                 elif (
                     any(k in d_name for k in ["trimestre", "quarter"])
@@ -449,9 +445,7 @@ class CepalstatConnector(IExternalDataConnector):
                     sex_dim_id = d_id
                     for m in members:
                         if isinstance(m, dict):
-                            sex_member_map[str(m.get("id"))] = str(
-                                m.get("name", "")
-                            )
+                            sex_member_map[str(m.get("id"))] = str(m.get("name", ""))
 
         # 2. Procesar observaciones de datos reales
         for item in raw_data:
@@ -615,6 +609,9 @@ class CepalstatConnector(IExternalDataConnector):
         if raw_code is None:
             return None
         cleaned = str(raw_code).strip().upper()
+        norm = normalizar_pais_codigo(cleaned)
+        if norm:
+            return norm.value
         return self.COUNTRY_MAPPINGS.get(cleaned)
 
     @staticmethod

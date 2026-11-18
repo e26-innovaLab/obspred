@@ -19,10 +19,12 @@ import httpx
 from app.core.config import settings
 from app.core.constants import (
     DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    DEFAULT_HTTP_USER_AGENT,
     DEFAULT_SIMEL_CHILE_BASE_URL,
     DEFAULT_SIMEL_CHILE_SOURCE,
     DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
     DEFAULT_SIMEL_SDMX_BASE_URL,
+    IndicadorSlug,
     PaisCodigo,
     SectorEstrategico,
     TipoIndicador,
@@ -95,61 +97,71 @@ class SimelChileConnector(IExternalDataConnector):
         "economía del conocimiento": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
     }
 
+    # Claves de dimensión SDMX oficiales (.Stat Suite INE Chile)
+    DIM_KEY_DESEMPLEO: Final[str] = "M.TDES._T.AS"
+    DIM_KEY_OCUPACION: Final[str] = "M.TOCU._T.AS"
+    DIM_KEY_PARTICIPACION: Final[str] = "M.TP._T.AS"
+    DIM_KEY_RAMA_TECNOLOGIA: Final[str] = "M.OCURAMA._T.AS.J"
+    DIM_KEY_RAMA_SALUD: Final[str] = "M.OCURAMA._T.AS.Q"
+    DIM_KEY_RAMA_ENERGIA: Final[str] = "M.OCURAMA._T.AS.D"
+    DIM_KEY_RAMA_TURISMO: Final[str] = "M.OCURAMA._T.AS.I"
+    DIM_KEY_RAMA_ECONOMIA_CONOCIMIENTO: Final[str] = "M.OCURAMA._T.AS.M"
+
     # Flujos de datos (Dataflows) SDMX del INE priorizados para el Observatorio
     SDMX_DATAFLOW_CONFIG: Final[list[dict[str, Any]]] = [
         {
             "dataflow": "DF_TDES_SEXO",
-            "dimension_key": "M.TDES._T.AS",
-            "indicador": "tasa_desempleo",
+            "dimension_key": DIM_KEY_DESEMPLEO,
+            "indicador": IndicadorSlug.TASA_DESEMPLEO,
             "sector": None,
             "unidad": "porcentaje",
         },
         {
             "dataflow": "DF_TOCU_SEXO",
-            "dimension_key": "M.TOCU._T.AS",
-            "indicador": "tasa_ocupacion",
+            "dimension_key": DIM_KEY_OCUPACION,
+            "indicador": IndicadorSlug.TASA_OCUPACION,
             "sector": None,
             "unidad": "porcentaje",
         },
         {
             "dataflow": "DF_TP_SEXO",
-            "dimension_key": "M.TP._T.AS",
-            "indicador": "tasa_participacion",
+            "dimension_key": DIM_KEY_PARTICIPACION,
+            "indicador": IndicadorSlug.TASA_PARTICIPACION,
             "sector": None,
             "unidad": "porcentaje",
         },
         {
             "dataflow": "DF_OCURAMA_RAMA_SEXO",
-            "dimension_key": "M.OCURAMA._T.AS.J",
-            "indicador": "empleo_sector",
+            "dimension_key": DIM_KEY_RAMA_TECNOLOGIA,
+            "indicador": IndicadorSlug.EMPLEO_SECTOR,
             "sector": SectorEstrategico.TECNOLOGIA,
             "unidad": "personas",
         },
         {
             "dataflow": "DF_OCURAMA_RAMA_SEXO",
-            "dimension_key": "M.OCURAMA._T.AS.Q",
-            "indicador": "empleo_sector",
+            "dimension_key": DIM_KEY_RAMA_SALUD,
+            "indicador": IndicadorSlug.EMPLEO_SECTOR,
             "sector": SectorEstrategico.SALUD,
             "unidad": "personas",
         },
         {
             "dataflow": "DF_OCURAMA_RAMA_SEXO",
-            "dimension_key": "M.OCURAMA._T.AS.D",
-            "indicador": "empleo_sector",
+            "dimension_key": DIM_KEY_RAMA_ENERGIA,
+            "indicador": IndicadorSlug.EMPLEO_SECTOR,
             "sector": SectorEstrategico.ENERGIA,
             "unidad": "personas",
         },
         {
             "dataflow": "DF_OCURAMA_RAMA_SEXO",
-            "dimension_key": "M.OCURAMA._T.AS.I",
-            "indicador": "empleo_sector",
+            "dimension_key": DIM_KEY_RAMA_TURISMO,
+            "indicador": IndicadorSlug.EMPLEO_SECTOR,
             "sector": SectorEstrategico.TURISMO,
             "unidad": "personas",
         },
         {
             "dataflow": "DF_OCURAMA_RAMA_SEXO",
-            "dimension_key": "M.OCURAMA._T.AS.M",
-            "indicador": "empleo_sector",
+            "dimension_key": DIM_KEY_RAMA_ECONOMIA_CONOCIMIENTO,
+            "indicador": IndicadorSlug.EMPLEO_SECTOR,
             "sector": SectorEstrategico.ECONOMIA_CONOCIMIENTO,
             "unidad": "personas",
         },
@@ -157,16 +169,16 @@ class SimelChileConnector(IExternalDataConnector):
 
     # Mapeo de términos de indicadores de SIMEL a slugs canónicos
     INDICATOR_SLUG_MAPPINGS: Final[dict[str, str]] = {
-        "tasa de desocupacion": "tasa_desempleo",
-        "tasa de desocupación": "tasa_desempleo",
-        "tdes": "tasa_desempleo",
-        "desocupacion": "tasa_desempleo",
-        "desempleo": "tasa_desempleo",
-        "tasa de ocupacion": "tasa_ocupacion",
-        "tasa de ocupación": "tasa_ocupacion",
-        "tocu": "tasa_ocupacion",
+        "tasa de desocupacion": IndicadorSlug.TASA_DESEMPLEO,
+        "tasa de desocupación": IndicadorSlug.TASA_DESEMPLEO,
+        "tdes": IndicadorSlug.TASA_DESEMPLEO,
+        "desocupacion": IndicadorSlug.TASA_DESEMPLEO,
+        "desempleo": IndicadorSlug.TASA_DESEMPLEO,
+        "tasa de ocupacion": IndicadorSlug.TASA_OCUPACION,
+        "tasa de ocupación": IndicadorSlug.TASA_OCUPACION,
+        "tocu": IndicadorSlug.TASA_OCUPACION,
         "ocupados": "empleo_total",
-        "ocurama": "empleo_sector",
+        "ocurama": IndicadorSlug.EMPLEO_SECTOR,
         "ocupados por rama": "empleo_sector",
         "ocupados segun rama": "empleo_sector",
         "ocupados según rama": "empleo_sector",
@@ -218,7 +230,7 @@ class SimelChileConnector(IExternalDataConnector):
         self._custom_client = client
         self._timeout = timeout
         self._headers = {
-            "User-Agent": "ObsPred-Backend/1.0 (SIMEL INE Chile Connector)",
+            "User-Agent": DEFAULT_HTTP_USER_AGENT,
             "Accept": "application/vnd.sdmx.data+csv,text/csv,text/plain;q=0.9,*/*",
         }
 

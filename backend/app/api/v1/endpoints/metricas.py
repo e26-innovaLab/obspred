@@ -29,7 +29,17 @@ from app.api.v1.schemas.metricas_schema import (
 )
 from app.api.v1.schemas.response_schema import create_success_response
 from app.api.v1.schemas.trazabilidad_schema import TrazabilidadFuenteSchema
-from app.core.constants import METRICAS_ROUTE, OPENAPI_TAG_METRICAS
+from app.core.constants import (
+    DEFAULT_BCENTRAL_CHILE_SOURCE,
+    DEFAULT_INDEC_SOURCE,
+    DEFAULT_INE_URUGUAY_SOURCE,
+    DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
+    DEFAULT_SENCE_CHILE_SOURCE,
+    METRICAS_ROUTE,
+    OPENAPI_TAG_METRICAS,
+    FuenteEstado,
+    TipoIndicador,
+)
 
 metricas_router = APIRouter(
     prefix=METRICAS_ROUTE,
@@ -88,10 +98,10 @@ async def get_series(
 
     series_data: list[SerieItemDto] = []
     fuente_base = TrazabilidadFuenteSchema(
-        fuente="Datos Oficiales Armonizados (INDEC / INE / SENCE)",
+        fuente=DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
         fecha_actualizacion="2026-09-30",
-        estado_fuente="activa",
-        tipo="observado",
+        estado_fuente=FuenteEstado.ACTIVA,
+        tipo=TipoIndicador.OBSERVADO,
     )
 
     # Mock determinístico por país
@@ -124,7 +134,7 @@ async def get_series(
 
     for p in paises_lista:
         puntos = [
-            PuntoSerieDto(periodo=per, valor=val, tipo="observado")
+            PuntoSerieDto(periodo=per, valor=val, tipo=TipoIndicador.OBSERVADO)
             for per, val in mock_valores.get(
                 p, [("2026-Q1", 100.0), ("2026-Q2", 110.0)]
             )
@@ -186,12 +196,12 @@ async def get_proyecciones(
     # 2. Aplicar validación de al menos 3 períodos históricos (Principio 5).
     # 3. Retornar límites superior e inferior calculados sobre la varianza muestral.
     historico = [
-        PuntoSerieDto(periodo="2025-Q1", valor=1868.0, tipo="observado"),
-        PuntoSerieDto(periodo="2025-Q2", valor=1852.0, tipo="observado"),
-        PuntoSerieDto(periodo="2025-Q3", valor=1826.0, tipo="observado"),
-        PuntoSerieDto(periodo="2025-Q4", valor=1860.0, tipo="observado"),
-        PuntoSerieDto(periodo="2026-Q1", valor=1820.0, tipo="observado"),
-        PuntoSerieDto(periodo="2026-Q2", valor=1933.0, tipo="observado"),
+        PuntoSerieDto(periodo="2025-Q1", valor=1868.0, tipo=TipoIndicador.OBSERVADO),
+        PuntoSerieDto(periodo="2025-Q2", valor=1852.0, tipo=TipoIndicador.OBSERVADO),
+        PuntoSerieDto(periodo="2025-Q3", valor=1826.0, tipo=TipoIndicador.OBSERVADO),
+        PuntoSerieDto(periodo="2025-Q4", valor=1860.0, tipo=TipoIndicador.OBSERVADO),
+        PuntoSerieDto(periodo="2026-Q1", valor=1820.0, tipo=TipoIndicador.OBSERVADO),
+        PuntoSerieDto(periodo="2026-Q2", valor=1933.0, tipo=TipoIndicador.OBSERVADO),
     ]
 
     proyecciones = [
@@ -224,8 +234,8 @@ async def get_proyecciones(
             TrazabilidadFuenteSchema(
                 fuente="innova.lab / Proyecciones estadísticas",
                 fecha_actualizacion="2026-10-01",
-                estado_fuente="activa",
-                tipo="proyeccion",
+                estado_fuente=FuenteEstado.ACTIVA,
+                tipo=TipoIndicador.PROYECCION,
                 metodologia_url="/fuentes#proyecciones",
             )
         ],
@@ -323,10 +333,10 @@ async def get_kpis(
     }
 
     fuente_kpi = TrazabilidadFuenteSchema(
-        fuente="INDEC / Encuesta Permanente de Hogares",
+        fuente=DEFAULT_INDEC_SOURCE,
         fecha_actualizacion="2026-09-24",
-        estado_fuente="activa",
-        tipo="observado",
+        estado_fuente=FuenteEstado.ACTIVA,
+        tipo=TipoIndicador.OBSERVADO,
     )
 
     for ind in indicadores_solicitados:
@@ -519,10 +529,10 @@ async def get_ranking(
     seleccionados = items_mock.get(dimension, items_mock["sector"])[:limite]
 
     fuente_ranking = TrazabilidadFuenteSchema(
-        fuente="SENCE / SABE / Portales de empleo oficiales",
+        fuente=DEFAULT_SENCE_CHILE_SOURCE,
         fecha_actualizacion="2026-09-01",
-        estado_fuente="activa",
-        tipo="observado",
+        estado_fuente=FuenteEstado.ACTIVA,
+        tipo=TipoIndicador.OBSERVADO,
     )
 
     data = MetricasRankingDataSchema(
@@ -582,27 +592,27 @@ async def get_comparativa(
             "nombre": "Tasa de desempleo",
             "unidad": "%",
             "valores": {
-                "ARG": (7.6, "2026-Q2", "INDEC — EPH"),
-                "URY": (7.9, "2025", "INE Uruguay — ECH"),
-                "CHL": (8.3, "2026-Q1", "INE Chile — ENE"),
+                "ARG": (7.6, "2026-Q2", DEFAULT_INDEC_SOURCE),
+                "URY": (7.9, "2025", DEFAULT_INE_URUGUAY_SOURCE),
+                "CHL": (8.3, "2026-Q1", DEFAULT_SENCE_CHILE_SOURCE),
             },
         },
         "tasa_empleo": {
             "nombre": "Tasa de empleo",
             "unidad": "%",
             "valores": {
-                "ARG": (45.2, "2026-Q2", "INDEC — EPH"),
-                "URY": (58.4, "2025", "INE Uruguay — ECH"),
-                "CHL": (56.1, "2026-Q1", "INE Chile — ENE"),
+                "ARG": (45.2, "2026-Q2", DEFAULT_INDEC_SOURCE),
+                "URY": (58.4, "2025", DEFAULT_INE_URUGUAY_SOURCE),
+                "CHL": (56.1, "2026-Q1", DEFAULT_SENCE_CHILE_SOURCE),
             },
         },
         "salario_real_indice": {
             "nombre": "Salario real (Índice)",
             "unidad": "pts",
             "valores": {
-                "ARG": (98.4, "2026-Q2", "Secretaría de Trabajo"),
-                "URY": (104.2, "2025", "INE Uruguay"),
-                "CHL": (102.0, "2026-Q1", "Banco Central de Chile"),
+                "ARG": (98.4, "2026-Q2", DEFAULT_INDEC_SOURCE),
+                "URY": (104.2, "2025", DEFAULT_INE_URUGUAY_SOURCE),
+                "CHL": (102.0, "2026-Q1", DEFAULT_BCENTRAL_CHILE_SOURCE),
             },
         },
     }
@@ -629,8 +639,8 @@ async def get_comparativa(
                         fuente=TrazabilidadFuenteSchema(
                             fuente=fuente_nombre,
                             fecha_actualizacion="2026-09-30",
-                            estado_fuente="activa",
-                            tipo="observado",
+                            estado_fuente=FuenteEstado.ACTIVA,
+                            tipo=TipoIndicador.OBSERVADO,
                         ),
                     )
                 )
@@ -738,10 +748,10 @@ async def get_mapa_calor(
         celdas=celdas,
         fuentes=[
             TrazabilidadFuenteSchema(
-                fuente="ILOSTAT / CEPALSTAT Armonizado",
+                fuente=DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
                 fecha_actualizacion="2026-09-30",
-                estado_fuente="activa",
-                tipo="observado",
+                estado_fuente=FuenteEstado.ACTIVA,
+                tipo=TipoIndicador.OBSERVADO,
             )
         ],
     )
