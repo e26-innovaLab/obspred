@@ -3885,6 +3885,37 @@
                 }
               ],
               "body": "{\n  \"success\": true,\n  \"status_code\": 200,\n  \"message\": \"Fuentes obtenidas con éxito.\",\n  \"data\": [\n    {\n      \"id\": 1,\n      \"nombre\": \"INDEC\",\n      \"descripcion\": \"Instituto Nacional de Estadística y Censos de la República Argentina\",\n      \"url\": \"https://www.indec.gob.ar\",\n      \"ultima_actualizacion\": \"2026-10-31T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 2,\n      \"nombre\": \"INE Uruguay\",\n      \"descripcion\": \"Instituto Nacional de Estadística de Uruguay - Encuesta Continua de Hogares\",\n      \"url\": \"https://www.ine.gub.uy\",\n      \"ultima_actualizacion\": \"2026-09-30T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 3,\n      \"nombre\": \"SIMEL Chile\",\n      \"descripcion\": \"Sistema de Información y Análisis del Mercado de Trabajo de Chile (INE Chile)\",\n      \"url\": \"https://simel.ine.gob.cl\",\n      \"ultima_actualizacion\": \"2026-10-15T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 4,\n      \"nombre\": \"World Bank\",\n      \"descripcion\": \"Indicadores macroeconómicos y de desarrollo del Banco Mundial\",\n      \"url\": \"https://data.worldbank.org\",\n      \"ultima_actualizacion\": \"2026-10-01T00:00:00Z\",\n      \"estado\": \"activa\"\n    },\n    {\n      \"id\": 5,\n      \"nombre\": \"ILOSTAT\",\n      \"descripcion\": \"Base de datos estadísticas del trabajo de la Organización Internacional del Trabajo\",\n      \"url\": \"https://ilostat.ilo.org\",\n      \"ultima_actualizacion\": \"2026-09-01T00:00:00Z\",\n      \"estado\": \"activa\"\n    }\n  ],\n  \"errors\": null,\n  \"meta\": {\n    \"page\": null,\n    \"per_page\": null,\n    \"total\": 5,\n    \"extra\": null\n  },\n  \"timestamp\": \"2026-11-17T18:00:00Z\"\n}"
+            },
+            {
+              "name": "503_error_database_offline",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{URL_BASE}}/fuentes",
+                  "host": [
+                    "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes"
+                  ]
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"status_code\": 503,\n  \"message\": \"No se pudo establecer conexi\\u00f3n con el servicio de base de datos.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"DATABASE_CONNECTION_ERROR\",\n      \"detail\": \"El servicio de base de datos se encuentra fuera de l\\u00ednea o inaccesible. Verifique que el servidor de base de datos est\\u00e9 activo y accesible.\",\n      \"field\": \"database\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-18T22:00:00Z\"\n}"
             }
           ]
         },

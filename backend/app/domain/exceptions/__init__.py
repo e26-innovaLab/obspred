@@ -1,6 +1,10 @@
 """Módulo de excepciones del dominio."""
 
-from app.domain.exceptions.base import DomainException, EntityNotFoundException
+from app.domain.exceptions.base import (
+    DatabaseConnectionException,
+    DomainException,
+    EntityNotFoundException,
+)
 from app.domain.exceptions.file_upload import (
     EmptyFileException,
     FileSizeExceededException,
@@ -18,6 +22,7 @@ from app.domain.exceptions.simel_exceptions import (
 )
 
 __all__ = [
+    "DatabaseConnectionException",
     "DomainException",
     "EmptyFileException",
     "EntityNotFoundException",

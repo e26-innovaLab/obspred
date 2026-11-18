@@ -100,8 +100,28 @@ Captura automáticamente parámetros faltantes o tipos incorrectos en esquemas P
 ### 4. `StarletteHTTPException` $\rightarrow$ Respuestas de rutas o abortos HTTP
 Maneja rutas inexistentes (HTTP 404 de framework) o métodos no permitidos (HTTP 405).
 
-### 5. `Exception` (Captura universal) $\rightarrow$ `HTTP 500 Internal Server Error`
-Cualquier error inesperado o bug no controlado se registra en los logs de Uvicorn con `logger.exception()` y devuelve una respuesta segura al cliente, **sin filtrar detalles sensibles del sistema interno**.
+### 5. `OperationalError` / `DatabaseConnectionException` $\rightarrow$ `HTTP 503 Service Unavailable`
+Captura fallos de conectividad con el motor de persistencia relacional cuando la base de datos se encuentra fuera de línea, apagada o inaccesible (puerto cerrado, timeout o rechazo de conexión). Evita devolver un genérico error 500 y proporciona un mensaje claro:
+```json
+{
+  "success": false,
+  "status_code": 503,
+  "message": "No se pudo establecer conexión con el servicio de base de datos.",
+  "data": null,
+  "errors": [
+    {
+      "code": "DATABASE_CONNECTION_ERROR",
+      "detail": "El servicio de base de datos se encuentra fuera de línea o inaccesible. Verifique que el servidor de base de datos esté activo y accesible.",
+      "field": "database"
+    }
+  ],
+  "meta": null,
+  "timestamp": "2026-11-18T22:00:00.000000Z"
+}
+```
+
+### 6. `Exception` (Captura universal) $\rightarrow$ `HTTP 500 Internal Server Error`
+Cualquier error inesperado o bug no controlado en la lógica se registra en los logs de Uvicorn con `logger.error(..., exc_info=True)` y devuelve una respuesta segura al cliente, **sin filtrar detalles sensibles del sistema interno**. Si el error interno contiene causas de fallo de base de datos, se clasifica automáticamente como 503.
 
 ---
 
@@ -117,7 +137,8 @@ Cualquier error inesperado o bug no controlado se registra en los logs de Uvicor
 | `INVALID_FILE_CONTENT` | 400 | Archivo ejecutable/binario disfrazado con extensión `.csv`. |
 | `INSUFFICIENT_DATA` | 422 | No se cumplen los períodos históricos mínimos para calcular proyecciones o índices. |
 | `EXTERNAL_CONNECTOR_ERROR` | 502 | Fallo de red, timeout o respuesta no válida de una API externa (World Bank, CEPAL). |
-| `INTERNAL_SERVER_ERROR` | 500 | Error no controlado o fallo crítico en persistencia. |
+| `DATABASE_CONNECTION_ERROR` | 503 | Base de datos fuera de línea, caída o inalcanzable. |
+| `INTERNAL_SERVER_ERROR` | 500 | Error no controlado o bug no capturado en la aplicación. |
 
 ---
 

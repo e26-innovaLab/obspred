@@ -356,6 +356,13 @@ BRECHAS_SAVE_SUCCESS_MESSAGE: Final[str] = (
 DEFAULT_SUCCESS_MESSAGE: Final[str] = "Operación ejecutada con éxito."
 DEFAULT_ERROR_MESSAGE: Final[str] = "Ocurrió un error al procesar la solicitud."
 INTERNAL_SERVER_ERROR_MESSAGE: Final[str] = "Error interno del servidor no controlado."
+DATABASE_UNAVAILABLE_MESSAGE: Final[str] = (
+    "No se pudo establecer conexión con el servicio de base de datos."
+)
+DATABASE_UNAVAILABLE_DETAIL: Final[str] = (
+    "El servicio de base de datos se encuentra fuera de línea o inaccesible. "
+    "Verifique que el servidor de base de datos esté activo y accesible."
+)
 
 
 # ==============================================================================
@@ -469,4 +476,6 @@ __all__ = [
     "DEFAULT_SUCCESS_MESSAGE",
     "DEFAULT_ERROR_MESSAGE",
     "INTERNAL_SERVER_ERROR_MESSAGE",
+    "DATABASE_UNAVAILABLE_MESSAGE",
+    "DATABASE_UNAVAILABLE_DETAIL",
 ]
