@@ -52,10 +52,7 @@ async def get_catalogo(
     catalogo_dto = await catalogo_service.get_catalogo()
 
     data = CatalogoDataSchema(
-        paises=[
-            PaisCatalogoDto(id=p.id, nombre=p.nombre)
-            for p in catalogo_dto.paises
-        ],
+        paises=[PaisCatalogoDto(id=p.id, nombre=p.nombre) for p in catalogo_dto.paises],
         sectores=[
             SectorCatalogoDto(id=s.id, nombre=s.nombre, isic=s.isic)
             for s in catalogo_dto.sectores

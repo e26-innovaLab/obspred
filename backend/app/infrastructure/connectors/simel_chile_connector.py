@@ -18,6 +18,7 @@ import httpx
 
 from app.core.config import settings
 from app.core.constants import (
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
     DEFAULT_SIMEL_CHILE_BASE_URL,
     DEFAULT_SIMEL_CHILE_SOURCE,
     DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
@@ -267,7 +268,10 @@ class SimelChileConnector(IExternalDataConnector):
         try:
             # Consulta al catálogo SDMX oficial del INE
             catalog_url = f"{self._sdmx_base_url}/dataflow/CL01"
-            response = await client.get(catalog_url)
+            response = await client.get(
+                catalog_url,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.is_success:
                 logger.info(
                     "SIMEL Chile SDMX API (INE) operativa y accesible (Status: %d).",

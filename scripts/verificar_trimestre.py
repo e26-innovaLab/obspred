@@ -77,11 +77,15 @@ async def diagnosticar() -> int:
 
         total_anomalias = len(anomalies)
         print("\n========================================================")
-        print(f" ANÁLISIS DE FORMATO DE PERIODO (Anomalías detectadas: {total_anomalias})")
+        print(
+            f" ANÁLISIS DE FORMATO DE PERIODO (Anomalías detectadas: {total_anomalias})"
+        )
         print("========================================================")
 
         if total_anomalias == 0:
-            print(" [OK] Todos los registros cumplen con el formato canónico (año de 4 dígitos o catálogo).")
+            print(
+                " [OK] Todos los registros cumplen con el formato canónico (año de 4 dígitos o catálogo)."
+            )
         else:
             print(" [!] Se detectaron registros que requieren corrección:")
             for a in anomalies[:10]:
@@ -91,7 +95,9 @@ async def diagnosticar() -> int:
                 )
             if total_anomalias > 10:
                 print(f" ... y {total_anomalias - 10} registros más.")
-            print("\n [SUGERENCIA] Ejecute con la bandera --corregir para normalizar automáticamente.")
+            print(
+                "\n [SUGERENCIA] Ejecute con la bandera --corregir para normalizar automáticamente."
+            )
 
         # 3. Muestra de registros representativos corregidos
         sample_query = text("""
@@ -133,7 +139,9 @@ async def limpiar_y_corregir() -> None:
               )
         """)
         res_trim_iso = await conn.execute(sql_trim_iso)
-        print(f" - Fechas ISO trimestrales convertidas (año + trimestre): {res_trim_iso.rowcount}")
+        print(
+            f" - Fechas ISO trimestrales convertidas (año + trimestre): {res_trim_iso.rowcount}"
+        )
 
         # B. Series anuales con fecha ISO (YYYY-MM-DD):
         # Extrae el año para 'periodo' y asegura 'trimestre' en NULL.
@@ -144,7 +152,9 @@ async def limpiar_y_corregir() -> None:
             WHERE periodo LIKE '____-__-__'
         """)
         res_anual_iso = await conn.execute(sql_anual_iso)
-        print(f" - Fechas ISO anuales normalizadas (solo año): {res_anual_iso.rowcount}")
+        print(
+            f" - Fechas ISO anuales normalizadas (solo año): {res_anual_iso.rowcount}"
+        )
 
         # C. Registros con sufijos trimestrales pegados al período (ej. '2024-Q1', '2024Q1'):
         for q in ["Q1", "Q2", "Q3", "Q4"]:
@@ -173,10 +183,14 @@ async def limpiar_y_corregir() -> None:
             "Energía": "energia",
         }
         for orig, dest in sectores_correcciones.items():
-            sql_sec = text(f"UPDATE indicadores SET sector = '{dest}' WHERE sector = '{orig}'")
+            sql_sec = text(
+                f"UPDATE indicadores SET sector = '{dest}' WHERE sector = '{orig}'"
+            )
             res_sec = await conn.execute(sql_sec)
             if res_sec.rowcount > 0:
-                print(f" - Sector estandarizado '{orig}' -> '{dest}': {res_sec.rowcount}")
+                print(
+                    f" - Sector estandarizado '{orig}' -> '{dest}': {res_sec.rowcount}"
+                )
 
     print("\n [OK] Limpieza y corrección finalizada exitosamente.")
 

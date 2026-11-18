@@ -9,6 +9,7 @@ from typing import Any, Final
 import httpx
 
 from app.core.constants import (
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
     DEFAULT_ILOSTAT_BASE_URL,
     DEFAULT_ILOSTAT_SOURCE,
     DEFAULT_ILOSTAT_TIMEOUT_SECONDS,
@@ -115,7 +116,11 @@ class ILOSTATConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(ping_url, params=params)
+            response = await client.get(
+                ping_url,
+                params=params,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code == 200 and "ref_area" in response.text.lower():
                 return True
             return False

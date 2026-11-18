@@ -9,6 +9,7 @@ from app.core.constants import (
     DEFAULT_ESCO_BASE_URL,
     DEFAULT_ESCO_SOURCE,
     DEFAULT_ESCO_TIMEOUT_SECONDS,
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
 )
 from app.core.logging import logger
 from app.domain.interfaces.external_connector import (
@@ -80,7 +81,11 @@ class EscoConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(self._base_url, params=params)
+            response = await client.get(
+                self._base_url,
+                params=params,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code == 200 and "_embedded" in response.json():
                 return True
             return False

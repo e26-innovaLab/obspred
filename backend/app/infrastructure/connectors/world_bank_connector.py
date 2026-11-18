@@ -7,6 +7,7 @@ from typing import Any
 import httpx
 
 from app.core.constants import (
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
     DEFAULT_WORLD_BANK_BASE_URL,
     DEFAULT_WORLD_BANK_SOURCE,
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
@@ -314,7 +315,10 @@ class WorldBankConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(ping_url)
+            response = await client.get(
+                ping_url,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code == 200:
                 payload = response.json()
                 return isinstance(payload, list) and len(payload) >= 1

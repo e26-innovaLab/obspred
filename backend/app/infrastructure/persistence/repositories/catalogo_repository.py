@@ -210,8 +210,7 @@ CANONICAL_INDICADORES: list[dict[str, Any]] = [
         "frecuencias": ["anual", "trimestral"],
         "desagregaciones": ["pais", "sector"],
         "descripcion": (
-            "Porcentaje de la población en edad de trabajar que se "
-            "encuentra ocupada."
+            "Porcentaje de la población en edad de trabajar que se encuentra ocupada."
         ),
         "orden": 2,
     },
@@ -230,9 +229,7 @@ CANONICAL_INDICADORES: list[dict[str, Any]] = [
         "unidad": "avisos",
         "frecuencias": ["trimestral", "mensual"],
         "desagregaciones": ["pais", "sector", "ocupacion"],
-        "descripcion": (
-            "Volumen de avisos de empleo y vacantes publicadas en bolsas."
-        ),
+        "descripcion": ("Volumen de avisos de empleo y vacantes publicadas en bolsas."),
         "orden": 4,
     },
 ]

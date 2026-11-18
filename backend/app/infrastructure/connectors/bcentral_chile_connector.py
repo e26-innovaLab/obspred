@@ -11,6 +11,7 @@ from app.core.constants import (
     DEFAULT_BCENTRAL_CHILE_BASE_URL,
     DEFAULT_BCENTRAL_CHILE_SOURCE,
     DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
     PaisCodigo,
     TipoIndicador,
 )
@@ -166,7 +167,11 @@ class BCentralChileConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(self._base_url, params=params)
+            response = await client.get(
+                self._base_url,
+                params=params,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code != 200:
                 return False
 

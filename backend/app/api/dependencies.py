@@ -503,4 +503,3 @@ def provide_catalogo_service(
         CatalogoService: Caso de uso listo para consulta y auto-seeding.
     """
     return CatalogoService(repository=repository)
-
