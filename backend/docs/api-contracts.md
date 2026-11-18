@@ -305,7 +305,14 @@ export async function fetchMiEntidad(id: number): Promise<MiEntidad> {
 - **Validaciones:** Rechaza archivos vacíos o archivos binarios enmascarados como texto.
 
 #### B. Sincronización Externa (Conectores Oficiales)
-- **Endpoint:** `POST /api/v1/ingesta/sync/world-bank`
+- **Endpoints disponibles:**
+  - `POST /api/v1/ingesta/sync/world-bank` (Banco Mundial)
+  - `POST /api/v1/ingesta/sync/cepalstat` (CEPALSTAT - CEPAL)
+  - `POST /api/v1/ingesta/sync/ilostat` (ILOSTAT / OIT)
+  - `POST /api/v1/ingesta/sync/datos-argentina` (Datos Argentina)
+  - `POST /api/v1/ingesta/sync/simel-chile` (SIMEL / INE Chile)
+  - `POST /api/v1/ingesta/sync/bcentral-chile` (Banco Central de Chile)
+  - `POST /api/v1/ingesta/sync/esco` (ESCO Taxonomías)
 - **Content-Type:** `application/json`
 - **Body (opcional):**
 ```json
