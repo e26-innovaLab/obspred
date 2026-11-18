@@ -36,6 +36,13 @@ def test_is_database_connection_error_direct():
     err_ref = ConnectionRefusedError("[Errno 111] Connection refused")
     assert is_database_connection_error(err_ref) is True
 
+    # Error exacto emitido por Windows/asyncpg cuando PostgreSQL está offline
+    err_win = OSError(
+        "Multiple exceptions: [Errno 10061] Connect call failed ('::1', 5432, 0, 0), "
+        "[Errno 10061] Connect call failed ('127.0.0.1', 5432)"
+    )
+    assert is_database_connection_error(err_win) is True
+
 
 def test_is_database_connection_error_wrapped():
     """Valida la detección en excepciones anidadas (__cause__ o __context__)."""
@@ -67,6 +74,7 @@ def test_exception_handlers_registered_in_fastapi():
     registered = app.exception_handlers
     assert OperationalError in registered
     assert DatabaseConnectionException in registered
+    assert OSError in registered
     assert Exception in registered
 
 

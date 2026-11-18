@@ -4,6 +4,7 @@ Configura middlewares de seguridad, rutas centrales, estandarización de respues
 y manejadores globales de excepciones bajo el esquema ApiResponse.
 """
 
+import traceback
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -65,9 +66,12 @@ def is_database_connection_error(exc: BaseException) -> bool:
     ):
         return True
 
-    curr: BaseException | None = exc
-    visited: set[int] = set()
-    keywords = (
+    db_keywords = (
+        "connect call failed",
+        "10061",  # WSAECONNREFUSED en Windows
+        "errno 111",  # ECONNREFUSED en Linux
+        "errno 61",  # ECONNREFUSED en macOS
+        "5432",  # Puerto estándar de PostgreSQL
         "connection refused",
         "could not connect",
         "cannot connect",
@@ -80,7 +84,14 @@ def is_database_connection_error(exc: BaseException) -> bool:
         "server closed the connection unexpectedly",
         "database offline",
         "connection reset",
+        "asyncpg",
+        "psycopg",
+        "aiosqlite",
+        "targetserverattributenotmatched",
     )
+
+    curr: BaseException | None = exc
+    visited: set[int] = set()
     while curr is not None and id(curr) not in visited:
         visited.add(id(curr))
         if isinstance(
@@ -94,9 +105,31 @@ def is_database_connection_error(exc: BaseException) -> bool:
             ),
         ):
             return True
+
         curr_str = str(curr).lower()
-        if any(kw in curr_str for kw in keywords):
+        if any(kw in curr_str for kw in db_keywords):
             return True
+
+        # Inspección del traceback para detectar frames originados en persistencia
+        tb = getattr(curr, "__traceback__", None)
+        if tb:
+            frames = traceback.extract_tb(tb)
+            db_markers = (
+                "sqlalchemy",
+                "asyncpg",
+                "aiosqlite",
+                "persistence",
+                "database.py",
+            )
+            in_db_layer = any(
+                any(marker in f.filename.lower() for marker in db_markers)
+                for f in frames
+            )
+            if in_db_layer and isinstance(
+                curr, (OSError, ConnectionError, TimeoutError, RuntimeError)
+            ):
+                return True
+
         curr = getattr(curr, "__cause__", None) or getattr(curr, "__context__", None)
 
     return False
@@ -243,6 +276,46 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
         return JSONResponse(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
+        )
+
+    @app.exception_handler(OSError)
+    async def os_error_handler(
+        request: Request, exc: OSError
+    ) -> JSONResponse:
+        """Maneja fallos de sockets a nivel de SO (ej. PostgreSQL offline)."""
+        logger.error(
+            f"Fallo de socket u OSError del sistema operativo: {exc}", exc_info=True
+        )
+        if is_database_connection_error(exc):
+            error_response = create_error_response(
+                message=DATABASE_UNAVAILABLE_MESSAGE,
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                errors=[
+                    ErrorDetail(
+                        code=ApiErrorCode.DATABASE_CONNECTION_ERROR,
+                        detail=DATABASE_UNAVAILABLE_DETAIL,
+                        field="database",
+                    )
+                ],
+            )
+            return JSONResponse(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
+            )
+
+        error_response = create_error_response(
+            message=INTERNAL_SERVER_ERROR_MESSAGE,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            errors=[
+                ErrorDetail(
+                    code=ApiErrorCode.INTERNAL_SERVER_ERROR,
+                    detail="Consulte con el equipo de soporte técnico.",
+                )
+            ],
+        )
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=error_response.model_dump(mode=JSON_SERIALIZATION_MODE),
         )
 
