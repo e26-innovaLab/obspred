@@ -20,6 +20,11 @@ from app.application.services.indice_empleabilidad_service import (
 )
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
+from app.core.constants import (
+    DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+    DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
+)
 from app.domain.interfaces.brecha_repository import IBrechaRepository
 from app.domain.interfaces.catalogo_repository import ICatalogoRepository
 from app.domain.interfaces.external_connector import IExternalDataConnector
@@ -272,7 +277,11 @@ def provide_bcentral_chile_connector() -> IExternalDataConnector:
         base_url=getattr(settings, "bcentral_chile_base_url", None),
         user=getattr(settings, "bcentral_chile_user", None),
         password=getattr(settings, "bcentral_chile_pass", None),
-        timeout=getattr(settings, "bcentral_chile_timeout_seconds", 30.0),
+        timeout=getattr(
+            settings,
+            "bcentral_chile_timeout_seconds",
+            DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+        ),
     )
 
 
@@ -307,7 +316,11 @@ def provide_simel_chile_connector() -> SimelChileConnector:
     """
     return SimelChileConnector(
         base_url=getattr(settings, "simel_chile_base_url", None),
-        timeout=getattr(settings, "simel_chile_timeout_seconds", 30.0),
+        timeout=getattr(
+            settings,
+            "simel_chile_timeout_seconds",
+            DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
+        ),
     )
 
 
@@ -399,7 +412,11 @@ def provide_datos_argentina_connector() -> IExternalDataConnector:
     """
     return DatosArgentinaConnector(
         base_url=getattr(settings, "datos_argentina_base_url", None),
-        timeout=getattr(settings, "datos_argentina_timeout_seconds", 30.0),
+        timeout=getattr(
+            settings,
+            "datos_argentina_timeout_seconds",
+            DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+        ),
     )
 
 

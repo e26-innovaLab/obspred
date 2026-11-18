@@ -288,12 +288,10 @@ def test_cepalstat_period_in_range_logic() -> None:
 
     # Registro trimestral con límite trimestral específico
     assert (
-        CepalstatConnector._is_period_in_range("2024-Q2", "2024-Q1", "2024-Q3")
-        is True
+        CepalstatConnector._is_period_in_range("2024-Q2", "2024-Q1", "2024-Q3") is True
     )
     assert (
-        CepalstatConnector._is_period_in_range("2024-Q4", "2024-Q1", "2024-Q3")
-        is False
+        CepalstatConnector._is_period_in_range("2024-Q4", "2024-Q1", "2024-Q3") is False
     )
 
 

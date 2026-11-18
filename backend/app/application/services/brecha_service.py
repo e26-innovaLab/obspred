@@ -2,6 +2,7 @@ from app.application.dtos.brecha_dto import (
     HabilidadComparadaCreateDTO,
     HabilidadComparadaDTO,
 )
+from app.core.constants import SectorEstrategico
 from app.domain.entities.brecha import HabilidadComparada
 from app.domain.exceptions.brecha_exceptions import OcupacionNoEncontradaError
 from app.domain.interfaces.brecha_repository import IBrechaRepository
@@ -128,12 +129,13 @@ DEFAULT_BRECHAS_CATALOG: dict[str, list[dict]] = {
 }
 
 
-SECTOR_DEFAULT_OCUPACION: dict[str, str] = {
-    "tecnologia": "desarrollador_software",
-    "salud": "enfermero_profesional",
-    "energia": "tecnico_solar_fotovoltaico",
-    "turismo": "soporte_ti",
-    "economia-conocimiento": "analista_datos",
+SECTOR_DEFAULT_OCUPACION: dict[SectorEstrategico | str, str] = {
+    SectorEstrategico.TECNOLOGIA: "desarrollador_software",
+    SectorEstrategico.SALUD: "enfermero_profesional",
+    SectorEstrategico.ENERGIA: "tecnico_solar_fotovoltaico",
+    SectorEstrategico.TURISMO: "soporte_ti",
+    SectorEstrategico.ECONOMIA_CONOCIMIENTO: "analista_datos",
+    # Compatibilidad con snake_case legado
     "economia_conocimiento": "analista_datos",
 }
 
@@ -152,9 +154,17 @@ class BrechaService:
         if ocupacion and ocupacion.strip():
             return ocupacion.strip()
         if sector and sector.strip():
-            norm_sec = sector.strip().lower().replace(" ", "-").replace("í", "i")
+            norm_sec = (
+                sector.strip()
+                .lower()
+                .replace("_", "-")
+                .replace(" ", "-")
+                .replace("í", "i")
+            )
             if norm_sec in SECTOR_DEFAULT_OCUPACION:
                 return SECTOR_DEFAULT_OCUPACION[norm_sec]
+            if sector.strip().lower() in SECTOR_DEFAULT_OCUPACION:
+                return SECTOR_DEFAULT_OCUPACION[sector.strip().lower()]
         return "desarrollador_software"
 
     async def get_by_ocupation(self, ocupacion: str) -> list[HabilidadComparadaDTO]:

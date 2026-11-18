@@ -1,8 +1,8 @@
 """DTOs para el servicio de alertas y detección de variaciones."""
 
-from typing import Literal
-
 from pydantic import BaseModel, Field
+
+from app.core.constants import AlertaNivel
 
 
 class AlertaItemDto(BaseModel):
@@ -15,8 +15,8 @@ class AlertaItemDto(BaseModel):
         ..., description="Período temporal en el que ocurrió el cambio."
     )
     variacion_pct: float = Field(..., description="Porcentaje de cambio interperíodo.")
-    nivel: Literal["bajo", "medio", "alto"] = Field(
-        default="medio", description="Severidad de la alerta."
+    nivel: AlertaNivel = Field(
+        default=AlertaNivel.MEDIO, description="Severidad de la alerta."
     )
     titulo: str = Field(..., description="Título sintético de la alerta.")
     descripcion: str = Field(

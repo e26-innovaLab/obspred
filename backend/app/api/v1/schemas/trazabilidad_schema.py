@@ -7,6 +7,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from app.core.constants import FuenteEstado, TipoIndicador
+
 
 class TrazabilidadFuenteSchema(BaseModel):
     """Representa la trazabilidad y procedencia de una métrica o indicador.
@@ -29,12 +31,14 @@ class TrazabilidadFuenteSchema(BaseModel):
         description="Fecha de última actualización en formato ISO (YYYY-MM-DD).",
         examples=["2026-09-30"],
     )
-    estado_fuente: Literal["activa", "desactualizada", "no_disponible"] = Field(
-        default="activa",
+    estado_fuente: (
+        FuenteEstado | Literal["activa", "desactualizada", "no_disponible"]
+    ) = Field(
+        default=FuenteEstado.ACTIVA,
         description="Estado de vigencia operativa de la fuente.",
     )
-    tipo: Literal["observado", "calculado", "proyeccion"] = Field(
-        default="observado",
+    tipo: TipoIndicador | Literal["observado", "calculado", "proyeccion"] = Field(
+        default=TipoIndicador.OBSERVADO,
         description="Naturaleza estadística del dato según Principio 3.",
     )
     metodologia_url: str | None = Field(

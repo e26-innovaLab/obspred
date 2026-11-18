@@ -1,7 +1,12 @@
 from collections import defaultdict
 
 from app.application.dtos.alerta_dto import AlertaItemDto
-from app.core.constants import UMBRAL_ALERTA_ALTO, UMBRAL_ALERTA_MEDIO
+from app.core.constants import (
+    UMBRAL_ALERTA_ALTO,
+    UMBRAL_ALERTA_MEDIO,
+    AlertaNivel,
+    AlertaTipo,
+)
 from app.domain.interfaces.indicador_repository import IIndicadorRepository
 
 
@@ -63,18 +68,17 @@ class AlertaService:
                 continue
 
             # calcular variaciones
-
             variacion_pct = (
                 (actual.valor - anterior.valor) / abs(anterior.valor)
             ) * 100
 
-            mangnitud = abs(variacion_pct)
+            magnitud = abs(variacion_pct)
 
             # Determinar el nivel de alerta según los umbrales definidos
-            if mangnitud >= UMBRAL_ALERTA_ALTO:
-                nivel = "alto"
-            elif mangnitud >= UMBRAL_ALERTA_MEDIO:
-                nivel = "medio"
+            if magnitud >= UMBRAL_ALERTA_ALTO:
+                nivel = AlertaNivel.ALTO
+            elif magnitud >= UMBRAL_ALERTA_MEDIO:
+                nivel = AlertaNivel.MEDIO
             else:
                 continue
 
@@ -109,21 +113,7 @@ class AlertaService:
     @staticmethod
     def _clasificar_tipo(indicador: str) -> str:
         """Clasifica el tipo de alerta según el indicador."""
-        nombre = indicador.lower()
-
-        indicadores_empleo = (
-            "empleo",
-            "desempleo",
-            "desocupacion",
-            "desocupación",
-            "subocupacion",
-            "subocupación",
-            "actividad",
-        )
-        if any(palabras in nombre for palabras in indicadores_empleo):
-            return "variacion_significativa"
-
-        return "Variacion_significativa"
+        return AlertaTipo.VARIACION_SIGNIFICATIVA
 
     @staticmethod
     def _generar_titulo_descripcion(
