@@ -9,6 +9,10 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.core.constants import (
+    INDICE_EMPLEABILIDAD_PESOS_DEFAULT,
+    DimensionIndiceNombre,
+)
 from app.infrastructure.persistence.database import Base
 from app.infrastructure.persistence.models.indicador import IndicadorModel
 from app.infrastructure.persistence.repositories import (
@@ -59,11 +63,15 @@ async def test_repository_fuente_por_pais() -> None:
     e_chl = await repo.get_by_ocupacion("enfermeria", pais="CHL")
     e_ury = await repo.get_by_ocupacion("enfermeria", pais="URY")
     e_gen = await repo.get_by_ocupacion("enfermeria", pais=None)
+    e_chile_nombre = await repo.get_by_ocupacion("enfermeria", pais="Chile")
+    e_desconocido = await repo.get_by_ocupacion("enfermeria", pais="pais-desconocido")
 
     assert e_arg is not None and "INDEC" in e_arg.fuente
     assert e_chl is not None and "SENCE" in e_chl.fuente
     assert e_ury is not None and "INE Uruguay" in e_ury.fuente
     assert e_gen is not None and "Armonizadas" in e_gen.fuente
+    assert e_chile_nombre is not None and "SENCE" in e_chile_nombre.fuente
+    assert e_desconocido is not None and "Armonizadas" in e_desconocido.fuente
 
 
 @pytest.mark.asyncio
@@ -124,3 +132,73 @@ async def test_repository_con_registros_en_bd() -> None:
         assert entity.score == 87.5
         assert entity.nivel == "Muy Alto"
         assert entity.fuente == "Ministerio de Ciencia / CONICET"
+        assert entity.sector == "Biotecnología"
+
+        # Verificar que las dimensiones usan los pesos canónicos y suman 1.0
+        assert len(entity.dimensiones) == 4
+        assert sum(d.peso for d in entity.dimensiones) == pytest.approx(1.0)
+        pesos_dict = {d.nombre: d.peso for d in entity.dimensiones}
+        assert (
+            pesos_dict[DimensionIndiceNombre.DEMANDA_PUESTOS]
+            == INDICE_EMPLEABILIDAD_PESOS_DEFAULT[DimensionIndiceNombre.DEMANDA_PUESTOS]
+        )
+        assert (
+            pesos_dict[DimensionIndiceNombre.ESTABILIDAD_SALARIAL]
+            == INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                DimensionIndiceNombre.ESTABILIDAD_SALARIAL
+            ]
+        )
+        assert (
+            pesos_dict[DimensionIndiceNombre.COBERTURA_FORMATIVA]
+            == INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                DimensionIndiceNombre.COBERTURA_FORMATIVA
+            ]
+        )
+        assert (
+            pesos_dict[DimensionIndiceNombre.CRECIMIENTO_RECIENTE]
+            == INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                DimensionIndiceNombre.CRECIMIENTO_RECIENTE
+            ]
+        )
+
+
+@pytest.mark.asyncio
+async def test_repository_ocupacion_catalogo_en_bd_sin_sector_resuelve_canonico() -> (
+    None
+):
+    """Verifica que si una ocupación del catálogo se encuentra en BD sin sector,
+    el canon_sector se resuelva desde el catálogo y nunca retorne 'general'.
+    """
+    test_engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+    async with test_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    session_factory = async_sessionmaker(
+        bind=test_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+
+    async with session_factory() as session:
+        # Desarrollador/a de software vive en catálogo con sector "tecnologia".
+        # Lo insertamos en BD con sector=None para simular registro sin sector.
+        registro_sin_sector = IndicadorModel(
+            pais="ARG",
+            sector=None,
+            ocupacion="Desarrollador/a de software",
+            indicador="demanda_puestos",
+            periodo="2026-Q1",
+            valor=80.0,
+            tipo="observado",
+            fuente="INDEC",
+            fecha_actualizacion=date(2026, 9, 30),
+        )
+        session.add(registro_sin_sector)
+        await session.commit()
+
+        repo = SqlAlchemyIndiceEmpleabilidadRepository(session=session)
+        entity = await repo.get_by_ocupacion("Desarrollador/a de software", pais="ARG")
+
+        assert entity is not None
+        assert entity.sector != "general"
+        assert entity.sector == "tecnologia"
