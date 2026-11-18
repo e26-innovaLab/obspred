@@ -37,10 +37,10 @@ class SerieItemDto(BaseModel):
         default="trimestral", description="Periodicidad de la serie."
     )
     puntos: list[PuntoSerieDto] = Field(
-        default_factory=list, description="Lista ordenada de puntos."
+        default_factory=list[PuntoSerieDto], description="Lista ordenada de puntos."
     )
     fuentes: list[TrazabilidadFuenteSchema] = Field(
-        default_factory=list, description="Fuentes asociadas."
+        default_factory=list[TrazabilidadFuenteSchema], description="Fuentes asociadas."
     )
 
 
@@ -48,7 +48,8 @@ class MetricasSeriesDataSchema(BaseModel):
     """Payload para endpoint de series temporales."""
 
     series: list[SerieItemDto] = Field(
-        default_factory=list, description="Colección de series por país."
+        default_factory=list[SerieItemDto],
+        description="Colección de series por país.",
     )
 
 
@@ -80,10 +81,12 @@ class MetricasProyeccionesDataSchema(BaseModel):
     indicador: str = Field(..., description="Slug del indicador.")
     unidad: str = Field(..., description="Unidad de medida.")
     historico: list[PuntoSerieDto] = Field(
-        default_factory=list, description="Serie histórica de referencia."
+        default_factory=list[PuntoSerieDto],
+        description="Serie histórica de referencia.",
     )
     proyeccion: list[PuntoProyeccionDto] = Field(
-        default_factory=list, description="Puntos futuros proyectados."
+        default_factory=list[PuntoProyeccionDto],
+        description="Puntos futuros proyectados.",
     )
     proyectable: bool = Field(
         ..., description="Indica si se cumple la condición de serie suficiente."
@@ -99,7 +102,8 @@ class MetricasProyeccionesDataSchema(BaseModel):
         default=0, description="Cantidad de observaciones históricas comparables."
     )
     fuentes: list[TrazabilidadFuenteSchema] = Field(
-        default_factory=list, description="Trazabilidad de la serie."
+        default_factory=list[TrazabilidadFuenteSchema],
+        description="Trazabilidad de la serie.",
     )
 
 
@@ -140,7 +144,8 @@ class KpiItemDto(BaseModel):
         default="sube", description="Indica si un incremento representa una mejora."
     )
     sparkline: Sequence[float | None] = Field(
-        default_factory=list, description="Últimos puntos para mini gráfico."
+        default_factory=list[float | None],
+        description="Últimos puntos para mini gráfico.",
     )
     fuente: TrazabilidadFuenteSchema = Field(
         ..., description="Trazabilidad de la fuente del dato."
@@ -151,7 +156,7 @@ class MetricasKpisDataSchema(BaseModel):
     """Payload para tarjetas resumen de indicadores."""
 
     kpis: list[KpiItemDto] = Field(
-        default_factory=list, description="Listado de KPIs solicitados."
+        default_factory=list[KpiItemDto], description="Listado de KPIs solicitados."
     )
 
 
@@ -185,10 +190,11 @@ class MetricasRankingDataSchema(BaseModel):
     unidad: str = Field(..., description="Unidad de medida.")
     periodo: str = Field(..., description="Período al que corresponde el ranking.")
     items: list[RankingItemDto] = Field(
-        default_factory=list, description="Registros ordenados."
+        default_factory=list[RankingItemDto], description="Registros ordenados."
     )
     fuentes: list[TrazabilidadFuenteSchema] = Field(
-        default_factory=list, description="Fuentes de los datos."
+        default_factory=list[TrazabilidadFuenteSchema],
+        description="Fuentes de los datos.",
     )
 
 
@@ -219,13 +225,17 @@ class ComparativaIndicadorDto(BaseModel):
     indicador: str = Field(..., description="Slug del indicador.")
     nombre: str = Field(..., description="Nombre del indicador.")
     unidad: str = Field(..., description="Unidad de medida.")
-    valores: list[ComparativaValorPaisDto] = Field(default_factory=list)
+    valores: list[ComparativaValorPaisDto] = Field(
+        default_factory=list[ComparativaValorPaisDto]
+    )
 
 
 class MetricasComparativaDataSchema(BaseModel):
     """Payload para tarjetas comparativas de países."""
 
-    indicadores: list[ComparativaIndicadorDto] = Field(default_factory=list)
+    indicadores: list[ComparativaIndicadorDto] = Field(
+        default_factory=list[ComparativaIndicadorDto]
+    )
 
 
 MetricasComparativaResponseSchema = ApiResponse[MetricasComparativaDataSchema]
@@ -259,12 +269,14 @@ class MetricasMapaCalorDataSchema(BaseModel):
     nombre: str = Field(..., description="Nombre del indicador.")
     unidad: str = Field(..., description="Unidad de medida.")
     periodo: str = Field(..., description="Período representativo.")
-    filas: list[MapaCalorFilaDto] = Field(default_factory=list)
+    filas: list[MapaCalorFilaDto] = Field(default_factory=list[MapaCalorFilaDto])
     columnas: list[str] = Field(
-        default_factory=list, description="Lista de países ISO-3."
+        default_factory=list[str], description="Lista de países ISO-3."
     )
-    celdas: list[MapaCalorCeldaDto] = Field(default_factory=list)
-    fuentes: list[TrazabilidadFuenteSchema] = Field(default_factory=list)
+    celdas: list[MapaCalorCeldaDto] = Field(default_factory=list[MapaCalorCeldaDto])
+    fuentes: list[TrazabilidadFuenteSchema] = Field(
+        default_factory=list[TrazabilidadFuenteSchema]
+    )
 
 
 MetricasMapaCalorResponseSchema = ApiResponse[MetricasMapaCalorDataSchema]
