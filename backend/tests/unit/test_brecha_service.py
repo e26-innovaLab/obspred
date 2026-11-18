@@ -162,3 +162,10 @@ def test_resolve_ocupacion_for_sector_strip_y_normalizacion() -> None:
         service.resolve_ocupacion_for_sector("economia-conocimiento", None)
         == "analista_datos"
     )
+
+    # Sector desconocido o None -> fallback a desarrollador_software
+    assert service.resolve_ocupacion_for_sector("sector-desconocido-xyz", None) == (
+        "desarrollador_software"
+    )
+    assert service.resolve_ocupacion_for_sector(None, None) == "desarrollador_software"
+    assert service.resolve_ocupacion_for_sector("", "   ") == "desarrollador_software"
