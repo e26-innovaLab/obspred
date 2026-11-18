@@ -13,9 +13,9 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8000/",
+          "raw": "{{HOST}}/",
           "host": [
-            "http://localhost:8000"
+            "{{HOST}}"
           ],
           "path": []
         },
@@ -33,10 +33,11 @@
               }
             ],
             "url": {
-              "raw": "http://localhost:8000/",
+              "raw": "{{HOST}}/",
               "host": [
-                "http://localhost:8000"
-              ]
+                "{{HOST}}"
+              ],
+              "path": []
             }
           },
           "status": "OK",
@@ -867,7 +868,17 @@
                 "url": {
                   "raw": "https://sdmx.ine.gob.cl/rest/data/CL01,DF_TDES_SEXO,1.0/M.TDES._T.AS?startPeriod=2024&format=csv",
                   "host": [
-                    "http://localhost:8000"
+                    "sdmx",
+                    "ine",
+                    "gob",
+                    "cl"
+                  ],
+                  "protocol": "https",
+                  "path": [
+                    "rest",
+                    "data",
+                    "CL01,DF_TDES_SEXO,1.0",
+                    "M.TDES._T.AS"
                   ]
                 }
               },
@@ -1158,6 +1169,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/esco",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "esco"
                   ]
                 }
               },
@@ -1186,6 +1202,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/esco",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "esco"
                   ]
                 }
               },
@@ -1249,6 +1270,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/cepalstat",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "cepalstat"
                   ]
                 }
               },
@@ -1277,6 +1303,11 @@
                   "raw": "{{URL_BASE}}/ingesta/sync/cepalstat",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "ingesta",
+                    "sync",
+                    "cepalstat"
                   ]
                 }
               },
@@ -1292,7 +1323,6 @@
               "body": "{\n  \"success\": false,\n  \"status_code\": 502,\n  \"message\": \"Fallo en la sincronización de 'CEPALSTAT'.\",\n  \"data\": null,\n  \"errors\": [\n    {\n      \"code\": \"EXTERNAL_SERVICE_ERROR\",\n      \"detail\": \"Fallo al comunicarse con la API de CEPALSTAT.\",\n      \"field\": \"source\"\n    }\n  ],\n  \"meta\": null,\n  \"timestamp\": \"2026-11-17T21:00:00Z\"\n}"
             }
           ]
-        }
         }
       ]
     },
@@ -3509,6 +3539,10 @@
                   "raw": "{{URL_BASE}}/brechas/dev-software",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "dev-software"
                   ]
                 }
               },
@@ -3537,6 +3571,10 @@
                   "raw": "{{URL_BASE}}/brechas/dev-software",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "brechas",
+                    "dev-software"
                   ]
                 }
               },
@@ -3831,6 +3869,9 @@
                   "raw": "{{URL_BASE}}/fuentes",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes"
                   ]
                 }
               },
@@ -3879,6 +3920,10 @@
                   "raw": "{{URL_BASE}}/fuentes/1",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "1"
                   ]
                 }
               },
@@ -3907,6 +3952,10 @@
                   "raw": "{{URL_BASE}}/fuentes/999",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "999"
                   ]
                 }
               },
@@ -3956,6 +4005,11 @@
                   "raw": "{{URL_BASE}}/fuentes/estado/activa",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes",
+                    "estado",
+                    "activa"
                   ]
                 }
               },
@@ -4017,6 +4071,9 @@
                   "raw": "{{URL_BASE}}/fuentes",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes"
                   ]
                 }
               },
@@ -4045,6 +4102,9 @@
                   "raw": "{{URL_BASE}}/fuentes",
                   "host": [
                     "{{URL_BASE}}"
+                  ],
+                  "path": [
+                    "fuentes"
                   ]
                 }
               },
@@ -4256,8 +4316,13 @@
   ],
   "variable": [
     {
+      "key": "HOST",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
       "key": "URL_BASE",
-      "value": "http://localhost:8000/api/v1",
+      "value": "{{HOST}}/api/v1",
       "type": "string"
     }
   ]
