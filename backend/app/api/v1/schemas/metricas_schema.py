@@ -1,11 +1,13 @@
 """Esquemas Pydantic para el módulo de métricas, gráficos y análisis comparativo."""
 
+from collections.abc import Sequence
 from typing import Literal
 
 from pydantic import BaseModel, Field
 
 from app.api.v1.schemas.response_schema import ApiResponse
 from app.api.v1.schemas.trazabilidad_schema import TrazabilidadFuenteSchema
+from app.core.constants import TipoIndicador
 
 # ==============================================================================
 # 1. Series Temporales (/metricas/series)
@@ -19,8 +21,8 @@ class PuntoSerieDto(BaseModel):
     valor: float | None = Field(
         None, description="Valor del indicador (null si no hay dato)."
     )
-    tipo: str = Field(
-        default="observado", description="Tipo de observación estadística."
+    tipo: TipoIndicador | str = Field(
+        default=TipoIndicador.OBSERVADO, description="Tipo de observación estadística."
     )
 
 
@@ -137,7 +139,7 @@ class KpiItemDto(BaseModel):
     sentido_positivo: Literal["sube", "baja"] = Field(
         default="sube", description="Indica si un incremento representa una mejora."
     )
-    sparkline: list[float | None] = Field(
+    sparkline: Sequence[float | None] = Field(
         default_factory=list, description="Últimos puntos para mini gráfico."
     )
     fuente: TrazabilidadFuenteSchema = Field(

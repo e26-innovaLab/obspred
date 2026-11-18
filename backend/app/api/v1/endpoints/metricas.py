@@ -1,6 +1,6 @@
 """Controlador y endpoints asociados al módulo de métricas y gráficos."""
 
-from typing import Annotated
+from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Query, status
 
@@ -286,7 +286,20 @@ async def get_kpis(
     indicadores_solicitados = [i.strip() for i in indicadores.split(",") if i.strip()]
     kpis_list: list[KpiItemDto] = []
 
-    kpi_catalogo = {
+    kpi_catalogo: dict[
+        str,
+        tuple[
+            str,
+            str,
+            float,
+            float,
+            float,
+            float,
+            Literal["crecimiento", "estabilidad", "caida"],
+            Literal["sube", "baja"],
+            list[float],
+        ],
+    ] = {
         "tasa_desempleo": (
             "Tasa de desempleo",
             "%",
@@ -356,8 +369,8 @@ async def get_kpis(
                     valor_anterior=val_ant,
                     variacion_abs=var_abs,
                     variacion_pct=var_pct,
-                    tendencia=tend,  # type: ignore[arg-type]
-                    sentido_positivo=sentido,  # type: ignore[arg-type]
+                    tendencia=tend,
+                    sentido_positivo=sentido,
                     sparkline=spark,
                     fuente=fuente_kpi,
                 )
@@ -588,7 +601,10 @@ async def get_comparativa(
 
     comparativas: list[ComparativaIndicadorDto] = []
 
-    mock_db = {
+    mock_db: dict[
+        str,
+        dict[str, Any],
+    ] = {
         "tasa_desempleo": {
             "nombre": "Tasa de desempleo",
             "unidad": "%",
@@ -619,7 +635,7 @@ async def get_comparativa(
     }
 
     for ind in indicadores_solicitados:
-        info = mock_db.get(
+        info: dict[str, Any] = mock_db.get(
             ind,
             {
                 "nombre": ind.replace("_", " ").capitalize(),
@@ -628,10 +644,11 @@ async def get_comparativa(
             },
         )
         valores_pais: list[ComparativaValorPaisDto] = []
+        info_valores: dict[str, tuple[float, str, str]] = info.get("valores", {})
 
         for p in paises_solicitados:
-            if p in info["valores"]:
-                val, per, fuente_nombre = info["valores"][p]
+            if p in info_valores:
+                val, per, fuente_nombre = info_valores[p]
                 valores_pais.append(
                     ComparativaValorPaisDto(
                         pais=p,
@@ -655,8 +672,8 @@ async def get_comparativa(
         comparativas.append(
             ComparativaIndicadorDto(
                 indicador=ind,
-                nombre=info["nombre"],
-                unidad=info["unidad"],
+                nombre=str(info.get("nombre", ind)),
+                unidad=str(info.get("unidad", "%")),
                 valores=valores_pais,
             )
         )
@@ -714,7 +731,7 @@ async def get_mapa_calor(
     ]
 
     celdas: list[MapaCalorCeldaDto] = []
-    matriz_mock = {
+    matriz_mock: dict[tuple[str, str], tuple[float | None, float | None]] = {
         ("tecnologia", "ARG"): (6.2, 5.8),
         ("tecnologia", "URY"): (5.4, -1.2),
         ("tecnologia", "CHL"): (5.9, 2.1),
