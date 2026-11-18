@@ -292,13 +292,23 @@ async def main() -> None:
     print("==========================================================")
     async with async_session_factory() as session:
         f_count = (await session.execute(text("SELECT COUNT(*) FROM fuentes"))).scalar()
-        h_count = (await session.execute(text("SELECT COUNT(*) FROM habilidades_brechas"))).scalar()
-        i_count = (await session.execute(text("SELECT COUNT(*) FROM indicadores"))).scalar()
+        h_count = (
+            await session.execute(text("SELECT COUNT(*) FROM habilidades_brechas"))
+        ).scalar()
+        i_count = (
+            await session.execute(text("SELECT COUNT(*) FROM indicadores"))
+        ).scalar()
         print(f"Total en 'fuentes': {f_count}")
         print(f"Total en 'habilidades_brechas': {h_count}")
         print(f"Total en 'indicadores': {i_count}")
 
-        fuentes_dist = (await session.execute(text("SELECT fuente, COUNT(*) FROM indicadores GROUP BY fuente ORDER BY COUNT(*) DESC"))).fetchall()
+        fuentes_dist = (
+            await session.execute(
+                text(
+                    "SELECT fuente, COUNT(*) FROM indicadores GROUP BY fuente ORDER BY COUNT(*) DESC"
+                )
+            )
+        ).fetchall()
         print("\nDistribución por fuente en 'indicadores':")
         for f, cnt in fuentes_dist:
             print(f" - {f}: {cnt} registros")
