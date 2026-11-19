@@ -67,10 +67,13 @@ class Settings(BaseSettings):
     server_host: str = "0.0.0.0"
     server_port: int = 8000
 
+
+
     cors_origins: list[str] = [
         "http://localhost:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:5174",
     ]
 
     database_url: str = "sqlite+aiosqlite:///./obspred_dev.db"
@@ -115,7 +118,6 @@ class Settings(BaseSettings):
         default=DEFAULT_CEPALSTAT_TIMEOUT_SECONDS,
         description="Timeout en segundos para solicitudes a CEPALSTAT",
     )
-
 
 # Instancia única reutilizable para inyección o importación directa
 settings = Settings()
