@@ -202,3 +202,17 @@ async def test_repository_ocupacion_catalogo_en_bd_sin_sector_resuelve_canonico(
         assert entity is not None
         assert entity.sector != "general"
         assert entity.sector == "tecnologia"
+
+
+@pytest.mark.asyncio
+async def test_repository_get_ranking_catalogo() -> None:
+    """Verifica que get_ranking retorne ocupaciones por país con puestos None."""
+    repo = SqlAlchemyIndiceEmpleabilidadRepository(session=None)
+    items = await repo.get_ranking(paises=["ARG", "URY"], sector="tecnologia")
+
+    assert len(items) == 8  # 4 ocupaciones de tecnología x 2 países
+    for item in items:
+        assert item.sector == "tecnologia"
+        assert item.pais in ["ARG", "URY"]
+        assert item.puestos_disponibles is None
+        assert 0.0 <= item.score <= 100.0

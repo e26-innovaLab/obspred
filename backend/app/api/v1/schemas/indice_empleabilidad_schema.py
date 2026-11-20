@@ -200,8 +200,11 @@ class OcupacionRankingItemDto(BaseModel):
 
     ocupacion_id: str = Field(..., description="Slug de la ocupación.")
     nombre: str = Field(..., description="Nombre canónico de la ocupación.")
-    puestos_disponibles: int = Field(
-        ..., description="Vacantes o puestos demandados observados."
+    puestos_disponibles: int | None = Field(
+        default=None,
+        description=(
+            "Vacantes o puestos demandados observados (None si no hay registros)."
+        ),
     )
     indice_empleabilidad: float = Field(
         ..., description="Score calculado en escala 0 a 100."

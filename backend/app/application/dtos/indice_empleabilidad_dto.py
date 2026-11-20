@@ -39,3 +39,15 @@ class IndiceEmpleabilidadDTO:
     sector: str | None = None
     periodo: str | None = None
     evolucion: list[EvolucionIndicePuntoDTO] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class OcupacionRankingDTO:
+    """DTO representativo de una fila de ocupación en el ranking."""
+
+    ocupacion_id: str
+    nombre: str
+    puestos_disponibles: int | None
+    indice_empleabilidad: float
+    pais: str
+    fuente: str

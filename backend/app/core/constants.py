@@ -122,6 +122,13 @@ class IndicadorSlug(StrEnum):
     EMPLEO_TOTAL = "empleo_total"
 
 
+class OrdenRanking(StrEnum):
+    """Criterios de ordenamiento para el ranking de ocupaciones."""
+
+    SCORE = "score"
+    PUESTOS = "puestos"
+
+
 def normalizar_pais_codigo(raw: str | None) -> PaisCodigo | None:
     """Normaliza cadenas sueltas o códigos ISO a PaisCodigo canónico.
 
@@ -385,6 +392,7 @@ __all__ = [
     "SectorEstrategico",
     "TipoIndicador",
     "IndicadorSlug",
+    "OrdenRanking",
     "normalizar_pais_codigo",
     "NivelEmpleabilidad",
     "DimensionIndiceNombre",

@@ -26,7 +26,11 @@ from app.application.services.indice_empleabilidad_service import (
 from app.core.constants import (
     INDICE_EMPLEABILIDAD_ROUTE,
     OPENAPI_TAG_INDICE_EMPLEABILIDAD,
+    OrdenRanking,
+    PaisCodigo,
+    normalizar_pais_codigo,
 )
+from app.domain.exceptions.base import DomainException
 
 indice_empleabilidad_router = APIRouter(
     prefix=INDICE_EMPLEABILIDAD_ROUTE,
@@ -45,6 +49,10 @@ indice_empleabilidad_router = APIRouter(
     ),
 )
 async def get_ranking_ocupaciones(
+    service: Annotated[
+        IndiceEmpleabilidadService,
+        Depends(provide_indice_empleabilidad_service),
+    ],
     pais: Annotated[
         str | None, Query(description="Códigos ISO-3 en CSV (ej. 'ARG,URY,CHL')")
     ] = None,
@@ -52,61 +60,71 @@ async def get_ranking_ocupaciones(
         str | None, Query(description="Filtro opcional de sector")
     ] = None,
     periodo: Annotated[str | None, Query(description="Período temporal")] = None,
+    orden: Annotated[
+        OrdenRanking,
+        Query(description="Criterio de ordenamiento ('score' o 'puestos')"),
+    ] = OrdenRanking.SCORE,
 ) -> IndiceRankingResponseSchema:
     """Procesa el ranking de ocupaciones para la tabla de la vista Ocupaciones.
 
     Args:
+        service: Servicio de aplicación para cálculo y ordenamiento del índice.
         pais: Códigos ISO 3166-1 alpha-3 separados por coma.
         sector: Filtro opcional por sector estratégico.
         periodo: Período temporal de corte.
+        orden: Criterio de ordenamiento ('score' o 'puestos').
 
     Returns:
         IndiceRankingResponseSchema: Envoltorio ApiResponse con la lista clasificada
             de ocupaciones con puestos demandados y score de empleabilidad.
+
+    Raises:
+        DomainException: Si algún código o nombre de país no es reconocido.
     """
-    # TODO [backend]: Conectar con IndiceEmpleabilidadService:
-    # 1. Inyectar IndiceEmpleabilidadService.get_ranking_multi_pais().
-    # 2. Computar puestos demandados y score para ocupaciones por país.
-    # 3. Ordenar descendentemente por puestos o score.
-    paises_lista = (
-        [p.strip().upper() for p in pais.split(",") if p.strip()]
-        if pais
-        else ["ARG", "URY", "CHL"]
+    paises_lista: list[str] = []
+    if pais:
+        for p in pais.split(","):
+            p_clean = p.strip()
+            if not p_clean:
+                continue
+            p_code = normalizar_pais_codigo(p_clean)
+            if not p_code:
+                raise DomainException(
+                    f"Código o nombre de país no reconocido: '{p_clean}'."
+                )
+            if p_code.value not in paises_lista:
+                paises_lista.append(p_code.value)
+
+    if not paises_lista:
+        paises_lista = [
+            PaisCodigo.ARG.value,
+            PaisCodigo.URY.value,
+            PaisCodigo.CHL.value,
+        ]
+
+    dtos = await service.get_ranking_multi_pais(
+        paises=paises_lista,
+        sector=sector,
+        periodo=periodo,
+        orden=orden,
     )
 
-    mock_ocupaciones_base = [
-        ("dev-software", "Desarrollador/a de software", 1820, 84.5),
-        ("enfermeria", "Enfermero/a profesional", 1450, 78.0),
-        ("analista-datos", "Analista de datos", 1210, 82.0),
-        ("ing-renovables", "Ingeniero/a en energías renovables", 980, 75.5),
-        ("especialista-ciberseguridad", "Especialista en ciberseguridad", 850, 86.0),
-        ("product-manager", "Gerente de producto digital", 740, 79.5),
-        ("tecnico-solar", "Técnico/a en instalaciones solares", 690, 71.0),
-        ("kinesiologia", "Kinesiólogo/a y fisioterapeuta", 580, 68.5),
+    items = [
+        OcupacionRankingItemDto(
+            ocupacion_id=dto.ocupacion_id,
+            nombre=dto.nombre,
+            puestos_disponibles=dto.puestos_disponibles,
+            indice_empleabilidad=dto.indice_empleabilidad,
+            pais=dto.pais,
+            fuente=dto.fuente,
+        )
+        for dto in dtos
     ]
-
-    items: list[OcupacionRankingItemDto] = []
-    factor_pais = {"ARG": 1.0, "URY": 0.35, "CHL": 1.15}
-
-    for p in paises_lista:
-        factor = factor_pais.get(p, 1.0)
-        for slug, nombre, vacantes, score in mock_ocupaciones_base:
-            items.append(
-                OcupacionRankingItemDto(
-                    ocupacion_id=slug,
-                    nombre=nombre,
-                    puestos_disponibles=int(vacantes * factor),
-                    indice_empleabilidad=min(
-                        100.0, round(score * (0.95 if p == "URY" else 1.0), 1)
-                    ),
-                    pais=p,
-                    fuente="innova.lab / Índices Armonizados",
-                )
-            )
 
     return create_success_response(
         data=IndiceRankingDataSchema(ocupaciones=items),
         message="Ranking de ocupaciones obtenido exitosamente.",
+        meta=ResponseMeta(total=len(items)),
     )
 
 

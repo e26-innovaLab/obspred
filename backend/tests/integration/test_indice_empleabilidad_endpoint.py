@@ -219,3 +219,109 @@ async def test_get_indice_empleabilidad_trazabilidad_total(
     assert data["fuente"] != ""
     assert data["fecha_actualizacion"] == "2026-09-30"
     assert "Metodología v1" in data["metodologia"]
+
+
+@pytest.mark.asyncio
+async def test_get_ranking_ocupaciones_default_catalogo(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica consulta de ranking por defecto desde catálogo con sesión nula.
+
+    Args:
+        async_client: Cliente HTTP asíncrono para pruebas.
+    """
+    url = f"{settings.api_v1_prefix}{INDICE_EMPLEABILIDAD_ROUTE}/ranking"
+    response = await async_client.get(url, params={"pais": "ARG,CHL"})
+
+    assert response.status_code == 200
+    payload = response.json()
+
+    assert payload["success"] is True
+    assert payload["status_code"] == 200
+    assert payload["errors"] is None
+
+    ocupaciones = payload["data"]["ocupaciones"]
+    assert len(ocupaciones) > 0
+
+    # Principio 4: Con sesión nula en pruebas no hay avisos en BD -> None honesto
+    for item in ocupaciones:
+        assert "ocupacion_id" in item
+        assert "nombre" in item
+        assert "indice_empleabilidad" in item
+        assert 0.0 <= item["indice_empleabilidad"] <= 100.0
+        assert item["pais"] in ["ARG", "CHL"]
+        assert "fuente" in item and len(item["fuente"]) > 0
+        assert item["puestos_disponibles"] is None
+
+    # Ordenamiento por score descendente
+    scores = [item["indice_empleabilidad"] for item in ocupaciones]
+    assert scores == sorted(scores, reverse=True)
+
+    # Metadatos
+    assert payload["meta"]["total"] == len(ocupaciones)
+
+
+@pytest.mark.asyncio
+async def test_get_ranking_ocupaciones_orden_puestos(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica que el parámetro de orden 'puestos' sea procesado correctamente.
+
+    Args:
+        async_client: Cliente HTTP asíncrono para pruebas.
+    """
+    url = f"{settings.api_v1_prefix}{INDICE_EMPLEABILIDAD_ROUTE}/ranking"
+    response = await async_client.get(url, params={"pais": "ARG", "orden": "puestos"})
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert len(payload["data"]["ocupaciones"]) > 0
+
+
+@pytest.mark.asyncio
+async def test_get_ranking_ocupaciones_pais_invalido(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica que un país desconocido retorne HTTP 400 bajo DomainException.
+
+    Args:
+        async_client: Cliente HTTP asíncrono para pruebas.
+    """
+    url = f"{settings.api_v1_prefix}{INDICE_EMPLEABILIDAD_ROUTE}/ranking"
+    response = await async_client.get(url, params={"pais": "PAIS_INVENTADO_XYZ"})
+
+    assert response.status_code == 400
+    payload = response.json()
+    assert payload["success"] is False
+    assert payload["status_code"] == 400
+    assert payload["errors"][0]["code"] == "DOMAIN_RULE_VIOLATION"
+
+
+@pytest.mark.asyncio
+async def test_get_ranking_ocupaciones_filtro_sector(
+    async_client: AsyncClient,
+) -> None:
+    """Verifica filtrado de ocupaciones por sector estratégico.
+
+    Args:
+        async_client: Cliente HTTP asíncrono para pruebas.
+    """
+    url = f"{settings.api_v1_prefix}{INDICE_EMPLEABILIDAD_ROUTE}/ranking"
+    response = await async_client.get(
+        url, params={"pais": "ARG", "sector": "tecnologia"}
+    )
+
+    assert response.status_code == 200
+    ocupaciones = response.json()["data"]["ocupaciones"]
+    assert len(ocupaciones) > 0
+    # Todas las ocupaciones deben pertenecer al sector tecnología del catálogo
+    slugs = {item["ocupacion_id"] for item in ocupaciones}
+    assert slugs.issubset(
+        {
+            "dev-software",
+            "analista-datos",
+            "diseno-ux",
+            "soporte-ti",
+        }
+    )
