@@ -243,6 +243,68 @@ export async function fetchMiEntidad(id: number): Promise<MiEntidad> {
 
 ### 3.3. Índice de Empleabilidad
 
+#### `GET /api/v1/indice-empleabilidad/ranking`
+- **Descripción:** Obtiene la tabla clasificada y ordenada de ocupaciones con puestos disponibles y score integral de empleabilidad (0–100) para comparativas territoriales multi-país.
+- **Parámetros de Query:**
+  - `pais` (opcional, string CSV): Códigos ISO 3166-1 alpha-3 o nombres canónicos separados por coma (ej. `ARG,URY,CHL`). Si se omite, retorna la comparativa regional de los tres países (`ARG`, `URY`, `CHL`). Valida mediante `normalizar_pais_codigo()` (HTTP 400 si contiene códigos desconocidos).
+  - `sector` (opcional, string): Filtro por sector estratégico (ej. `tecnologia`, `salud`, `energia`, `turismo`, `economia_conocimiento`).
+  - `periodo` (opcional, string): Período temporal de corte (ej. `2026-Q1`). Si se omite, toma el período más reciente con observaciones.
+  - `orden` (opcional, enum `score` | `puestos`, default `score`): Criterio principal de ordenamiento.
+    - `score`: Orden descendente por Índice de Empleabilidad (0–100); desempate por puestos demandados descendente (`NULLS LAST`).
+    - `puestos`: Orden descendente por puestos demandados observados (`NULLS LAST`); desempate por score descendente.
+- **Principio de Honestidad de Datos:** `puestos_disponibles` retorna `int` si existen registros observados de vacantes en el período o `null` explícito si no hay medición disponible (nunca se imputa `0` ficticio).
+- **Respuesta 200 OK:**
+```json
+{
+  "success": true,
+  "status_code": 200,
+  "message": "Ranking de ocupaciones obtenido exitosamente.",
+  "data": {
+    "ocupaciones": [
+      {
+        "ocupacion_id": "dev-software",
+        "nombre": "Desarrollador/a de software",
+        "puestos_disponibles": 1820,
+        "indice_empleabilidad": 84.5,
+        "pais": "ARG",
+        "fuente": "INDEC / Secretaría de Trabajo"
+      },
+      {
+        "ocupacion_id": "analista-datos",
+        "nombre": "Analista de datos",
+        "puestos_disponibles": null,
+        "indice_empleabilidad": 82.0,
+        "pais": "ARG",
+        "fuente": "INDEC / Secretaría de Trabajo"
+      }
+    ]
+  },
+  "errors": null,
+  "meta": {
+    "total": 2
+  },
+  "timestamp": "2026-11-20T12:00:00.000000Z"
+}
+```
+- **Respuesta 400 Bad Request:**
+```json
+{
+  "success": false,
+  "status_code": 400,
+  "message": "Código o nombre de país no reconocido: 'PAIS_FALSO'.",
+  "data": null,
+  "errors": [
+    {
+      "code": "DOMAIN_RULE_VIOLATION",
+      "detail": "Código o nombre de país no reconocido: 'PAIS_FALSO'.",
+      "field": null
+    }
+  ],
+  "meta": null,
+  "timestamp": "2026-11-20T12:00:00.000000Z"
+}
+```
+
 #### `GET /api/v1/indice-empleabilidad/{ocupacion}`
 - **Descripción:** Obtiene el score integral de empleabilidad (0–100) y el desglose de sus 4 dimensiones metodológicas para una ocupación dada.
 - **Parámetros de Path:**

@@ -86,6 +86,7 @@ class IndiceEmpleabilidad:
         sector: Sector estratégico asociado.
         periodo: Período de referencia temporal analizado.
         evolucion: Serie temporal histórica de puntos del índice.
+        puestos_disponibles: Vacantes o demanda observada (None si no hay registros).
     """
 
     ocupacion_id: str
@@ -105,6 +106,7 @@ class IndiceEmpleabilidad:
     sector: str | None = None
     periodo: str | None = None
     evolucion: list[EvolucionIndicePunto] = field(default_factory=list)
+    puestos_disponibles: int | None = None
 
     def __post_init__(self) -> None:
         """Valida invariantes de la entidad tras su inicialización.

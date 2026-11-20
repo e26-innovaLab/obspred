@@ -4,7 +4,9 @@ from app.application.dtos.indice_empleabilidad_dto import (
     DimensionIndiceDTO,
     EvolucionIndicePuntoDTO,
     IndiceEmpleabilidadDTO,
+    OcupacionRankingDTO,
 )
+from app.core.constants import OrdenRanking
 from app.domain.exceptions.base import EntityNotFoundException
 from app.domain.exceptions.indice_empleabilidad import InvalidOccupationException
 from app.domain.interfaces.indice_empleabilidad_repository import (
@@ -97,3 +99,67 @@ class IndiceEmpleabilidadService:
                 for p in entity.evolucion
             ],
         )
+
+    async def get_ranking_multi_pais(
+        self,
+        paises: list[str],
+        sector: str | None = None,
+        periodo: str | None = None,
+        orden: OrdenRanking | str = OrdenRanking.SCORE,
+    ) -> list[OcupacionRankingDTO]:
+        """Obtiene el ranking comparativo de ocupaciones para múltiples países.
+
+        Args:
+            paises: Lista de códigos de países analizados (ej. ['ARG', 'URY', 'CHL']).
+            sector: Filtro opcional por sector estratégico.
+            periodo: Período temporal de corte.
+            orden: Criterio de ordenamiento ('score' o 'puestos').
+
+        Returns:
+            list[OcupacionRankingDTO]: Lista clasificada y ordenada de ocupaciones
+                con scores y puestos disponibles.
+        """
+        sanitized_sector = sector.strip() if sector and sector.strip() else None
+        sanitized_periodo = periodo.strip() if periodo and periodo.strip() else None
+
+        entities = await self._repository.get_ranking(
+            paises=paises,
+            sector=sanitized_sector,
+            periodo=sanitized_periodo,
+        )
+
+        dtos = [
+            OcupacionRankingDTO(
+                ocupacion_id=e.ocupacion_id,
+                nombre=e.ocupacion_nombre,
+                puestos_disponibles=e.puestos_disponibles,
+                indice_empleabilidad=e.score,
+                pais=e.pais or "",
+                fuente=e.fuente,
+            )
+            for e in entities
+        ]
+
+        # Criterio de ordenamiento:
+        # PUESTOS: puestos_disponibles DESC NULLS LAST, desempate score DESC
+        # SCORE: indice_empleabilidad DESC, desempate puestos_disponibles DESC
+        if str(orden).lower() in (OrdenRanking.PUESTOS.value, "puestos"):
+            dtos.sort(
+                key=lambda d: (
+                    1 if d.puestos_disponibles is not None else 0,
+                    d.puestos_disponibles if d.puestos_disponibles is not None else -1,
+                    d.indice_empleabilidad,
+                ),
+                reverse=True,
+            )
+        else:
+            dtos.sort(
+                key=lambda d: (
+                    d.indice_empleabilidad,
+                    1 if d.puestos_disponibles is not None else 0,
+                    d.puestos_disponibles if d.puestos_disponibles is not None else -1,
+                ),
+                reverse=True,
+            )
+
+        return dtos
