@@ -31,8 +31,10 @@ from app.core.constants import (
     INDICE_EMPLEABILIDAD_RANKING_SUCCESS_MESSAGE,
     INDICE_EMPLEABILIDAD_ROUTE,
     OPENAPI_TAG_INDICE_EMPLEABILIDAD,
+    NivelEmpleabilidad,
     OrdenRanking,
     PaisCodigo,
+    TipoIndicador,
     normalizar_pais_codigo,
 )
 from app.domain.exceptions.base import DomainException
@@ -201,7 +203,7 @@ async def get_indice_empleabilidad_por_ocupacion(
         ocupacion_id=dto.ocupacion_id,
         ocupacion_nombre=dto.ocupacion_nombre,
         score=dto.score,
-        nivel=dto.nivel,
+        nivel=NivelEmpleabilidad(dto.nivel),
         dimensiones=[
             DimensionIndiceSchema(
                 nombre=dim.nombre,
@@ -211,7 +213,7 @@ async def get_indice_empleabilidad_por_ocupacion(
             )
             for dim in dto.dimensiones
         ],
-        tipo=dto.tipo,
+        tipo=TipoIndicador(dto.tipo),
         fuente=dto.fuente,
         fecha_actualizacion=dto.fecha_actualizacion,
         metodologia=dto.metodologia,
