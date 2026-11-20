@@ -230,6 +230,8 @@ HEALTH_SERVICES_ROUTE: Final[str] = f"{HEALTH_CHECK_ROUTE}/services"
 HEALTH_EXTERNAL_ROUTE: Final[str] = f"{HEALTH_CHECK_ROUTE}/external"
 INDICADORES_ROUTE: Final[str] = "/indicadores"
 INDICE_EMPLEABILIDAD_ROUTE: Final[str] = "/indice-empleabilidad"
+INDICE_EMPLEABILIDAD_RANKING_ROUTE: Final[str] = "/ranking"
+INDICE_EMPLEABILIDAD_OCUPACION_ROUTE: Final[str] = "/{ocupacion}"
 METRICAS_ROUTE: Final[str] = "/metricas"
 TENDENCIAS_ROUTE: Final[str] = "/tendencias"
 BRECHAS_ROUTE: Final[str] = "/brechas"
@@ -371,6 +373,17 @@ DATABASE_UNAVAILABLE_DETAIL: Final[str] = (
     "Verifique que el servidor de base de datos esté activo y accesible."
 )
 
+# Mensajes de Índice de Empleabilidad
+INDICE_EMPLEABILIDAD_RANKING_SUCCESS_MESSAGE: Final[str] = (
+    "Ranking de ocupaciones obtenido exitosamente."
+)
+INDICE_EMPLEABILIDAD_GET_SUCCESS_MESSAGE: Final[str] = (
+    "Índice de Empleabilidad obtenido con éxito."
+)
+ERROR_MSG_PAIS_NO_RECONOCIDO_TEMPLATE: Final[str] = (
+    "Código o nombre de país no reconocido: '{pais}'."
+)
+
 
 # ==============================================================================
 # Exportaciones Públicas (__all__)
@@ -414,6 +427,8 @@ __all__ = [
     "HEALTH_EXTERNAL_ROUTE",
     "INDICADORES_ROUTE",
     "INDICE_EMPLEABILIDAD_ROUTE",
+    "INDICE_EMPLEABILIDAD_RANKING_ROUTE",
+    "INDICE_EMPLEABILIDAD_OCUPACION_ROUTE",
     "METRICAS_ROUTE",
     "TENDENCIAS_ROUTE",
     "BRECHAS_ROUTE",
@@ -486,4 +501,7 @@ __all__ = [
     "INTERNAL_SERVER_ERROR_MESSAGE",
     "DATABASE_UNAVAILABLE_MESSAGE",
     "DATABASE_UNAVAILABLE_DETAIL",
+    "INDICE_EMPLEABILIDAD_RANKING_SUCCESS_MESSAGE",
+    "INDICE_EMPLEABILIDAD_GET_SUCCESS_MESSAGE",
+    "ERROR_MSG_PAIS_NO_RECONOCIDO_TEMPLATE",
 ]

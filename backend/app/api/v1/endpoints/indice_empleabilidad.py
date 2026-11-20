@@ -24,6 +24,11 @@ from app.application.services.indice_empleabilidad_service import (
     IndiceEmpleabilidadService,
 )
 from app.core.constants import (
+    ERROR_MSG_PAIS_NO_RECONOCIDO_TEMPLATE,
+    INDICE_EMPLEABILIDAD_GET_SUCCESS_MESSAGE,
+    INDICE_EMPLEABILIDAD_OCUPACION_ROUTE,
+    INDICE_EMPLEABILIDAD_RANKING_ROUTE,
+    INDICE_EMPLEABILIDAD_RANKING_SUCCESS_MESSAGE,
     INDICE_EMPLEABILIDAD_ROUTE,
     OPENAPI_TAG_INDICE_EMPLEABILIDAD,
     OrdenRanking,
@@ -39,7 +44,7 @@ indice_empleabilidad_router = APIRouter(
 
 
 @indice_empleabilidad_router.get(
-    "/ranking",
+    INDICE_EMPLEABILIDAD_RANKING_ROUTE,
     response_model=IndiceRankingResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Ranking tabular de ocupaciones por Índice de Empleabilidad",
@@ -90,7 +95,7 @@ async def get_ranking_ocupaciones(
             p_code = normalizar_pais_codigo(p_clean)
             if not p_code:
                 raise DomainException(
-                    f"Código o nombre de país no reconocido: '{p_clean}'."
+                    ERROR_MSG_PAIS_NO_RECONOCIDO_TEMPLATE.format(pais=p_clean)
                 )
             if p_code.value not in paises_lista:
                 paises_lista.append(p_code.value)
@@ -123,13 +128,13 @@ async def get_ranking_ocupaciones(
 
     return create_success_response(
         data=IndiceRankingDataSchema(ocupaciones=items),
-        message="Ranking de ocupaciones obtenido exitosamente.",
+        message=INDICE_EMPLEABILIDAD_RANKING_SUCCESS_MESSAGE,
         meta=ResponseMeta(total=len(items)),
     )
 
 
 @indice_empleabilidad_router.get(
-    "/{ocupacion}",
+    INDICE_EMPLEABILIDAD_OCUPACION_ROUTE,
     response_model=IndiceEmpleabilidadResponseSchema,
     status_code=status.HTTP_200_OK,
     summary="Consultar Índice de Empleabilidad por ocupación",
@@ -229,7 +234,7 @@ async def get_indice_empleabilidad_por_ocupacion(
 
     return create_success_response(
         data=data,
-        message="Índice de Empleabilidad obtenido con éxito.",
+        message=INDICE_EMPLEABILIDAD_GET_SUCCESS_MESSAGE,
         status_code=status.HTTP_200_OK,
         meta=meta,
     )
