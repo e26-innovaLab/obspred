@@ -280,9 +280,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         )
 
     @app.exception_handler(OSError)
-    async def os_error_handler(
-        request: Request, exc: OSError
-    ) -> JSONResponse:
+    async def os_error_handler(request: Request, exc: OSError) -> JSONResponse:
         """Maneja fallos de sockets a nivel de SO (ej. PostgreSQL offline)."""
         logger.error(
             f"Fallo de socket u OSError del sistema operativo: {exc}", exc_info=True

@@ -64,8 +64,7 @@ def test_is_database_connection_error_non_db():
     assert is_database_connection_error(ValueError("Parámetro inválido")) is False
     assert is_database_connection_error(KeyError("clave_inexistente")) is False
     assert (
-        is_database_connection_error(RuntimeError("Fallo inesperado de CPU"))
-        is False
+        is_database_connection_error(RuntimeError("Fallo inesperado de CPU")) is False
     )
 
 
@@ -83,11 +82,13 @@ def test_database_connection_error_response_payload():
     response = create_error_response(
         message=DATABASE_UNAVAILABLE_MESSAGE,
         status_code=503,
-        errors=[{
-            "code": ApiErrorCode.DATABASE_CONNECTION_ERROR,
-            "detail": DATABASE_UNAVAILABLE_DETAIL,
-            "field": "database",
-        }],
+        errors=[
+            {
+                "code": ApiErrorCode.DATABASE_CONNECTION_ERROR,
+                "detail": DATABASE_UNAVAILABLE_DETAIL,
+                "field": "database",
+            }
+        ],
     )
     payload = response.model_dump(mode="json")
     assert payload["success"] is False
