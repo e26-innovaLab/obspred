@@ -11,6 +11,8 @@ from app.core.constants import (
     DEFAULT_BCENTRAL_CHILE_BASE_URL,
     DEFAULT_BCENTRAL_CHILE_SOURCE,
     DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    IndicadorSlug,
     PaisCodigo,
     TipoIndicador,
 )
@@ -38,14 +40,14 @@ class BCentralChileConnector(IExternalDataConnector):
     INDICATOR_MAPPINGS: dict[str, dict[str, Any]] = {
         # --- Dimensión Laboral ---
         "F049.DES.TAS.HIST.10.M": {
-            "slug": "tasa_desocupacion",
+            "slug": IndicadorSlug.TASA_DESOCUPACION,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasas de desocupación nacional (serie histórica)",
             "unidad": "porcentaje",
         },
         "F049.RMU.IND.HIST.81.M": {
-            "slug": "indice_remuneraciones",
+            "slug": IndicadorSlug.INDICE_REMUNERACIONES,
             "sector": None,
             "ocupacion": None,
             "nombre": "Índice de Remuneraciones histórico",
@@ -53,7 +55,7 @@ class BCentralChileConnector(IExternalDataConnector):
         },
         # --- Dimensión Productiva ---
         "F032.IMC.IND.Z.Z.EP18.Z.Z.0.M": {
-            "slug": "imacec",
+            "slug": IndicadorSlug.IMACEC,
             "sector": "Productivo General",
             "ocupacion": None,
             "nombre": "Índice Mensual de Actividad Económica (IMACEC base 2018)",
@@ -166,7 +168,11 @@ class BCentralChileConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(self._base_url, params=params)
+            response = await client.get(
+                self._base_url,
+                params=params,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code != 200:
                 return False
 

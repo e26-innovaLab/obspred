@@ -7,10 +7,14 @@ from typing import Any
 import httpx
 
 from app.core.constants import (
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    DEFAULT_HTTP_USER_AGENT,
     DEFAULT_WORLD_BANK_BASE_URL,
     DEFAULT_WORLD_BANK_SOURCE,
     DEFAULT_WORLD_BANK_TIMEOUT_SECONDS,
+    IndicadorSlug,
     PaisCodigo,
+    SectorEstrategico,
     TipoIndicador,
 )
 from app.core.logging import logger
@@ -39,13 +43,13 @@ class WorldBankConnector(IExternalDataConnector):
     # Catálogo de indicadores oficiales verificados y su mapeo al modelo de dominio
     INDICATOR_MAPPINGS: dict[str, dict[str, Any]] = {
         "SL.UEM.TOTL.ZS": {
-            "slug": "tasa_desempleo",
+            "slug": IndicadorSlug.TASA_DESEMPLEO,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de desocupación total (% de fuerza laboral)",
         },
         "SL.TLF.CACT.ZS": {
-            "slug": "participacion_laboral",
+            "slug": IndicadorSlug.PARTICIPACION_LABORAL,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de participación en la fuerza laboral (%)",
@@ -58,31 +62,31 @@ class WorldBankConnector(IExternalDataConnector):
         },
         "SL.SRV.EMPL.ZS": {
             "slug": "empleo_servicios",
-            "sector": "Servicios",
+            "sector": "servicios",
             "ocupacion": None,
             "nombre": "Empleo en servicios (% del empleo total)",
         },
         "SL.IND.EMPL.ZS": {
             "slug": "empleo_industria",
-            "sector": "Industria",
+            "sector": "industria",
             "ocupacion": None,
             "nombre": "Empleo en industria (% del empleo total)",
         },
         "NY.GDP.PCAP.CD": {
-            "slug": "pib_per_capita",
+            "slug": IndicadorSlug.PIB_PER_CAPITA,
             "sector": None,
             "ocupacion": None,
             "nombre": "PIB per cápita (US$ a precios actuales)",
         },
         "SE.TER.ENRR": {
-            "slug": "matricula_terciaria",
+            "slug": IndicadorSlug.MATRICULA_TERCIARIA,
             "sector": None,
             "ocupacion": None,
             "nombre": "Inscripción en educación terciaria (% bruto)",
         },
         "IT.NET.USER.ZS": {
-            "slug": "usuarios_internet",
-            "sector": "Tecnología",
+            "slug": IndicadorSlug.USUARIOS_INTERNET,
+            "sector": SectorEstrategico.TECNOLOGIA,
             "ocupacion": None,
             "nombre": "Población con acceso a Internet (%)",
         },
@@ -105,10 +109,7 @@ class WorldBankConnector(IExternalDataConnector):
         self._custom_client = client
         self._timeout = timeout
         self._headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (compatible; ObservatorioPredictivo/1.0; "
-                "+https://github.com/innova-lab/obspred)"
-            ),
+            "User-Agent": DEFAULT_HTTP_USER_AGENT,
             "Accept": "application/json",
         }
 
@@ -168,7 +169,7 @@ class WorldBankConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            tasks = []
+            tasks: list[Any] = []
             for code in target_indicator_codes:
                 indicator_meta = self.INDICATOR_MAPPINGS[code]
                 url = (
@@ -314,7 +315,10 @@ class WorldBankConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(ping_url)
+            response = await client.get(
+                ping_url,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code == 200:
                 payload = response.json()
                 return isinstance(payload, list) and len(payload) >= 1
@@ -336,13 +340,21 @@ class WorldBankConnector(IExternalDataConnector):
         }
 
         resolved: list[str] = []
+        seen: set[str] = set()
         for req in requested:
             if req in self.INDICATOR_MAPPINGS:
-                resolved.append(req)
+                code = req
             elif req in slug_to_code:
-                resolved.append(slug_to_code[req])
+                code = slug_to_code[req]
             else:
                 logger.warning("Indicador '%s' no reconocido en World Bank.", req)
+                continue
+
+            if code in seen:
+                continue
+
+            seen.add(code)
+            resolved.append(code)
 
         return resolved or list(self.INDICATOR_MAPPINGS.keys())
 

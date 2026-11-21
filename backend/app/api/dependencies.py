@@ -6,13 +6,27 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.services.alertas_service import AlertaService
+from app.application.services.brecha_service import BrechaService
+from app.application.services.catalogo_service import CatalogoService
+from app.application.services.external_services_health_service import (
+    ExternalServicesHealthService,
+)
 from app.application.services.external_sync_service import ExternalSyncService
 from app.application.services.file_upload_service import FileUploadService
+from app.application.services.fuentes_service import FuenteService
 from app.application.services.indice_empleabilidad_service import (
     IndiceEmpleabilidadService,
 )
 from app.application.validators.csv_file_validator import CsvFileValidator
 from app.core.config import settings
+from app.core.constants import (
+    DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+    DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+    DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
+)
+from app.domain.interfaces.brecha_repository import IBrechaRepository
+from app.domain.interfaces.catalogo_repository import ICatalogoRepository
 from app.domain.interfaces.external_connector import IExternalDataConnector
 from app.domain.interfaces.file_storage_service import IFileStorageService
 from app.domain.interfaces.file_validator import IFileValidator
@@ -23,12 +37,31 @@ from app.domain.interfaces.indice_empleabilidad_repository import (
 from app.infrastructure.connectors.bcentral_chile_connector import (
     BCentralChileConnector,
 )
+from app.infrastructure.connectors.cepalstat_connector import (
+    CepalstatConnector,
+)
+from app.infrastructure.connectors.datos_argentina_connector import (
+    DatosArgentinaConnector,
+)
+from app.infrastructure.connectors.esco_connector import EscoConnector
 from app.infrastructure.connectors.ilostat_connector import ILOSTATConnector
+from app.infrastructure.connectors.simel_chile_connector import (
+    SimelChileConnector,
+)
 from app.infrastructure.connectors.world_bank_connector import WorldBankConnector
 from app.infrastructure.persistence.database import get_db_session
 from app.infrastructure.persistence.repositories import (
     SqlAlchemyIndicadorRepository,
     SqlAlchemyIndiceEmpleabilidadRepository,
+)
+from app.infrastructure.persistence.repositories.brecha_repository import (
+    SQLAlchemyBrechaRepository,
+)
+from app.infrastructure.persistence.repositories.catalogo_repository import (
+    SqlAlchemyCatalogoRepository,
+)
+from app.infrastructure.persistence.repositories.fuente_repository import (
+    SqlAlchemyFuenteRepository,
 )
 from app.infrastructure.storage.local_file_storage_service import (
     LocalFileStorageService,
@@ -173,6 +206,40 @@ def provide_world_bank_sync_service(
     return ExternalSyncService(connector=connector, repository=repository)
 
 
+def provide_brecha_repository(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> IBrechaRepository:
+    """Provee el repositorio para la persistencia y consulta de Brechas.
+
+    Args:
+        session: Sesión transaccional inyectada por FastAPI.
+
+    Returns:
+        IBrechaRepository: Instancia concreta de SQLAlchemyBrechaRepository.
+    """
+    return SQLAlchemyBrechaRepository(db=session)
+
+
+def provide_brecha_service(
+    repository: Annotated[
+        IBrechaRepository,
+        Depends(provide_brecha_repository),
+    ],
+) -> BrechaService:
+    """Provee el servicio de aplicación para las Brechas de Habilidades.
+
+    Args:
+        repository: Repositorio inyectado por FastAPI.
+
+    Returns:
+        BrechaService: Servicio listo para su uso en controladores.
+    """
+    return BrechaService(repository=repository)
+
+
 def provide_ilostat_connector() -> IExternalDataConnector:
     """Provee una instancia del conector oficial de ILOSTAT."""
     return ILOSTATConnector()
@@ -210,7 +277,11 @@ def provide_bcentral_chile_connector() -> IExternalDataConnector:
         base_url=getattr(settings, "bcentral_chile_base_url", None),
         user=getattr(settings, "bcentral_chile_user", None),
         password=getattr(settings, "bcentral_chile_pass", None),
-        timeout=getattr(settings, "bcentral_chile_timeout_seconds", 30.0),
+        timeout=getattr(
+            settings,
+            "bcentral_chile_timeout_seconds",
+            DEFAULT_BCENTRAL_CHILE_TIMEOUT_SECONDS,
+        ),
     )
 
 
@@ -235,3 +306,260 @@ def provide_bcentral_chile_sync_service(
         ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
     """
     return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_simel_chile_connector() -> SimelChileConnector:
+    """Provee la instancia del conector oficial de SIMEL Chile (INE).
+
+    Returns:
+        SimelChileConnector: Instancia de SimelChileConnector configurada.
+    """
+    return SimelChileConnector(
+        base_url=getattr(settings, "simel_chile_base_url", None),
+        timeout=getattr(
+            settings,
+            "simel_chile_timeout_seconds",
+            DEFAULT_SIMEL_CHILE_TIMEOUT_SECONDS,
+        ),
+    )
+
+
+def provide_simel_chile_sync_service(
+    connector: Annotated[
+        SimelChileConnector,
+        Depends(provide_simel_chile_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de sincronización de SIMEL Chile.
+
+    Args:
+        connector: Conector de SIMEL Chile inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación para ingesta y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_fuente_service(
+    session: Annotated[
+        AsyncSession,
+        Depends(provide_db_session),
+    ],
+) -> FuenteService:
+    repository = SqlAlchemyFuenteRepository(session=session)
+    return FuenteService(repository)
+
+
+def provide_alert_service(
+    indicador_repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> AlertaService:
+    """Provee el servicio de aplicación para generación y consulta de alertas.
+
+    Args:
+        indicador_repository: Repositorio de indicadores inyectado por FastAPI.
+
+    Returns:
+        AlertaService: Servicio de alertas configurado con repositorio de indicadores.
+    """
+    return AlertaService(indicador_repository=indicador_repository)
+
+
+def provide_esco_connector() -> IExternalDataConnector:
+    """Provee una instancia del conector oficial de ESCO (Taxonomías).
+
+    Returns:
+        IExternalDataConnector: Instancia de EscoConnector configurada.
+    """
+    return EscoConnector(settings.esco_base_url)
+
+
+def provide_esco_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_esco_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con ESCO.
+
+    Args:
+        connector: Conector de ESCO inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_datos_argentina_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de Datos Argentina API.
+
+    Returns:
+        IExternalDataConnector: Instancia de DatosArgentinaConnector configurada.
+    """
+    return DatosArgentinaConnector(
+        base_url=getattr(settings, "datos_argentina_base_url", None),
+        timeout=getattr(
+            settings,
+            "datos_argentina_timeout_seconds",
+            DEFAULT_DATOS_ARGENTINA_TIMEOUT_SECONDS,
+        ),
+    )
+
+
+def provide_datos_argentina_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_datos_argentina_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización
+    con la API de Datos Argentina.
+
+    Args:
+        connector: Conector de Datos Argentina inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para ejecución y persistencia.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_cepalstat_connector() -> IExternalDataConnector:
+    """Provee la instancia del conector oficial de CEPALSTAT API.
+
+    Returns:
+        IExternalDataConnector: Instancia de CepalstatConnector configurada.
+    """
+    return CepalstatConnector(
+        base_url=settings.cepalstat_api_base_url,
+        timeout=settings.cepalstat_timeout_seconds,
+    )
+
+
+def provide_cepalstat_sync_service(
+    connector: Annotated[
+        IExternalDataConnector,
+        Depends(provide_cepalstat_connector),
+    ],
+    repository: Annotated[
+        IIndicadorRepository,
+        Depends(provide_indicador_repository),
+    ],
+) -> ExternalSyncService:
+    """Provee el servicio de aplicación para sincronización con la API de CEPALSTAT.
+
+    Args:
+        connector: Conector de CEPALSTAT inyectado.
+        repository: Repositorio de indicadores inyectado para persistencia en DB.
+
+    Returns:
+        ExternalSyncService: Servicio de aplicación listo para sincronizar CEPALSTAT.
+    """
+    return ExternalSyncService(connector=connector, repository=repository)
+
+
+def provide_external_services_health_service(
+    world_bank: Annotated[
+        IExternalDataConnector,
+        Depends(provide_world_bank_connector),
+    ],
+    simel_chile: Annotated[
+        SimelChileConnector,
+        Depends(provide_simel_chile_connector),
+    ],
+    datos_argentina: Annotated[
+        IExternalDataConnector,
+        Depends(provide_datos_argentina_connector),
+    ],
+    bcentral_chile: Annotated[
+        IExternalDataConnector,
+        Depends(provide_bcentral_chile_connector),
+    ],
+    ilostat: Annotated[
+        IExternalDataConnector,
+        Depends(provide_ilostat_connector),
+    ],
+    esco: Annotated[
+        IExternalDataConnector,
+        Depends(provide_esco_connector),
+    ],
+    cepalstat: Annotated[
+        IExternalDataConnector,
+        Depends(provide_cepalstat_connector),
+    ],
+) -> ExternalServicesHealthService:
+    """Provee el servicio de salud y disponibilidad de todas las fuentes externas.
+
+    Args:
+        world_bank: Conector inyectado del Banco Mundial.
+        simel_chile: Conector inyectado de SIMEL - INE Chile.
+        datos_argentina: Conector inyectado de Datos Argentina.
+        bcentral_chile: Conector inyectado del Banco Central de Chile.
+        ilostat: Conector inyectado de ILOSTAT (OIT).
+        esco: Conector inyectado de la taxonomía ESCO.
+        cepalstat: Conector inyectado de CEPALSTAT.
+
+    Returns:
+        ExternalServicesHealthService: Orquestador listo para verificar la salud
+            de todos los conectores externos configurados.
+    """
+    connectors = [
+        world_bank,
+        simel_chile,
+        datos_argentina,
+        bcentral_chile,
+        ilostat,
+        esco,
+        cepalstat,
+    ]
+    return ExternalServicesHealthService(connectors=connectors)
+
+
+def provide_catalogo_repository(
+    session: Annotated[AsyncSession, Depends(provide_db_session)],
+) -> ICatalogoRepository:
+    """Provee la implementación SQLAlchemy del repositorio del catálogo maestro.
+
+    Args:
+        session: Sesión de base de datos asíncrona inyectada.
+
+    Returns:
+        ICatalogoRepository: Instancia de SqlAlchemyCatalogoRepository.
+    """
+    return SqlAlchemyCatalogoRepository(session=session)
+
+
+def provide_catalogo_service(
+    repository: Annotated[
+        ICatalogoRepository,
+        Depends(provide_catalogo_repository),
+    ],
+) -> CatalogoService:
+    """Provee el servicio de aplicación para consulta y gestión del catálogo.
+
+    Args:
+        repository: Repositorio de catálogo inyectado.
+
+    Returns:
+        CatalogoService: Caso de uso listo para consulta y auto-seeding.
+    """
+    return CatalogoService(repository=repository)

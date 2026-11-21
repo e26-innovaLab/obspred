@@ -9,9 +9,12 @@ from typing import Any, Final
 import httpx
 
 from app.core.constants import (
+    DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+    DEFAULT_HTTP_USER_AGENT,
     DEFAULT_ILOSTAT_BASE_URL,
     DEFAULT_ILOSTAT_SOURCE,
     DEFAULT_ILOSTAT_TIMEOUT_SECONDS,
+    IndicadorSlug,
     PaisCodigo,
     TipoIndicador,
 )
@@ -35,25 +38,25 @@ class ILOSTATConnector(IExternalDataConnector):
 
     INDICATOR_MAPPINGS: Final[dict[str, dict[str, Any]]] = {
         "UNE_DEAP_SEX_AGE_RT_A": {
-            "slug": "tasa_desempleo",
+            "slug": IndicadorSlug.TASA_DESEMPLEO,
             "sector": None,
             "ocupacion": None,
             "nombre": "Tasa de desocupación armonizada por sexo y edad (%)",
         },
         "EMP_TEMP_SEX_ECO_NB_A": {
-            "slug": "empleo_sector",
+            "slug": IndicadorSlug.EMPLEO_SECTOR,
             "sector": "ISIC_REV4",
             "ocupacion": None,
             "nombre": "Empleo por actividad económica (CNAE / ISIC)",
         },
         "EMP_TEMP_SEX_OCU_NB_A": {
-            "slug": "empleo_ocupacion",
+            "slug": IndicadorSlug.EMPLEO_OCUPACION,
             "sector": None,
             "ocupacion": "ISCO_08",
             "nombre": "Empleo por ocupación estandarizada (CIUO / ISCO)",
         },
         "EAR_4MTH_SEX_ECO_CUR_NB_A": {
-            "slug": "salario_medio",
+            "slug": IndicadorSlug.SALARIO_MEDIO,
             "sector": "ISIC_REV4",
             "ocupacion": None,
             "nombre": "Salario medio mensual en moneda local",
@@ -71,11 +74,7 @@ class ILOSTATConnector(IExternalDataConnector):
         self._custom_client = client
         self._timeout = timeout
         self._headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                "Chrome/124.0.0.0 Safari/537.36"
-            ),
+            "User-Agent": DEFAULT_HTTP_USER_AGENT,
             "Accept": "text/csv,text/plain;q=0.9,*/*;q=0.8",
         }
 
@@ -115,7 +114,11 @@ class ILOSTATConnector(IExternalDataConnector):
         client = await self._get_client()
 
         try:
-            response = await client.get(ping_url, params=params)
+            response = await client.get(
+                ping_url,
+                params=params,
+                timeout=DEFAULT_HEALTH_CHECK_TIMEOUT_SECONDS,
+            )
             if response.status_code == 200 and "ref_area" in response.text.lower():
                 return True
             return False

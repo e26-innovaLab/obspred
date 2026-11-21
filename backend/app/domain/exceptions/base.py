@@ -28,3 +28,26 @@ class EntityNotFoundException(DomainException):
         super().__init__(message)
         self.entity_name = entity_name
         self.entity_id = entity_id
+
+
+class DatabaseConnectionException(DomainException):
+    """Excepción lanzada cuando falla la conexión con el motor de base de datos."""
+
+    def __init__(
+        self,
+        message: str = (
+            "No se pudo establecer conexión con el servicio de base de datos."
+        ),
+        detail: str | None = None,
+    ) -> None:
+        """Inicializa la excepción indicando la indisponibilidad de la base de datos.
+
+        Args:
+            message: Mensaje general del error.
+            detail: Detalle específico de diagnóstico para el cliente.
+        """
+        super().__init__(message)
+        self.detail = detail or (
+            "El servicio de base de datos se encuentra fuera de línea o inaccesible. "
+            "Verifique que el servidor de base de datos esté activo y accesible."
+        )

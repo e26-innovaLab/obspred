@@ -1,48 +1,69 @@
 """Controlador y endpoints asociados a la consulta de tendencias y proyecciones."""
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, status
 
+from app.api.v1.schemas.response_schema import create_success_response
 from app.api.v1.schemas.tendencia_schema import (
     CambioSignificativo,
     MetadatosFuente,
     PuntoProyeccion,
     PuntoSerie,
-    TendenciasResponse,
+    TendenciasDataSchema,
+    TendenciasResponseSchema,
 )
-from app.core.constants import TENDENCIAS_ROUTE
+from app.core.constants import OPENAPI_TAG_TENDENCIAS, TENDENCIAS_ROUTE
 
-tendencias_router = APIRouter(prefix=TENDENCIAS_ROUTE, tags=["Tendencias"])
+tendencias_router = APIRouter(prefix=TENDENCIAS_ROUTE, tags=[OPENAPI_TAG_TENDENCIAS])
 
 
 @tendencias_router.get(
+    "",
+    response_model=TendenciasResponseSchema,
+    include_in_schema=False,
+)
+@tendencias_router.get(
     "/",
-    response_model=TendenciasResponse,
+    response_model=TendenciasResponseSchema,
+    status_code=status.HTTP_200_OK,
     summary="Obtener serie temporal, proyecciones y cambios significativos",
     description=(
-        "Retorna la evolucion histórica y proyectada para un pais, sector, "
-        "ocupación e indicador dados."
+        "Retorna la evolución histórica y proyectada para un país, sector, "
+        "ocupación e indicador dados con el formato estándar ApiResponse."
     ),
 )
 async def get_tendencias(
     pais: str = Query(default="Argentina", description="Nombre del país o código ISO"),
     sector: str = Query(
-        default="Todos los sectores", description="Sector de actividad económica"
+        default="Todos los sectores",
+        description="Sector de actividad económica",
     ),
     ocupacion: str = Query(
-        default="Todas las ocupaciones", description="Categoria u ocupación laboral"
+        default="Todas las ocupaciones",
+        description="Categoría u ocupación laboral",
     ),
     indicador: str = Query(
-        default="puestos_demandados", description="Tipo de indicador a consultar"
+        default="puestos_demandados",
+        description="Tipo de indicador a consultar",
     ),
-) -> TendenciasResponse:
-    """
-    Acá vamos a conectar con la capa de servicio/repositories
-    por ahora dejamos datos Mockeados
-    """
+) -> TendenciasResponseSchema:
+    """Procesa la consulta de tendencias y series temporales para el frontend.
 
-    # Simulacion de respuesta mock, para que front pueda testear
+    # TODO(backend): Conectar con TendenciaService / IndicadorRepository:
+    # 1. Inyectar servicio de tendencias y proyecciones.
+    # 2. Consultar serie histórica consolidada en base de datos.
+    # 3. Computar cambios significativos y proyecciones estadísticas.
 
-    return TendenciasResponse(
+    Args:
+        pais: País o código ISO solicitado.
+        sector: Sector económico para filtrar.
+        ocupacion: Denominación u ocupación de corte.
+        indicador: Clave del indicador estadístico.
+
+    Returns:
+        TendenciasResponseSchema: Envoltorio estándar ApiResponse con los datos
+            de tendencias y proyecciones.
+    """
+    data = TendenciasDataSchema(
         pais=pais,
         sector=sector,
         ocupacion=ocupacion,
@@ -104,4 +125,10 @@ async def get_tendencias(
                 "trimestral observada)."
             ),
         ),
+    )
+
+    return create_success_response(
+        data=data,
+        message="Tendencias y proyecciones obtenidas con éxito.",
+        status_code=status.HTTP_200_OK,
     )

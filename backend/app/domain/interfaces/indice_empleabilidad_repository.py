@@ -41,3 +41,23 @@ class IIndiceEmpleabilidadRepository(ABC):
             bool: True si la ocupación es válida y reconocida, False si no existe.
         """
         pass
+
+    @abstractmethod
+    async def get_ranking(
+        self,
+        paises: list[str],
+        sector: str | None = None,
+        periodo: str | None = None,
+    ) -> list[IndiceEmpleabilidad]:
+        """Obtiene el listado clasificado de ocupaciones para ranking multi-país.
+
+        Args:
+            paises: Lista de códigos ISO-3 de países a incluir.
+            sector: Filtro opcional por sector estratégico.
+            periodo: Período temporal de referencia.
+
+        Returns:
+            list[IndiceEmpleabilidad]: Lista de entidades del índice con puestos
+                disponibles y scores calculados por país y ocupación.
+        """
+        pass

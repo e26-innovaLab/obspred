@@ -1,26 +1,11 @@
-import { useState } from "react";
-import { FiltrosBar } from "../../components/common/FiltrosBar";
 import { useTrazabilidadData } from "./hooks/useTrazabilidadData";
 import { FuentesTable } from "./components/FuentesTable";
-import { PAISES } from "../../services/mock/catalogo";
-import type { Pais } from "../../types/kpi";
-
-const ORDEN_PAISES = PAISES.map((p) => p.id as Pais);
 
 // Vista 5 — Trazabilidad y fuentes.
 // Fuente, fecha de actualización y tipo de cada indicador; estado de
 // frescura de cada fuente y acceso a la metodología. Filtros: País · Fuente.
 export function TrazabilidadPage() {
-  const { fuentes } = useTrazabilidadData();
-
-  const [paises, setPaisesLocal] = useState<Pais[]>(ORDEN_PAISES);
-  const togglePais = (pais: Pais) =>
-    setPaisesLocal((prev) => {
-      const nuevos = prev.includes(pais)
-        ? prev.filter((p) => p !== pais)
-        : [...prev, pais];
-      return ORDEN_PAISES.filter((p) => nuevos.includes(p));
-    });
+  useTrazabilidadData();
 
   return (
     <section className="page">
@@ -62,13 +47,13 @@ export function TrazabilidadPage() {
       <section className="fuentes-section">
         <h2>Catálogo de fuentes</h2>
         <div className="fuentes-table-container">
-          <FuentesTable fuentes={fuentes} />
+          <FuentesTable />
         </div>
       </section>
 
       <section className="metodologia-grid">
         <div className="metodologia-card">
-          <h2>Cópmo se construyen los indicadores</h2>
+          <h2>Cómo se construyen los indicadores</h2>
           <div className="metodologia-paso">
             <p className="metodologia-paso__titulo">Definición</p>
             <p className="metodologia-paso__descripcion">Precisar qué mide cada indicador y su unidad.</p>

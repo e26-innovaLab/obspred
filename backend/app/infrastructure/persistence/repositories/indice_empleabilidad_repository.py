@@ -7,11 +7,18 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.constants import (
+    DEFAULT_INDEC_SOURCE,
+    DEFAULT_INE_URUGUAY_SOURCE,
+    DEFAULT_REGIONAL_ARMONIZADAS_SOURCE,
+    DEFAULT_SENCE_CHILE_SOURCE,
     INDICADOR_INDICE_EMPLEABILIDAD,
+    INDICE_EMPLEABILIDAD_PESOS_DEFAULT,
     DimensionIndiceNombre,
+    IndicadorSlug,
     PaisCodigo,
     SectorEstrategico,
     TipoIndicador,
+    normalizar_pais_codigo,
 )
 from app.core.logging import logger
 from app.domain.entities.indice_empleabilidad import (
@@ -792,16 +799,14 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         Returns:
             str: Identificación de organismos oficiales de datos.
         """
-        if not pais:
-            return "SENCE-SABE / INDEC / INE / OIT (Fuentes Oficiales Armonizadas)"
-        p = pais.upper().strip()
-        if p in (PaisCodigo.ARG, "AR", "ARGENTINA"):
-            return "INDEC — Encuesta Permanente de Hogares / Secretaría de Trabajo"
-        if p in (PaisCodigo.CHL, "CL", "CHILE"):
-            return "SENCE — SABE / INE Chile — ENE y SIMEL"
-        if p in (PaisCodigo.URY, "UY", "URUGUAY"):
-            return "INE Uruguay — ECH / ANEP — DGETP-UTU"
-        return f"Observatorio Predictivo ({p}) / Fuentes Armonizadas"
+        codigo = normalizar_pais_codigo(pais)
+        if codigo == PaisCodigo.ARG:
+            return DEFAULT_INDEC_SOURCE
+        if codigo == PaisCodigo.CHL:
+            return DEFAULT_SENCE_CHILE_SOURCE
+        if codigo == PaisCodigo.URY:
+            return DEFAULT_INE_URUGUAY_SOURCE
+        return DEFAULT_REGIONAL_ARMONIZADAS_SOURCE
 
     async def exists_ocupacion(self, ocupacion: str) -> bool:
         """Determina si la ocupación existe en el catálogo o base de datos.
@@ -875,7 +880,15 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
 
             # Construir entidad a partir de registros en BD
             canon_nombre = db_records[0].ocupacion or ocupacion
-            canon_sector = db_records[0].sector or sector or "general"
+            cat_entry = self._resolve_catalog_entry(canon_nombre)
+            raw_sec = (
+                db_records[0].sector
+                or sector
+                or (cat_entry["sector"] if cat_entry else None)
+            )
+            canon_sector: str | None = (
+                raw_sec.value if isinstance(raw_sec, SectorEstrategico) else raw_sec
+            )
             fuente = db_records[0].fuente or self._get_fuente_por_pais(pais)
             fecha_act = db_records[0].fecha_actualizacion
 
@@ -891,25 +904,33 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.DEMANDA_PUESTOS,
                     valor=score,
-                    peso=0.35,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.DEMANDA_PUESTOS
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.ESTABILIDAD_SALARIAL,
                     valor=score,
-                    peso=0.25,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.ESTABILIDAD_SALARIAL
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.COBERTURA_FORMATIVA,
                     valor=score,
-                    peso=0.20,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.COBERTURA_FORMATIVA
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
                 DimensionIndice(
                     nombre=DimensionIndiceNombre.CRECIMIENTO_RECIENTE,
                     valor=score,
-                    peso=0.20,
+                    peso=INDICE_EMPLEABILIDAD_PESOS_DEFAULT[
+                        DimensionIndiceNombre.CRECIMIENTO_RECIENTE
+                    ],
                     descripcion="Medición agregada desde registros de BD",
                 ),
             ]
@@ -932,7 +953,34 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         if entry is None:
             return None
 
-        # Construir dimensiones desde el catálogo metodológico
+        return self._build_from_catalog(
+            entry=entry,
+            pais=pais,
+            sector=sector,
+            periodo=periodo,
+        )
+
+    def _build_from_catalog(
+        self,
+        entry: dict,
+        pais: str | None = None,
+        sector: str | None = None,
+        periodo: str | None = None,
+        puestos_disponibles: int | None = None,
+    ) -> IndiceEmpleabilidad:
+        """Construye una entidad IndiceEmpleabilidad desde el catálogo.
+
+        Args:
+            entry: Diccionario con la definición taxonómica de la ocupación.
+            pais: Filtro opcional por código de país.
+            sector: Filtro opcional por sector estratégico.
+            periodo: Período temporal de corte.
+            puestos_disponibles: Vacantes observadas (None si no hay registros).
+
+        Returns:
+            IndiceEmpleabilidad: Entidad de dominio construida con sus 4 dimensiones
+                y trazabilidad metodológica.
+        """
         dimensiones = [
             DimensionIndice(
                 nombre=dim[0],
@@ -946,7 +994,6 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
         score = IndiceEmpleabilidad.calcular_score_ponderado(dimensiones)
         nivel = IndiceEmpleabilidad.determinar_nivel(score)
 
-        # Serie histórica de evolución metodológica (≥ 3 períodos)
         evolucion = [
             EvolucionIndicePunto(
                 periodo="2025-Q3", valor=round(max(0.0, score - 3.2), 1)
@@ -959,6 +1006,12 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 periodo="2026-Q2", valor=round(min(100.0, score + 1.1), 1)
             ),
         ]
+
+        canon_sector = sector or (
+            entry["sector"].value
+            if isinstance(entry["sector"], SectorEstrategico)
+            else entry["sector"]
+        )
 
         return IndiceEmpleabilidad(
             ocupacion_id=entry["id"],
@@ -974,7 +1027,98 @@ class SqlAlchemyIndiceEmpleabilidadRepository(IIndiceEmpleabilidadRepository):
                 "Demanda 35%, Estabilidad 25%, Cobertura 20%, Crecimiento 20%)"
             ),
             pais=pais,
-            sector=sector or entry["sector"],
+            sector=canon_sector,
             periodo=periodo or "2026-Q1",
             evolucion=evolucion,
+            puestos_disponibles=puestos_disponibles,
         )
+
+    async def get_ranking(
+        self,
+        paises: list[str],
+        sector: str | None = None,
+        periodo: str | None = None,
+    ) -> list[IndiceEmpleabilidad]:
+        """Obtiene el listado clasificado de ocupaciones para ranking multi-país.
+
+        Args:
+            paises: Lista de códigos ISO-3 de países a incluir.
+            sector: Filtro opcional por sector estratégico.
+            periodo: Período temporal de referencia.
+
+        Returns:
+            list[IndiceEmpleabilidad]: Lista de entidades del índice con puestos
+                disponibles y scores calculados por país y ocupación.
+        """
+        entries = list(self._CATALOGO_OCUPACIONES.values())
+        if sector and sector.strip():
+            sector_norm = _normalize_string(sector)
+            filtered = []
+            for entry in entries:
+                sec = entry.get("sector")
+                sec_val = sec.value if isinstance(sec, SectorEstrategico) else str(sec)
+                sec_name = entry.get("sector_nombre", "")
+                if (
+                    _normalize_string(sec_val) == sector_norm
+                    or _normalize_string(sec_name) == sector_norm
+                ):
+                    filtered.append(entry)
+            entries = filtered
+
+        # Normalizar y deduplicar códigos de países
+        paises_norm_map: dict[str, str] = {}
+        for p in paises:
+            code = normalizar_pais_codigo(p)
+            canon = code.value if code else p.strip().upper()
+            if canon:
+                paises_norm_map[canon] = canon
+
+        paises_codigos = list(paises_norm_map.keys())
+
+        # Mapeo de puestos demandados por (pais, ocupacion_id)
+        puestos_map: dict[tuple[str, str], int] = {}
+
+        if self._session and paises_codigos:
+            try:
+                stmt = select(IndicadorModel).where(
+                    IndicadorModel.indicador == IndicadorSlug.PUESTOS_DEMANDADOS.value,
+                    func.upper(IndicadorModel.pais).in_(paises_codigos),
+                    IndicadorModel.ocupacion.isnot(None),
+                )
+                if periodo and periodo.strip():
+                    stmt = stmt.where(IndicadorModel.periodo == periodo.strip())
+                else:
+                    stmt = stmt.order_by(IndicadorModel.periodo.desc())
+
+                result = await self._session.execute(stmt)
+                records: list[IndicadorModel] = list(result.scalars().all())
+
+                for rec in records:
+                    p_code = normalizar_pais_codigo(rec.pais)
+                    canon_p = p_code.value if p_code else rec.pais.strip().upper()
+                    cat_match = self._resolve_catalog_entry(rec.ocupacion or "")
+                    if cat_match:
+                        key = (canon_p, cat_match["id"])
+                        if key not in puestos_map:
+                            puestos_map[key] = int(round(rec.valor))
+            except Exception as exc:
+                logger.warning(
+                    f"Fallo al consultar puestos demandados para ranking: {exc}"
+                )
+
+        resultados: list[IndiceEmpleabilidad] = []
+        for p_code in paises_codigos:
+            for entry in entries:
+                puestos = puestos_map.get((p_code, entry["id"]))
+                entity = self._build_from_catalog(
+                    entry=entry,
+                    pais=p_code,
+                    sector=entry["sector"].value
+                    if isinstance(entry["sector"], SectorEstrategico)
+                    else entry["sector"],
+                    periodo=periodo,
+                    puestos_disponibles=puestos,
+                )
+                resultados.append(entity)
+
+        return resultados

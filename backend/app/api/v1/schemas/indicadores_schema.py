@@ -19,6 +19,7 @@ class IndicadoresFilterSchema(BaseModel):
         ocupacion: Ocupación analizada según taxonomía normalizada.
         desde: Límite temporal inicial del rango (ej. 2023, 2024-Q1).
         hasta: Límite temporal final del rango (ej. 2024, 2024-Q4).
+        trimestre: Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4).
     """
 
     model_config = ConfigDict(
@@ -47,6 +48,10 @@ class IndicadoresFilterSchema(BaseModel):
         default=None,
         description="Límite temporal final del rango (ej. 2024, 2024-Q4)",
     )
+    trimestre: str | None = Field(
+        default=None,
+        description="Filtro opcional por trimestre (ej. Q1, Q2, Q3, Q4)",
+    )
 
     @field_validator("*", mode="before")
     @classmethod
@@ -66,6 +71,7 @@ class IndicadorItemSchema(BaseModel):
         ocupacion: Ocupación analizada si aplica.
         indicador: Clave o nombre del indicador (ej. tasa_desempleo).
         periodo: Período temporal del dato (ej. 2024-Q1, 2024).
+        trimestre: Trimestre del indicador si aplica (ej. Q1, Q2, Q3, Q4).
         valor: Valor numérico del indicador.
         tipo: Tipo metodológico del dato (observado, calculado, proyeccion).
         fuente: Organismo o entidad proveedora del dato.
@@ -93,6 +99,10 @@ class IndicadorItemSchema(BaseModel):
     periodo: str = Field(
         ...,
         description="Período temporal del indicador (ej. 2024-Q1)",
+    )
+    trimestre: str | None = Field(
+        default=None,
+        description="Trimestre del período si aplica (ej. Q1, Q2, Q3, Q4)",
     )
     valor: float = Field(
         ...,

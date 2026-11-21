@@ -31,7 +31,8 @@ dev = [
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = "-ra -q"
-testpaths = ["tests"]
+testpaths = ["tests/unit", "tests/integration"]
+norecursedirs = ["tests/manual"]
 asyncio_mode = "auto"
 pythonpath = ["."]
 
